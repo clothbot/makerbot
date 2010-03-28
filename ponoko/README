@@ -1,0 +1,5 @@
+Usage:
+  sed -f /path/to/ponoko/qcad2ponoko.sed qcad.source.svg > ponoko.dest.svg
+
+Then import the ponoko.dest.svg file into one of the ponoko Inkscape templates, reposition as required and Save As your final file.
+
