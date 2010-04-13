@@ -1,5 +1,5 @@
 // MakerBeam Library
-// Version 20100228
+// Version 20100413
 
 // Copyright 2010, by Andrew Plumb
 // Licensed under the Attribution - Creative Commons license
@@ -14,20 +14,60 @@
 //   - see http://www.makerbeam.com/
 
 // To Do:
-//  -  Drop the Mini-T mount points down and difference off the bottom
-//   protrusion so the first layer extends all the way to their tips.
-//   - Current version's are bit too high, don't appear in 1st layer and warp
-//    a little.
+// - make corner pieces with integrated bearing brackets.
 
 $fa=9;
 $fs=0.1;
 
 scale_1in=25.4;
 
- render_part=3; // The part the Flex-Shaft screws into.
+// render_part=3; // The part the Flex-Shaft screws into.
 // render_part=6; // An optional part to bolt on the Flex-Shaft handle
 // render_part=9; // The Mini-T to Z-platform M5 bolt hold adapter part
+ render_part=10; // mini_t_socket
 
+
+module mini_t_socket(
+	rotAngle=0
+	, mini_t_z=12.0
+	, mini_t_r=15.0/2
+	, mini_t_d=15.0
+	, mini_t_wall=0.1*scale_1in
+  ) {
+  difference () {
+    union () {
+	    rotate([0,0,rotAngle])translate([mini_t_r-mini_t_d/2,-4.0,0]) {
+		scale([mini_t_d,8.0,mini_t_z]) cube(size=1.0,center=false);
+	    }
+	    rotate([0,0,rotAngle])
+		translate([mini_t_r
+		  , 0
+		  , mini_t_z
+		])
+		rotate([45,0,0])
+		  scale([mini_t_d,10.0+2*mini_t_wall,10.0+2*mini_t_wall])
+			cube(size=1.0,center=true);
+    }
+    union () {
+	    rotate([0,0,rotAngle])
+		translate([mini_t_r
+			, 0.0
+			, mini_t_z
+		]) rotate([45,0,0]) {
+		  translate([2.0,0,0]) scale([mini_t_d,10.2,10.2])
+			cube(size=1.0,center=true);
+		  cylinder(r=1.6
+			, h=20.0
+			, center=true
+		  );
+		  rotate([90,0,0]) cylinder(r=1.6
+			, h=20.0
+			, center=true
+		  );
+	    }
+    }
+  }
+}
 
 
 module dremel_flexshaft_mount_body(
@@ -303,5 +343,10 @@ if( render_part==8 ) {
 if( render_part==9 ) {
   echo("Rendering bracket_handle()...");
   flex_bracket();
+}
+
+if( render_part==10 ) {
+  echo("Rendering mini_t_socket()...");
+  mini_t_socket();
 }
 
