@@ -344,6 +344,23 @@ module cube_corner() {
  difference () {
   union () {
     cylinder(r=26/2+0.1*scale_1in, h=24.0, center=false);
+    translate([0,0,19]) for ( i=[0:2] ) {
+	assign(rotAngle=i*360/3-45) {
+	  rotate([90,0,rotAngle]) {
+	   translate([0,0,29.0/2])
+	    cylinder(
+		r1=8.0
+		, r2=6.0
+		, h=2.0
+		, center=false);
+	   translate([0,0,23.0/2])
+	    cylinder(
+		r=8.0
+		, h=3.0
+		, center=false);
+	  }
+	}
+    }
     translate([0.707*18/2,0.707*18/2,0]) rotate([0,-90,-135]) 
 	mini_t_socket(rotAngle=0
 		, mini_t_b=1.414*8.0
