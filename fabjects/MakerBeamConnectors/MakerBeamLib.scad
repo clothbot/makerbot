@@ -29,6 +29,7 @@ scale_1in=25.4;
 
 module mini_t_socket(
 	rotAngle=0
+	, mini_t_b=8.0
 	, mini_t_z=12.0
 	, mini_t_r=15.0/2
 	, mini_t_d=15.0
@@ -36,16 +37,16 @@ module mini_t_socket(
   ) {
   difference () {
     union () {
-	    rotate([0,0,rotAngle])translate([mini_t_r-mini_t_d/2,-4.0,0]) {
-		scale([mini_t_d,8.0,mini_t_z]) cube(size=1.0,center=false);
+	    rotate([0,0,rotAngle])translate([mini_t_r-mini_t_d/2-mini_t_wall,-mini_t_b/2,0]) {
+		scale([mini_t_d+mini_t_wall,mini_t_b,mini_t_z]) cube(size=1.0,center=false);
 	    }
 	    rotate([0,0,rotAngle])
-		translate([mini_t_r
+		translate([mini_t_r-mini_t_wall/2
 		  , 0
 		  , mini_t_z
 		])
 		rotate([45,0,0])
-		  scale([mini_t_d,10.0+2*mini_t_wall,10.0+2*mini_t_wall])
+		  scale([mini_t_d+mini_t_wall,10.0+2*mini_t_wall,10.0+2*mini_t_wall])
 			cube(size=1.0,center=true);
     }
     union () {
@@ -54,7 +55,7 @@ module mini_t_socket(
 			, 0.0
 			, mini_t_z
 		]) rotate([45,0,0]) {
-		  translate([2.0,0,0]) scale([mini_t_d,10.2,10.2])
+		  translate([mini_t_wall,0,0]) scale([mini_t_d+2*mini_t_wall,10.2,10.2])
 			cube(size=1.0,center=true);
 		  cylinder(r=1.6
 			, h=20.0
@@ -346,7 +347,13 @@ if( render_part==9 ) {
 }
 
 if( render_part==10 ) {
-  echo("Rendering mini_t_socket()...");
-  mini_t_socket();
+  echo("Rendering mini_t_socket() with 10*10*10 reference cube...");
+  rotate([0,-90,-135]) mini_t_socket(rotAngle=0
+	, mini_t_z=1.414*10.0
+	, mini_t_r=7.5+0.1*scale_1in
+	, mini_t_d=15.0
+	, mini_t_wall=0.1*scale_1in
+  );
+  cube(size=10.0);
 }
 
