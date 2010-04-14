@@ -24,8 +24,9 @@ scale_1in=25.4;
 // render_part=3; // The part the Flex-Shaft screws into.
 // render_part=6; // An optional part to bolt on the Flex-Shaft handle
 // render_part=9; // The Mini-T to Z-platform M5 bolt hold adapter part
- render_part=10; // mini_t_socket
-
+// render_part=10; // mini_t_socket
+// render_part=11; // bearing_hole
+render_part=12; // cube_corner
 
 module mini_t_socket(
 	rotAngle=0
@@ -70,6 +71,47 @@ module mini_t_socket(
   }
 }
 
+module bearing_hole(
+	captive_nut_w=5.5
+	, captive_nut_l=6.4
+	, captive_nut_h=3.0
+	, captive_nut_count=4
+	, captive_bolt_d=3.0
+	, captive_bolt_l=16.0
+	, axle_h_up=10.0
+	, axle_h_dn=5.0
+	, bearing_id=8.0
+	, bearing_od=22.0
+	, bearing_h=7.0
+	) {
+  union () {
+    cylinder(r=bearing_od/2
+	, h=bearing_h
+	, center=true);
+    cylinder(r=bearing_id/2
+	, h=axle_h_up
+	, center=false);
+    rotate([180,0,0]) cylinder(r=bearing_id/2
+	, h=axle_h_dn
+	, center=false);
+    for( i=[0:captive_nut_count-1] ) {
+	assign(rotAngle=i*360/captive_nut_count) {
+	 rotate([0,0,rotAngle]) {
+	  translate([bearing_id/2,-captive_nut_w/2,-bearing_h/2]) {
+	    scale([bearing_od/2-bearing_id/2+captive_nut_h,captive_nut_w,bearing_h])
+	      cube(size=1.0, center=false);
+	  }
+	 }
+	 rotate([90,0,rotAngle+90]) {
+	  cylinder( r=captive_bolt_d/2
+		, h=bearing_od/2-bearing_id/2+captive_bolt_l
+		, center=false);
+	 }
+	}
+    }
+  }
+
+}
 
 module dremel_flexshaft_mount_body(
 	arms=6
@@ -297,6 +339,48 @@ module flex_bracket() {
   }
 }
 
+module cube_corner() {
+ difference () {
+  union () {
+    cylinder(r=26/2+0.1*scale_1in, h=24.0, center=false);
+    translate([0.707*18/2,0.707*18/2,0]) rotate([0,-90,-135]) 
+	mini_t_socket(rotAngle=0
+		, mini_t_z=1.414*10.0
+		, mini_t_r=20.0/2+0.1*scale_1in
+//		, mini_t_r=20.0/2+3.0
+		, mini_t_d=20.0
+		, mini_t_wall=0.1*scale_1in
+//		, mini_t_wall=3.0
+	);
+    rotate([0,0,-90]) translate([26.0/2,0,0]) 
+	mini_t_socket(rotAngle=0
+		, mini_t_z=12.0
+		, mini_t_r=7.5+0.1*scale_1in
+		, mini_t_d=15.0
+		, mini_t_wall=0.1*scale_1in
+	);
+    rotate([0,0,-180]) translate([26.0/2,0,0]) 
+	mini_t_socket(rotAngle=0
+		, mini_t_z=12.0
+		, mini_t_r=7.5+0.1*scale_1in
+		, mini_t_d=15.0
+		, mini_t_wall=0.1*scale_1in
+	);
+  }
+  union () {
+    rotate([0,0,180+45]) translate([0,0,24.0-10.0/2])
+	bearing_hole(captive_nut_count=3
+		, captive_bolt_l=16.0
+		, bearing_h=11.0
+		, axle_h_up=12.0
+		, axle_h_dn=20.0
+		, bearing_id=17.0
+		, bearing_od=23.0
+	);
+  }
+ }
+}
+
 
 if( render_part==1 ) {
   echo("Rendering dremel_flexshaft_mount_body()...");
@@ -356,4 +440,17 @@ if( render_part==10 ) {
   );
   cube(size=10.0);
 }
+
+if( render_part==11 ) {
+  echo("Rendering bearing_hole()...");
+  bearing_hole(captive_nut_count=3
+		, captive_bolt_l=16.0
+	);
+}
+
+if( render_part==12 ) {
+  echo("Rendering cube_corner()...");
+  cube_corner();
+}
+
 
