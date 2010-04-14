@@ -26,7 +26,7 @@ scale_1in=25.4;
 // render_part=9; // The Mini-T to Z-platform M5 bolt hold adapter part
 // render_part=10; // mini_t_socket
 // render_part=11; // bearing_hole
-render_part=12; // cube_corner
+ render_part=12; // cube_corner
 
 module mini_t_socket(
 	rotAngle=0
@@ -35,19 +35,20 @@ module mini_t_socket(
 	, mini_t_r=15.0/2
 	, mini_t_d=15.0
 	, mini_t_wall=0.1*scale_1in
+	, mini_t_rwall=0.1*scale_1in
   ) {
   difference () {
     union () {
-	    rotate([0,0,rotAngle])translate([mini_t_r-mini_t_d/2-mini_t_wall,-mini_t_b/2,0]) {
-		scale([mini_t_d+mini_t_wall,mini_t_b,mini_t_z]) cube(size=1.0,center=false);
+	    rotate([0,0,rotAngle])translate([mini_t_r-mini_t_d/2-mini_t_rwall,-mini_t_b/2,0]) {
+		scale([mini_t_d+mini_t_rwall,mini_t_b,mini_t_z]) cube(size=1.0,center=false);
 	    }
 	    rotate([0,0,rotAngle])
-		translate([mini_t_r-mini_t_wall/2
+		translate([mini_t_r-mini_t_rwall/2
 		  , 0
 		  , mini_t_z
 		])
 		rotate([45,0,0])
-		  scale([mini_t_d+mini_t_wall,10.0+2*mini_t_wall,10.0+2*mini_t_wall])
+		  scale([mini_t_d+mini_t_rwall,10.0+2*mini_t_wall,10.0+2*mini_t_wall])
 			cube(size=1.0,center=true);
     }
     union () {
@@ -345,12 +346,12 @@ module cube_corner() {
     cylinder(r=26/2+0.1*scale_1in, h=24.0, center=false);
     translate([0.707*18/2,0.707*18/2,0]) rotate([0,-90,-135]) 
 	mini_t_socket(rotAngle=0
+		, mini_t_b=1.414*8.0
 		, mini_t_z=1.414*10.0
-		, mini_t_r=20.0/2+0.1*scale_1in
-//		, mini_t_r=20.0/2+3.0
+		, mini_t_r=20.0/2+3.0
 		, mini_t_d=20.0
 		, mini_t_wall=0.1*scale_1in
-//		, mini_t_wall=3.0
+		, mini_t_rwall=3.0
 	);
     rotate([0,0,-90]) translate([26.0/2,0,0]) 
 	mini_t_socket(rotAngle=0
@@ -358,6 +359,7 @@ module cube_corner() {
 		, mini_t_r=7.5+0.1*scale_1in
 		, mini_t_d=15.0
 		, mini_t_wall=0.1*scale_1in
+		, mini_t_rwall=5.0
 	);
     rotate([0,0,-180]) translate([26.0/2,0,0]) 
 	mini_t_socket(rotAngle=0
@@ -365,6 +367,7 @@ module cube_corner() {
 		, mini_t_r=7.5+0.1*scale_1in
 		, mini_t_d=15.0
 		, mini_t_wall=0.1*scale_1in
+		, mini_t_rwall=5.0
 	);
   }
   union () {
@@ -434,9 +437,10 @@ if( render_part==10 ) {
   echo("Rendering mini_t_socket() with 10*10*10 reference cube...");
   rotate([0,-90,-135]) mini_t_socket(rotAngle=0
 	, mini_t_z=1.414*10.0
-	, mini_t_r=7.5+0.1*scale_1in
-	, mini_t_d=15.0
+	, mini_t_r=10
+	, mini_t_d=20.0
 	, mini_t_wall=0.1*scale_1in
+	, mini_t_rwall=5.0
   );
   cube(size=10.0);
 }
