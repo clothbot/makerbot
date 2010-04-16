@@ -36,6 +36,7 @@ module mini_t_socket(
 	, mini_t_wall=0.1*scale_1in
 	, mini_t_rwall=0.1*scale_1in
 	, mini_t_delta=0.1*scale_1in-2.0
+	, mini_t_rdelta=0
   ) {
   difference () {
     union () {
@@ -64,6 +65,12 @@ module mini_t_socket(
 			  translate([0.125,-0.5,0]) scale([2,2,2]) sphere(r=0.25/4, center=true, $fn=9);
 			  translate([-0.5,0,-0.5]) scale([2,1,1]) sphere(r=0.25/2, center=false, $fn=9);
 			  translate([0.125,0,-0.5]) scale([2,2,2]) sphere(r=0.25/4, center=false, $fn=9);
+		    }
+		  if( mini_t_rdelta > 0 ) translate([-mini_t_d/2-mini_t_wall,0,0]) scale([2*mini_t_rdelta,10.0+mini_t_delta,10.0+mini_t_delta])
+		    difference () {
+			cube(size=1.0,center=true);
+			  translate([0,-0.5,0]) scale([4,1,1]) sphere(r=0.25/2, center=true, $fn=9);
+			  translate([0,0,-0.5]) scale([4,1,1]) sphere(r=0.25/2, center=false, $fn=9);
 		    }
 		  cylinder(r=1.6
 			, h=20.0
@@ -375,6 +382,7 @@ module cube_corner() {
 		, mini_t_d=20.0
 		, mini_t_wall=0.1*scale_1in
 		, mini_t_rwall=3.0
+		, mini_t_rdelta=10.0
 	);
     rotate([0,0,-90]) translate([26.0/2,0,0]) 
 	mini_t_socket(rotAngle=0
@@ -463,7 +471,15 @@ if( render_part==10 ) {
 	, mini_t_r=10
 	, mini_t_d=20.0
 	, mini_t_wall=0.1*scale_1in
-	, mini_t_rwall=5.0
+	, mini_t_rwall=0.1*scale_1in
+	, mini_t_rdelta=10.0
+  );
+  rotate([0,-90,45]) mini_t_socket(rotAngle=0
+	, mini_t_z=1.414*10.0
+	, mini_t_r=0
+	, mini_t_d=10.0
+	, mini_t_wall=3.0
+	, mini_t_rwall=1.0
   );
 //  cube(size=10.0);
 }
