@@ -26,6 +26,8 @@ scale_1in=25.4;
 // render_part=10; // mini_t_socket
 // render_part=11; // bearing_hole
  render_part=12; // cube_corner
+// render_part=13; // nut_blank
+// render_part=14; // m3_nut
 
 module mini_t_socket(
 	rotAngle=0
@@ -82,6 +84,36 @@ module mini_t_socket(
 		  );
 	    }
     }
+  }
+}
+
+module nut_blank(
+	nut_w=5.5
+	, nut_h=2.5
+	) {
+  intersection () {
+    translate([-nut_w,-nut_w/2,0]) scale([2*nut_w,nut_w,nut_h])  cube(size=1.0, center=false);
+    rotate([0,0,60]) 
+	translate([-nut_w,-nut_w/2,0]) scale([2*nut_w,nut_w,nut_h]) cube(size=1.0, center=false);
+    rotate([0,0,120]) 
+	translate([-nut_w,-nut_w/2,0]) scale([2*nut_w,nut_w,nut_h]) cube(size=1.0, center=false);
+  }
+}
+
+module m3_nut(
+	nut_h=3.0
+	, nut_wdelta=0.1
+	, bolt_rdelta=0.05
+	, bolt_hdelta=0.01
+	) {
+  difference () {
+	nut_blank(
+	  nut_w=5.5+nut_wdelta
+	  , nut_h=nut_h
+	);
+	translate([0,0,-bolt_hdelta/2]) cylinder(r=3.0/2+bolt_rdelta,
+	  , h=nut_h+bolt_hdelta
+	  , center=false );
   }
 }
 
@@ -496,4 +528,14 @@ if( render_part==12 ) {
   cube_corner();
 }
 
+if( render_part==13 ) {
+  echo("Rendering nut_blank()...");
+  nut_blank();
+}
 
+if( render_part==14 ) {
+  echo("Rendering m3_nut()...");
+  m3_nut(	nut_h=2.5
+	, bolt_rdelta=-0.05
+  );
+}
