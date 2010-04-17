@@ -1,5 +1,5 @@
 // SewableSockets Library
-// Version 20100413
+// Version 20100416
 
 // Copyright 2010, by Andrew Plumb
 // Licensed under the Attribution - Creative Commons license
@@ -28,6 +28,10 @@ module dip_socket_holes(
 	, pkgWidth=3.0*0.1*scale_1in
 	) {
   union () {
+    translate([0,0,-pinHoleWidth]) rotate([0,0,-135]) {
+	cylinder(r=pinRowSpace/8,h=2*pinHoleWidth,center=false);
+	scale([pinRowSpace/8,pinRowSpace/8,2*pinHoleWidth]) cube(size=1.0);
+    }
     for( i=[0:(pinCount/2-1)] ) {
       assign(pinPos=pinSpace*i) {
 	translate([pinPos,pinRowSpace/2,-pinHoleDepth])
