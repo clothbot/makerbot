@@ -1,5 +1,5 @@
 // MakerBeam Library
-// Version 20100413
+// Version 20100417
 
 // Copyright 2010, by Andrew Plumb
 // Licensed under the Attribution - Creative Commons license
@@ -25,9 +25,10 @@ scale_1in=25.4;
 // render_part=9; // The Mini-T to Z-platform M5 bolt hold adapter part
 // render_part=10; // mini_t_socket
 // render_part=11; // bearing_hole
- render_part=12; // cube_corner
+// render_part=12; // cube_corner
 // render_part=13; // nut_blank
 // render_part=14; // m3_nut
+ render_part=15; // cu_pipe_socket
 
 module mini_t_socket(
 	rotAngle=0
@@ -447,6 +448,75 @@ module cube_corner() {
  }
 }
 
+module cu_pipe_socket (
+	rotAngle=0
+	, cu_pipe_id=0.5*scale_1in
+	, cu_pipe_od=(2/3)*scale_1in
+	, cu_pipe_b=(2/3)*scale_1in
+	, cu_pipe_z=(2/3)*scale_1in
+	, cu_pipe_r=15.0/2
+	, cu_pipe_d=(2/3)*scale_1in
+	, cu_pipe_wall=0.1*scale_1in
+	, cu_pipe_rwall=0.1*scale_1in
+	, cu_pipe_delta=0.1*scale_1in-2.0
+	, cu_pipe_rdelta=0
+  ) {
+  difference () {
+    union () {
+	    rotate([0,0,rotAngle])translate([cu_pipe_r-cu_pipe_d/2-cu_pipe_rwall,-cu_pipe_b/2,0]) {
+		scale([cu_pipe_d+cu_pipe_rwall,cu_pipe_b,cu_pipe_z]) cube(size=1.0,center=false);
+	    }
+	    rotate([0,0,rotAngle])
+		translate([cu_pipe_r-cu_pipe_rwall/2
+		  , 0
+		  , cu_pipe_z
+		])
+		rotate([45,0,0])
+		  scale([cu_pipe_d+cu_pipe_rwall,cu_pipe_od/2+2*cu_pipe_wall,cu_pipe_od/2+2*cu_pipe_wall])
+			rotate([0,90,0]) cylinder(r=1.0,h=1.0,center=true);
+    }
+    union () {
+	    rotate([0,0,rotAngle])
+		translate([cu_pipe_r
+			, 0.0
+			, cu_pipe_z
+		]) rotate([45,0,0]) {
+		  translate([cu_pipe_wall,0,0]) scale([cu_pipe_d+2*cu_pipe_wall,cu_pipe_od/2+cu_pipe_delta,cu_pipe_od/2+cu_pipe_delta]) {
+		   difference () {
+		    rotate([-45,0,0]) {
+		      rotate([0,90,0]) cylinder(r=1.0,h=1.0,center=true);
+		      rotate([45,0,0]) translate([-0.5,0,0]) cube(size=1.0,center=false);
+		    }
+		    rotate([-45,0,0]) translate([0,0,1.55]) cube(size=1.1,center=true);
+		   }
+		  }
+		  if( cu_pipe_rdelta > 0 ) translate([-cu_pipe_d/2-cu_pipe_wall,0,0]) scale([cu_pipe_d+2*cu_pipe_wall,cu_pipe_od/2+cu_pipe_delta,cu_pipe_od/2+cu_pipe_delta])
+		   difference () {
+		    rotate([-45,0,0]) {
+		      rotate([0,90,0]) cylinder(r=1.0,h=1.0,center=true);
+		      rotate([45,0,0]) translate([-0.5,0,0]) cube(size=1.0,center=false);
+		    }
+		    rotate([-45,0,0]) translate([0,0,1.55]) cube(size=1.1,center=true);
+		   }
+		  cylinder(r=1.6
+			, h=2*cu_pipe_od+cu_pipe_delta
+			, center=true
+		  );
+		  rotate([90,0,0]) cylinder(r=1.6
+			, h=2*cu_pipe_od+cu_pipe_delta
+			, center=true
+		  );
+	    }
+		cylinder(r=3.0/2, h=cu_pipe_z, center=true);
+		translate([0,0,cu_pipe_r-3.0]) nut_blank(nut_h=4.0);
+		translate([cu_pipe_r,0,0]) {
+		  cylinder(r=3.0/2, h=cu_pipe_z, center=true);
+		  translate([0,0,cu_pipe_r-3.0]) nut_blank(nut_h=4.0);
+		}
+    }
+  }
+}
+
 
 if( render_part==1 ) {
   echo("Rendering dremel_flexshaft_mount_body()...");
@@ -539,3 +609,11 @@ if( render_part==14 ) {
 	, bolt_rdelta=-0.05
   );
 }
+
+if( render_part==15 ) {
+  echo("Rendering cu_pipe_socket()...");
+  cu_pipe_socket( cu_pipe_rwall=0.1*scale_1in
+	, cu_pipe_rdelta=10.0);
+
+}
+
