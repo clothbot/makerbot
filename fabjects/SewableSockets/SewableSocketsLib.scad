@@ -32,8 +32,8 @@ module pin_hole(
 	  , h=pinSpace
 	  , center=false);
     translate([0,0,-holeHeight]) {
-	rotate([0,0,45])
-	 scale([pinHoleWidth,pinHoleWidth,holeHeight])
+	rotate([0,0,0])
+	 scale([sqrt(2)*pinHoleWidth,sqrt(2)*pinHoleWidth,holeHeight])
 	  translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
 	rotate([90,0,0]) rotate([0,0,45]) {
 	 scale([pinHoleWidth,pinHoleWidth,holeHeight])
@@ -51,8 +51,8 @@ module pin_hole(
 		, center=false);
 	}
 	translate([0,-holeHeight,0]) {
-	   rotate([-45,0,0]) rotate([0,0,45]) 
-	    scale([pinHoleWidth,pinHoleWidth,sqrt(2)*holeHeight])
+	   rotate([-45,0,0]) rotate([0,0,0]) 
+	    scale([sqrt(2)*pinHoleWidth,sqrt(2)*pinHoleWidth,sqrt(2)*holeHeight])
 	     translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
 	}
     }
