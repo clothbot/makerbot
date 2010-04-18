@@ -15,86 +15,74 @@ scale_1in=25.4;
 
 // render_part=1; // DIP Socket Holes
 // render_part=2; // DIP Socket Body
-render_part=3; // DIP Socket
+ render_part=3; // DIP Socket
+// render_part=4; // pin_hole
+
+module pin_hole(
+	rotAngle=0
+	, holeHeight=5.0
+	, pinSpace=0.1*scale_1in
+	, pinHoleWidth=0.1*scale_1in/4
+	, pinHoleDepth=0.15*scale_1in
+	) {
+  rotate([0,0,rotAngle]) union () {
+    translate([0,0,-pinSpace/2])
+	cylinder(r2=pinSpace
+	  , r1=0
+	  , h=pinSpace
+	  , center=false);
+    translate([0,0,-holeHeight]) {
+	rotate([0,0,45])
+	 scale([pinHoleWidth,pinHoleWidth,holeHeight])
+	  translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
+	rotate([90,0,0]) rotate([0,0,45]) {
+	 scale([pinHoleWidth,pinHoleWidth,holeHeight])
+	  translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
+	}
+	translate([0,0,-pinHoleWidth/2]) {
+	  cylinder(r1=2*pinHoleWidth
+		, r2=0
+		, h=2*pinHoleWidth
+		, center=false);
+	  translate([0,-holeHeight+pinHoleWidth/2,0])
+	    cylinder(r1=2*pinHoleWidth
+		, r2=0
+		, h=2*pinHoleWidth
+		, center=false);
+	}
+	translate([0,-holeHeight,0]) {
+	   rotate([-45,0,0]) rotate([0,0,45]) 
+	    scale([pinHoleWidth,pinHoleWidth,sqrt(2)*holeHeight])
+	     translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
+	}
+    }
+  }
+}
+
 
 module dip_socket_holes(
 	socketHeight=5.0
 	, pinCount=28
 	, pinSpace=0.1*scale_1in
-	, pinHoleWidth=0.1*scale_1in/4
+	, pinHoleWidth=0.1*scale_1in/3
 	, pinHoleDepth=0.15*scale_1in
 	, pinRowSpace=3.25*0.1*scale_1in
 	, pkgLength=14.0*0.1*scale_1in
 	, pkgWidth=3.0*0.1*scale_1in
 	) {
   union () {
-    translate([0,0,-pinHoleWidth]) rotate([0,0,-135]) {
-	cylinder(r=pinRowSpace/8,h=2*pinHoleWidth,center=false);
-	scale([pinRowSpace/8,pinRowSpace/8,2*pinHoleWidth]) cube(size=1.0);
+    translate([0,0,-socketHeight-pinHoleWidth]) rotate([0,0,-135]) {
+	cylinder(r=pinRowSpace/8,h=socketHeight+2*pinHoleWidth,center=false);
+	scale([pinRowSpace/8,pinRowSpace/8,socketHeight+2*pinHoleWidth]) cube(size=1.0);
     }
     for( i=[0:(pinCount/2-1)] ) {
       assign(pinPos=pinSpace*i) {
-	translate([pinPos,pinRowSpace/2,-pinHoleDepth])
-	  cylinder(r1=pinHoleWidth/2
-		, r2=pinHoleWidth
-		, h=pinHoleDepth
-		, center=false
-		);
-	translate([pinPos,pinRowSpace/2,0]) {
-	  sphere(r=pinHoleWidth);
-	  rotate([-135,0,0]) {
-	    scale([pinHoleWidth,pinHoleWidth,1.414*socketHeight])
-		rotate([0,0,-135]) translate([-1.414*pinHoleWidth/2,-1.414*pinHoleWidth/2,0])
-		  cube(size=1.0,center=false);
-	  }
-	}
-	translate([pinPos, pinRowSpace/2, -socketHeight]) {
-	  scale([pinHoleWidth,pinHoleWidth,socketHeight])
-		rotate([0,0,-135]) translate([-1.414*pinHoleWidth/2,-1.414*pinHoleWidth/2,0])
-		  cube(size=1.0,center=false);
-	  translate([0,0,-pinHoleWidth/2]) cylinder(r1=pinHoleWidth
-		, r2=0
-		, h=2*pinHoleWidth
-		, center=false
-		);
-	  rotate([-90,0,0]) {
-	    scale([pinHoleWidth,pinHoleWidth,socketHeight+pinHoleWidth])
-		rotate([0,0,-135]) translate([-1.414*pinHoleWidth/2,-1.414*pinHoleWidth/2,0])
-		  cube(size=1.0,center=false);
-	  }
-	 }
+	  translate([pinPos,pinRowSpace/2,0])
+	    pin_hole(rotAngle=180);
 
-	translate([pinPos,-pinRowSpace/2,-pinHoleDepth])
-	  cylinder(r1=pinHoleWidth/2
-		, r2=pinHoleWidth
-		, h=pinHoleDepth
-		, center=false
-		);
-	translate([pinPos,-pinRowSpace/2,0]) {
-	  sphere(r=pinHoleWidth);
-	  rotate([135,0,0]) {
-	    scale([pinHoleWidth,pinHoleWidth,1.414*socketHeight])
-		rotate([0,0,-135]) translate([-1.414*pinHoleWidth/2,-1.414*pinHoleWidth/2,0])
-		  cube(size=1.0,center=false);
-	  }
-	}
-	translate([pinPos, -pinRowSpace/2, -socketHeight]) {
-	  scale([pinHoleWidth,pinHoleWidth,socketHeight])
-		rotate([0,0,-135]) translate([-1.414*pinHoleWidth/2,-1.414*pinHoleWidth/2,0])
-		  cube(size=1.0,center=false);
-	  translate([0,0,-pinHoleWidth/2]) cylinder(r1=pinHoleWidth
-		, r2=0
-		, h=2*pinHoleWidth
-		, center=false
-		);
-	  rotate([90,0,0]) {
-	    scale([pinHoleWidth,pinHoleWidth,socketHeight+pinHoleWidth])
-		rotate([0,0,-135]) translate([-1.414*pinHoleWidth/2,-1.414*pinHoleWidth/2,0])
-		  cube(size=1.0,center=false);
-	  }
+	  translate([pinPos,-pinRowSpace/2,0])
+	    pin_hole(rotAngle=0);
 	 }
-
-	}
     }
   }
 }
@@ -123,6 +111,7 @@ module dip_socket() {
   }
 }
 
+
 if( render_part==1 ) {
   echo("Rendering dip_socket_holes()...");
   dip_socket_holes();
@@ -136,4 +125,9 @@ if( render_part==2 ) {
 if( render_part==3 ) {
   echo("Rendering dip_socket()...");
   dip_socket();
+}
+
+if( render_part==4 ) {
+  echo("Rendering pin_hole()...");
+  pin_hole();
 }
