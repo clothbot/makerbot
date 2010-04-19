@@ -1,5 +1,5 @@
 // SewableSockets Library
-// Version 20100416
+// Version 20100419
 
 // Copyright 2010, by Andrew Plumb
 // Licensed under the Attribution - Creative Commons license
@@ -73,31 +73,20 @@ module pin_hole_odd(
 	) {
   rotate([0,0,rotAngle]) union () {
     translate([0,-pinSpace/2+pinHoleWidth/2,-pinSpace/2]) rotate([0,0,45])
-	scale([pinSpace,pinSpace,pinSpace])
+	scale([pinSpace+pinHoleWidth,pinSpace+pinHoleWidth,pinSpace])
 	  cube(size=1.0,center=false);
+    translate([0,pinSpace/2+2*pinHoleWidth,-holeHeight-pinHoleWidth]) {
+	rotate([0,0,45])
+	 scale([2*pinHoleWidth,2*pinHoleWidth,holeHeight+2*pinHoleWidth])
+	  translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
+    }	
     translate([0,0,-holeHeight]) {
 	rotate([0,0,45])
 	 scale([2*pinHoleWidth,2*pinHoleWidth,holeHeight])
 	  translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
-	rotate([90,0,0]) rotate([0,0,45]) {
-	 scale([2*pinHoleWidth,2*pinHoleWidth,holeHeight+pinSpace])
+	translate([0,pinSpace+sqrt(2)*pinHoleWidth,0]) rotate([90,0,0]) rotate([0,0,45]) {
+	 scale([2*pinHoleWidth,2*pinHoleWidth,holeHeight+3*pinSpace+pinHoleWidth])
 	  translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
-	}
-	translate([0,0,-sqrt(2)*pinHoleWidth/2]) {
-	  cylinder(r1=sqrt(2)*2*pinHoleWidth
-		, r2=0
-		, h=sqrt(2)*2*pinHoleWidth
-		, center=false);
-//	  translate([0,-holeHeight+sqrt(2)*pinHoleWidth/2,0])
-//	    cylinder(r1=sqrt(2)*2*pinHoleWidth
-//		, r2=0
-//		, h=sqrt(2)*2*pinHoleWidth
-//		, center=false);
-	}
-	translate([0,-holeHeight,0]) {
-	   rotate([-45,0,0]) rotate([0,0,0]) 
-	    scale([2*pinHoleWidth,2*pinHoleWidth,sqrt(2)*holeHeight])
-	     translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
 	}
     }
   }
@@ -112,31 +101,20 @@ module pin_hole_even(
 	) {
   rotate([0,0,rotAngle]) union () {
     translate([0,pinSpace/2-pinHoleWidth/2,-pinSpace/2]) rotate([0,0,-135])
-	scale([pinSpace,pinSpace,pinSpace])
+	scale([pinSpace+pinHoleWidth,pinSpace+pinHoleWidth,pinSpace])
 	  cube(size=1.0,center=false);
+    translate([0,-pinSpace/2-2*pinHoleWidth,-holeHeight-pinHoleWidth]) {
+	rotate([0,0,45])
+	 scale([2*pinHoleWidth,2*pinHoleWidth,holeHeight+2*pinHoleWidth])
+	  translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
+    }	
     translate([0,0,-holeHeight]) {
 	rotate([0,0,45])
 	 scale([2*pinHoleWidth,2*pinHoleWidth,holeHeight])
 	  translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
-	rotate([90,0,0]) rotate([0,0,45]) {
-	 scale([2*pinHoleWidth,2*pinHoleWidth,holeHeight+pinSpace])
+	translate([0,sqrt(2)*pinHoleWidth,0]) rotate([90,0,0]) rotate([0,0,45]) {
+	 scale([2*pinHoleWidth,2*pinHoleWidth,holeHeight+2*pinSpace+pinHoleWidth])
 	  translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
-	}
-	translate([0,0,-sqrt(2)*pinHoleWidth/2]) {
-	  cylinder(r1=sqrt(2)*2*pinHoleWidth
-		, r2=0
-		, h=sqrt(2)*2*pinHoleWidth
-		, center=false);
-//	  translate([0,-holeHeight+sqrt(2)*pinHoleWidth/2,0])
-//	    cylinder(r1=sqrt(2)*2*pinHoleWidth
-//		, r2=0
-//		, h=sqrt(2)*2*pinHoleWidth
-//		, center=false);
-	}
-	translate([0,-holeHeight,0]) {
-	   rotate([-45,0,0]) rotate([0,0,0]) 
-	    scale([2*pinHoleWidth,2*pinHoleWidth,sqrt(2)*holeHeight])
-	     translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
 	}
     }
   }
@@ -208,11 +186,11 @@ module dip_socket_body(
 	, pinHoleDepth=0.15*scale_1in
 	, pinRowSpace=3.25*0.1*scale_1in
 	, pkgLength=14.0*0.1*scale_1in
-	, pkgWidth=3.0*0.1*scale_1in
+	, pkgWidth=sqrt(2)*3.0*0.1*scale_1in
 	) {
   union () {
-    translate([-pinSpace,-(pinRowSpace+2*socketHeight)/2,-socketHeight])
-      scale([(pinCount+2)*pinSpace/2,pinRowSpace+2*socketHeight,socketHeight])
+    translate([-1.5*pinSpace,-(pinRowSpace+2*sqrt(2)*socketHeight)/2,-socketHeight])
+      scale([(pinCount+4)*pinSpace/2,pinRowSpace+2*sqrt(2)*socketHeight,socketHeight])
 	   cube(size=1.0, center=false);
   }
 }
