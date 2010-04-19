@@ -22,6 +22,19 @@ scale_1in=25.4;
 // render_part=7; // DIP Socket Holes Alternating
  render_part=8; // DIP Socket Alternating
 
+module nut_blank(
+        nut_w=5.5
+        , nut_h=2.5
+        ) {
+  intersection () {
+    translate([-nut_w,-nut_w/2,0]) scale([2*nut_w,nut_w,nut_h])  cube(size=1.0, center=false);
+    rotate([0,0,60])
+        translate([-nut_w,-nut_w/2,0]) scale([2*nut_w,nut_w,nut_h]) cube(size=1.0, center=false);
+    rotate([0,0,120])
+        translate([-nut_w,-nut_w/2,0]) scale([2*nut_w,nut_w,nut_h]) cube(size=1.0, center=false);
+  }
+}
+
 
 module pin_hole(
 	rotAngle=0
@@ -72,9 +85,11 @@ module pin_hole_odd(
 	, pinHoleDepth=0.15*scale_1in
 	) {
   rotate([0,0,rotAngle]) union () {
-    translate([0,-pinSpace/2+pinHoleWidth/2,-pinSpace/2]) rotate([0,0,45])
-	scale([pinSpace+pinHoleWidth,pinSpace+pinHoleWidth,pinSpace])
-	  cube(size=1.0,center=false);
+//    translate([0,-pinSpace/2+pinHoleWidth/2,-pinSpace/2])
+//   rotate([0,0,45]) scale([pinSpace+pinHoleWidth,pinSpace+pinHoleWidth,pinSpace])
+//	  cube(size=1.0,center=false);
+    translate([0,pinSpace/2+pinHoleWidth/2,-pinSpace/2])
+	rotate([0,0,30]) nut_blank(nut_w=pinSpace+pinHoleWidth, nut_h=pinSpace);
     translate([0,pinSpace/2+2*pinHoleWidth,-holeHeight-pinHoleWidth]) {
 	rotate([0,0,45])
 	 scale([2*pinHoleWidth,2*pinHoleWidth,holeHeight+2*pinHoleWidth])
@@ -100,9 +115,11 @@ module pin_hole_even(
 	, pinHoleDepth=0.15*scale_1in
 	) {
   rotate([0,0,rotAngle]) union () {
-    translate([0,pinSpace/2-pinHoleWidth/2,-pinSpace/2]) rotate([0,0,-135])
-	scale([pinSpace+pinHoleWidth,pinSpace+pinHoleWidth,pinSpace])
-	  cube(size=1.0,center=false);
+//    translate([0,pinSpace/2-pinHoleWidth/2,-pinSpace/2]) rotate([0,0,-135])
+//	scale([pinSpace+pinHoleWidth,pinSpace+pinHoleWidth,pinSpace])
+//	  cube(size=1.0,center=false);
+    translate([0,-pinSpace/2-pinHoleWidth/2,-pinSpace/2])
+	rotate([0,0,30]) nut_blank(nut_w=pinSpace+pinHoleWidth, nut_h=pinSpace);
     translate([0,-pinSpace/2-2*pinHoleWidth,-holeHeight-pinHoleWidth]) {
 	rotate([0,0,45])
 	 scale([2*pinHoleWidth,2*pinHoleWidth,holeHeight+2*pinHoleWidth])
