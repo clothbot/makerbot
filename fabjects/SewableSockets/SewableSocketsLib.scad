@@ -26,15 +26,8 @@ module nut_blank(
         nut_w=5.5
         , nut_h=2.5
         ) {
-  intersection () {
-    translate([-nut_w,-nut_w/2,0]) scale([2*nut_w,nut_w,nut_h])  cube(size=1.0, center=false);
-    rotate([0,0,60])
-        translate([-nut_w,-nut_w/2,0]) scale([2*nut_w,nut_w,nut_h]) cube(size=1.0, center=false);
-    rotate([0,0,120])
-        translate([-nut_w,-nut_w/2,0]) scale([2*nut_w,nut_w,nut_h]) cube(size=1.0, center=false);
-  }
+  scale([nut_w,nut_w,nut_h]) import_stl("../libraries/primitives/unit_hexagon.stl");
 }
-
 
 module pin_hole(
 	rotAngle=0
@@ -95,9 +88,9 @@ module pin_hole_odd(
 	 scale([2*pinHoleWidth,2*pinHoleWidth,holeHeight+2*pinHoleWidth])
 	  translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
     }	
-    translate([0,0,-holeHeight]) {
+    translate([0,0,-holeHeight-pinHoleWidth]) {
 	rotate([0,0,45])
-	 scale([2*pinHoleWidth,2*pinHoleWidth,holeHeight])
+	 scale([2*pinHoleWidth,2*pinHoleWidth,holeHeight+2*pinHoleWidth])
 	  translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
 	translate([0,pinSpace+sqrt(2)*pinHoleWidth,0]) rotate([90,0,0]) rotate([0,0,45]) {
 	 scale([2*pinHoleWidth,2*pinHoleWidth,holeHeight+3*pinSpace+pinHoleWidth])
@@ -125,9 +118,9 @@ module pin_hole_even(
 	 scale([2*pinHoleWidth,2*pinHoleWidth,holeHeight+2*pinHoleWidth])
 	  translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
     }	
-    translate([0,0,-holeHeight]) {
+    translate([0,0,-holeHeight-pinHoleWidth]) {
 	rotate([0,0,45])
-	 scale([2*pinHoleWidth,2*pinHoleWidth,holeHeight])
+	 scale([2*pinHoleWidth,2*pinHoleWidth,holeHeight+2*pinHoleWidth])
 	  translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
 	translate([0,sqrt(2)*pinHoleWidth,0]) rotate([90,0,0]) rotate([0,0,45]) {
 	 scale([2*pinHoleWidth,2*pinHoleWidth,holeHeight+2*pinSpace+pinHoleWidth])
