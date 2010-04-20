@@ -92,13 +92,7 @@ module nut_blank(
 	nut_w=5.5
 	, nut_h=2.5
 	) {
-  intersection () {
-    translate([-nut_w,-nut_w/2,0]) scale([2*nut_w,nut_w,nut_h])  cube(size=1.0, center=false);
-    rotate([0,0,60]) 
-	translate([-nut_w,-nut_w/2,0]) scale([2*nut_w,nut_w,nut_h]) cube(size=1.0, center=false);
-    rotate([0,0,120]) 
-	translate([-nut_w,-nut_w/2,0]) scale([2*nut_w,nut_w,nut_h]) cube(size=1.0, center=false);
-  }
+  scale([nut_w,nut_w,nut_h]) import_stl("../libraries/primitives/unit_hexagon.stl");
 }
 
 module m3_nut(
