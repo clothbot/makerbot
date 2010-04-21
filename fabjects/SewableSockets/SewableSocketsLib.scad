@@ -78,20 +78,13 @@ module pin_hole_odd(
 	, pinHoleDepth=0.15*scale_1in
 	) {
   rotate([0,0,rotAngle]) union () {
-//    translate([0,-pinSpace/2+pinHoleWidth/2,-pinSpace/2])
-//   rotate([0,0,45]) scale([pinSpace+pinHoleWidth,pinSpace+pinHoleWidth,pinSpace])
-//	  cube(size=1.0,center=false);
-    translate([0,pinSpace/2+pinHoleWidth/2,-pinSpace/2])
-	rotate([0,0,30]) nut_blank(nut_w=pinSpace+pinHoleWidth, nut_h=pinSpace);
-    translate([0,pinSpace/2+2*pinHoleWidth,-holeHeight-pinHoleWidth]) {
-	rotate([0,0,45])
-	 scale([2*pinHoleWidth,2*pinHoleWidth,holeHeight+2*pinHoleWidth])
-	  translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
+    translate([0,3.2/2+pinHoleWidth,-1.3])
+	rotate([0,0,30]) nut_blank(nut_w=3.2, nut_h=1.3+pinSpace);
+    translate([0,3.2/2+pinHoleWidth,-holeHeight-pinHoleWidth]) {
+	rotate([0,0,90]) nut_blank(nut_w=1.6,nut_h=holeHeight+2*pinHoleWidth);
     }	
     translate([0,0,-holeHeight-pinHoleWidth]) {
-	rotate([0,0,45])
-	 scale([2*pinHoleWidth,2*pinHoleWidth,holeHeight+2*pinHoleWidth])
-	  translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
+	rotate([0,0,90]) nut_blank(nut_w=1.5*pinHoleWidth,nut_h=holeHeight+2*pinHoleWidth);
 	translate([0,pinSpace+sqrt(2)*pinHoleWidth,1.5*pinHoleWidth]) rotate([90,0,0]) rotate([0,0,45]) {
 	 scale([2*pinHoleWidth,2*pinHoleWidth,holeHeight+3*pinSpace+pinHoleWidth])
 	  translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
@@ -108,20 +101,13 @@ module pin_hole_even(
 	, pinHoleDepth=0.15*scale_1in
 	) {
   rotate([0,0,rotAngle]) union () {
-//    translate([0,pinSpace/2-pinHoleWidth/2,-pinSpace/2]) rotate([0,0,-135])
-//	scale([pinSpace+pinHoleWidth,pinSpace+pinHoleWidth,pinSpace])
-//	  cube(size=1.0,center=false);
-    translate([0,-pinSpace/2-pinHoleWidth/2,-pinSpace/2])
-	rotate([0,0,30]) nut_blank(nut_w=pinSpace+pinHoleWidth, nut_h=pinSpace);
-    translate([0,-pinSpace/2-2*pinHoleWidth,-holeHeight-pinHoleWidth]) {
-	rotate([0,0,45])
-	 scale([2*pinHoleWidth,2*pinHoleWidth,holeHeight+2*pinHoleWidth])
-	  translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
+    translate([0,-3.2/2-pinHoleWidth,-1.3])
+	rotate([0,0,30]) nut_blank(nut_w=3.2, nut_h=1.3+pinSpace);
+    translate([0,-3.2/2-pinHoleWidth,-holeHeight-pinHoleWidth]) {
+	rotate([0,0,90]) nut_blank(nut_w=1.6,nut_h=holeHeight+2*pinHoleWidth);
     }	
     translate([0,0,-holeHeight-pinHoleWidth]) {
-	rotate([0,0,45])
-	 scale([2*pinHoleWidth,2*pinHoleWidth,holeHeight+2*pinHoleWidth])
-	  translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
+	rotate([0,0,90]) nut_blank(nut_w=1.5*pinHoleWidth,nut_h=holeHeight+2*pinHoleWidth);
 	translate([0,sqrt(2)*pinHoleWidth,1.5*pinHoleWidth]) rotate([90,0,0]) rotate([0,0,45]) {
 	 scale([2*pinHoleWidth,2*pinHoleWidth,holeHeight+2*pinSpace+pinHoleWidth])
 	  translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
@@ -169,10 +155,8 @@ module dip_socket_holes_alternating(
 	, pkgWidth=3.0*0.1*scale_1in
 	) {
   union () {
-    translate([0,0,-socketHeight-pinHoleWidth]) rotate([0,0,-135]) {
-	cylinder(r=pinRowSpace/8,h=socketHeight+2*pinHoleWidth,center=false);
-	scale([pinRowSpace/8,pinRowSpace/8,socketHeight+2*pinHoleWidth]) cube(size=1.0);
-    }
+    translate([0,0,-socketHeight-pinHoleWidth]) rotate([0,0,-135])
+	cylinder(r2=1.6/2,r1=1.6/4,h=socketHeight+2*pinHoleWidth,center=false);
     for( i=[0:(pinCount/2-1)] ) {
       assign(pinPos=pinSpace*i) {
 	  translate([pinPos,pinRowSpace/2,0]) {
