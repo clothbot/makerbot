@@ -1,5 +1,5 @@
 // SewableSockets Library
-// Version 20100419
+// Version 20100420
 
 // Copyright 2010, by Andrew Plumb
 // Licensed under the Attribution - Creative Commons license
@@ -78,13 +78,13 @@ module pin_hole_odd(
 	, pinHoleDepth=0.15*scale_1in
 	) {
   rotate([0,0,rotAngle]) union () {
-    translate([0,3.2/2+pinHoleWidth,-1.3])
-	rotate([0,0,30]) nut_blank(nut_w=3.2, nut_h=1.3+pinSpace);
-    translate([0,3.2/2+pinHoleWidth,-holeHeight-pinHoleWidth]) {
-	rotate([0,0,90]) nut_blank(nut_w=1.6,nut_h=holeHeight+2*pinHoleWidth);
+    translate([0,pinSpace,-1.5])
+	rotate([0,0,30]) nut_blank(nut_w=3.2, nut_h=1.5+pinSpace);
+    translate([0,pinSpace,-holeHeight-pinHoleWidth]) {
+	rotate([0,0,90+30]) nut_blank(nut_w=1.7,nut_h=holeHeight+2*pinHoleWidth);
     }	
     translate([0,0,-holeHeight-pinHoleWidth]) {
-	rotate([0,0,90]) nut_blank(nut_w=1.5*pinHoleWidth,nut_h=holeHeight+2*pinHoleWidth);
+	rotate([0,0,90]) nut_blank(nut_w=1.6,nut_h=holeHeight+2*pinHoleWidth);
 	translate([0,pinSpace+sqrt(2)*pinHoleWidth,1.5*pinHoleWidth]) rotate([90,0,0]) rotate([0,0,45]) {
 	 scale([2*pinHoleWidth,2*pinHoleWidth,holeHeight+3*pinSpace+pinHoleWidth])
 	  translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
@@ -101,13 +101,13 @@ module pin_hole_even(
 	, pinHoleDepth=0.15*scale_1in
 	) {
   rotate([0,0,rotAngle]) union () {
-    translate([0,-3.2/2-pinHoleWidth,-1.3])
-	rotate([0,0,30]) nut_blank(nut_w=3.2, nut_h=1.3+pinSpace);
-    translate([0,-3.2/2-pinHoleWidth,-holeHeight-pinHoleWidth]) {
-	rotate([0,0,90]) nut_blank(nut_w=1.6,nut_h=holeHeight+2*pinHoleWidth);
+    translate([0,-pinSpace,-1.5])
+	rotate([0,0,30]) nut_blank(nut_w=3.2, nut_h=1.5+pinSpace);
+    translate([0,-pinSpace,-holeHeight-pinHoleWidth]) {
+	rotate([0,0,90+30]) nut_blank(nut_w=1.7,nut_h=holeHeight+2*pinHoleWidth);
     }	
     translate([0,0,-holeHeight-pinHoleWidth]) {
-	rotate([0,0,90]) nut_blank(nut_w=1.5*pinHoleWidth,nut_h=holeHeight+2*pinHoleWidth);
+	rotate([0,0,90]) nut_blank(nut_w=1.6,nut_h=holeHeight+2*pinHoleWidth);
 	translate([0,sqrt(2)*pinHoleWidth,1.5*pinHoleWidth]) rotate([90,0,0]) rotate([0,0,45]) {
 	 scale([2*pinHoleWidth,2*pinHoleWidth,holeHeight+2*pinSpace+pinHoleWidth])
 	  translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
@@ -243,5 +243,5 @@ if( render_part==7 ) {
 
 if( render_part==8 ) {
   echo("Rendering dip_socket_alternating()...");
-  dip_socket_alternating();
+  translate([0,0,5.0]) dip_socket_alternating();
 }
