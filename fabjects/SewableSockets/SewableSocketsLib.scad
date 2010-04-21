@@ -90,7 +90,7 @@ module pin_hole_odd(
 	  translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
 	}
     }
-    translate([0,-pinSpace/2,-2*pinHoleWidth]) {
+    translate([0,-pinSpace/2,-sqrt(2)*pinHoleWidth]) {
 	translate([0,pinSpace+sqrt(2)*pinHoleWidth,1.5*pinHoleWidth]) rotate([90,0,0]) rotate([0,0,45]) {
 	 scale([1.6/2,1.6/2,holeHeight+2*pinSpace+pinHoleWidth])
 	  translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
@@ -118,7 +118,7 @@ module pin_hole_even(
 	  translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
 	}
     }
-    translate([0,-1.6/2,-2*pinHoleWidth]) {
+    translate([0,-1.6/2,-sqrt(2)*pinHoleWidth]) {
 	translate([0,sqrt(2)*pinHoleWidth,1.5*pinHoleWidth]) rotate([90,0,0]) rotate([0,0,45]) {
 	 scale([1.6/2,1.6/2,holeHeight+pinSpace+pinHoleWidth])
 	  translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
