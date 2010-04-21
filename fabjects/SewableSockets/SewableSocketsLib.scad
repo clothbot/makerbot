@@ -79,9 +79,9 @@ module pin_hole_odd(
 	) {
   rotate([0,0,rotAngle]) union () {
     translate([0,pinSpace,-1.5])
-	rotate([0,0,30]) nut_blank(nut_w=3.2, nut_h=1.5+pinSpace);
+	rotate([0,0,30]) nut_blank(nut_w=3.2, nut_h=1.3+pinSpace);
     translate([0,pinSpace,-holeHeight-pinHoleWidth]) {
-	rotate([0,0,90+30]) nut_blank(nut_w=1.7,nut_h=holeHeight+2*pinHoleWidth);
+	rotate([0,0,90+30]) nut_blank(nut_w=1.6,nut_h=holeHeight+2*pinHoleWidth);
     }	
     translate([0,0,-holeHeight-pinHoleWidth]) {
 	rotate([0,0,90]) nut_blank(nut_w=1.6,nut_h=holeHeight+2*pinHoleWidth);
@@ -90,7 +90,12 @@ module pin_hole_odd(
 	  translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
 	}
     }
-  }
+    translate([0,-pinSpace/2,-2*pinHoleWidth]) {
+	translate([0,pinSpace+sqrt(2)*pinHoleWidth,1.5*pinHoleWidth]) rotate([90,0,0]) rotate([0,0,45]) {
+	 scale([1.6/2,1.6/2,holeHeight+2*pinSpace+pinHoleWidth])
+	  translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
+	}
+    }  }
 }
 
 module pin_hole_even(
@@ -102,14 +107,20 @@ module pin_hole_even(
 	) {
   rotate([0,0,rotAngle]) union () {
     translate([0,-pinSpace,-1.5])
-	rotate([0,0,30]) nut_blank(nut_w=3.2, nut_h=1.5+pinSpace);
+	rotate([0,0,30]) nut_blank(nut_w=3.2, nut_h=1.3+pinSpace);
     translate([0,-pinSpace,-holeHeight-pinHoleWidth]) {
-	rotate([0,0,90+30]) nut_blank(nut_w=1.7,nut_h=holeHeight+2*pinHoleWidth);
+	rotate([0,0,90+30]) nut_blank(nut_w=1.6,nut_h=holeHeight+2*pinHoleWidth);
     }	
     translate([0,0,-holeHeight-pinHoleWidth]) {
 	rotate([0,0,90]) nut_blank(nut_w=1.6,nut_h=holeHeight+2*pinHoleWidth);
 	translate([0,sqrt(2)*pinHoleWidth,1.5*pinHoleWidth]) rotate([90,0,0]) rotate([0,0,45]) {
 	 scale([2*pinHoleWidth,2*pinHoleWidth,holeHeight+2*pinSpace+pinHoleWidth])
+	  translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
+	}
+    }
+    translate([0,-1.6/2,-2*pinHoleWidth]) {
+	translate([0,sqrt(2)*pinHoleWidth,1.5*pinHoleWidth]) rotate([90,0,0]) rotate([0,0,45]) {
+	 scale([1.6/2,1.6/2,holeHeight+pinSpace+pinHoleWidth])
 	  translate([-0.5,-0.5,0]) cube(size=1.0, center=false);
 	}
     }
@@ -155,8 +166,8 @@ module dip_socket_holes_alternating(
 	, pkgWidth=3.0*0.1*scale_1in
 	) {
   union () {
-    translate([0,0,-socketHeight-pinHoleWidth]) rotate([0,0,-135])
-	cylinder(r2=1.6/2,r1=1.6/4,h=socketHeight+2*pinHoleWidth,center=false);
+    translate([-1.5*pinSpace,0,-socketHeight-pinHoleWidth]) rotate([0,0,-135])
+	cylinder(r2=1.6,r1=1.6/2,h=socketHeight+2*pinHoleWidth,center=false);
     for( i=[0:(pinCount/2-1)] ) {
       assign(pinPos=pinSpace*i) {
 	  translate([pinPos,pinRowSpace/2,0]) {
