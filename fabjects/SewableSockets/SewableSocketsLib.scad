@@ -1,5 +1,5 @@
 // SewableSockets Library
-// Version 20100420
+// Version 20100421
 
 // Copyright 2010, by Andrew Plumb
 // Licensed under the Attribution - Creative Commons license
@@ -145,9 +145,10 @@ module dip_socket_holes(
     }
     for( i=[0:(pinCount/2-1)] ) {
       assign(pinPos=pinSpace*i) {
+	  echo("dip_socket_holes: Pin ",i+1,"X:",pinPos," Y:",pinRowSpace/2);
 	  translate([pinPos,pinRowSpace/2,0])
 	    pin_hole(rotAngle=180);
-
+	  echo("dip_socket_holes: Pin ",pinCount-i,"X:",pinPos," Y:",-pinRowSpace/2);
 	  translate([pinPos,-pinRowSpace/2,0])
 	    pin_hole(rotAngle=0);
 	 }
@@ -156,7 +157,8 @@ module dip_socket_holes(
 }
 
 module dip_socket_holes_alternating(
-	socketHeight=5.0
+	, debug=0
+	, socketHeight=5.0
 	, pinCount=28
 	, pinSpace=0.1*scale_1in
 	, pinHoleWidth=0.1*scale_1in/3
@@ -165,15 +167,18 @@ module dip_socket_holes_alternating(
 	, pkgLength=14.0*0.1*scale_1in
 	, pkgWidth=3.0*0.1*scale_1in
 	) {
+  if(debug!=0) echo("dip_socket_holes_alternating: debug",debug);
   union () {
     translate([-1.5*pinSpace,0,-socketHeight-pinHoleWidth]) rotate([0,0,-135])
 	cylinder(r2=1.6,r1=1.6/2,h=socketHeight+2*pinHoleWidth,center=false);
     for( i=[0:(pinCount/2-1)] ) {
       assign(pinPos=pinSpace*i) {
+	  if(debug==1) echo("  dip_socket_holes_alternating: Pin ",i+1,"X:",pinPos," Y:",pinRowSpace/2);
 	  translate([pinPos,pinRowSpace/2,0]) {
 	    if (i%2==0) pin_hole_even(rotAngle=180);
 	    if (i%2==1) pin_hole_odd(rotAngle=180);
 	  }
+	  if(debug==1) echo("  dip_socket_holes_alternating: Pin ",pinCount-i,"X:",pinPos," Y:",-pinRowSpace/2);
 	  translate([pinPos,-pinRowSpace/2,0]) {
 	    if (i%2==0) pin_hole_odd(rotAngle=0);
 	    if (i%2==1) pin_hole_even(rotAngle=0);
@@ -210,7 +215,7 @@ module dip_socket() {
 module dip_socket_alternating() {
   difference () {
 	dip_socket_body();
-	dip_socket_holes_alternating();
+	dip_socket_holes_alternating(debug=1);
   }
 }
 
