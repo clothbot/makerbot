@@ -3,8 +3,15 @@
 #  http://www.artwork.com/gerber/appl2.htm
 #  http://web.vtc.edu/mt/2040Sum03/Project/Gillespie/turning%20G%20code.htm
 # Usage: sed -f gerber2scad.sed board.GBL > board.GBL.xml 
+s/^G75/<gcode>/
 s/^G70/<units>imperial<\/units>/g
 s/^G71/<units>metric<\/units>/g
+/^%FSLA/,/\*%/ {
+  s/^%FSLAX\([0-9]\)\([0-9]\)Y\([0-9]\)\([0-9]\)\*%$/<numbers>\
+  <x><int>\1<\/int><frac>\2<\/frac><\/x>\
+  <y><int>\3<\/int><frac>\4<\/frac><\/y>\
+<\/numbers>/g
+}
 /^%AD/,/\*%$/ {
   s/^%ADD\([1-9][0-9]\)\(.*\)\*%$/<define><aperture name=\1>\2<\/aperture><\/define>/g
 }
@@ -34,3 +41,9 @@ s/^M02/<\/aperture>\
 &/
 s/^G\([0-9]*\)/<g\1\/>/g
 s/^M\([0-9]*\)/<m\1\/>/g
+s/^%\(.*\)\*%$/<pcode>\1<\/pcode>/g
+/^%/,/%$/ {
+  s/^%$/<\/pcode>/
+  s/^%/<pcode>/
+}
+s/M02$/<\/gcode>/
