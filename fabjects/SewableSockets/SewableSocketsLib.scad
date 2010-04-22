@@ -20,7 +20,9 @@ scale_1in=25.4;
 // render_part=5; // pin_hole_odd
 // render_part=6; // pin_hole_even
 // render_part=7; // DIP Socket Holes Alternating
- render_part=8; // DIP Socket Alternating
+// render_part=8; // DIP Socket Alternating
+// render_part=9; // SIP Socket Holes Alternating
+ render_part=10; // ATmega168_w_16MHz
 
 module nut_blank(
         nut_w=5.5
@@ -158,6 +160,7 @@ module dip_socket_holes(
 
 module dip_socket_holes_alternating(
 	, debug=0
+	, pinRotAngle=0
 	, socketHeight=5.0
 	, pinCount=28
 	, pinSpace=0.1*scale_1in
@@ -175,18 +178,47 @@ module dip_socket_holes_alternating(
       assign(pinPos=pinSpace*i) {
 	  if(debug==1) echo("  dip_socket_holes_alternating: Pin ",i+1,"X:",pinPos," Y:",pinRowSpace/2);
 	  translate([pinPos,pinRowSpace/2,0]) {
-	    if (i%2==0) pin_hole_even(rotAngle=180);
-	    if (i%2==1) pin_hole_odd(rotAngle=180);
+	    if (i%2==0) pin_hole_even(rotAngle=180+pinRotAngle);
+	    if (i%2==1) pin_hole_odd(rotAngle=180+pinRotAngle);
 	  }
 	  if(debug==1) echo("  dip_socket_holes_alternating: Pin ",pinCount-i,"X:",pinPos," Y:",-pinRowSpace/2);
 	  translate([pinPos,-pinRowSpace/2,0]) {
-	    if (i%2==0) pin_hole_odd(rotAngle=0);
-	    if (i%2==1) pin_hole_even(rotAngle=0);
+	    if (i%2==0) pin_hole_odd(rotAngle=0+pinRotAngle);
+	    if (i%2==1) pin_hole_even(rotAngle=0+pinRotAngle);
 	  }
 	 }
     }
   }
 }
+
+module sip_socket_holes_alternating(
+	, debug=0
+	, pinRotAngle=0
+	, socketHeight=5.0
+	, pinCount=3
+	, pinSpace=0.1*scale_1in
+	, pinHoleWidth=0.1*scale_1in/3
+	, pinHoleDepth=0.15*scale_1in
+//	, pinRowSpace=3.25*0.1*scale_1in
+	, pkgLength=14.0*0.1*scale_1in
+	, pkgWidth=3.0*0.1*scale_1in
+	) {
+  if(debug!=0) echo("sip_socket_holes_alternating: debug",debug);
+  union () {
+    translate([-1.5*pinSpace,0,-socketHeight-pinHoleWidth]) rotate([0,0,-135])
+	cylinder(r2=1.6,r1=1.6/2,h=socketHeight+2*pinHoleWidth,center=false);
+    for( i=[0:(pinCount-1)] ) {
+      assign(pinPos=pinSpace*i) {
+	  if(debug==1) echo("  sip_socket_holes_alternating: Pin ",i+1,"X:",pinPos," Y:",0.0);
+	  translate([pinPos,0,0]) {
+	    if (i%2==0) pin_hole_even(rotAngle=pinRotAngle);
+	    if (i%2==1) pin_hole_odd(rotAngle=pinRotAngle);
+	  }
+	 }
+    }
+  }
+}
+
 
 module dip_socket_body(
 	socketHeight=5.0
@@ -205,6 +237,23 @@ module dip_socket_body(
   }
 }
 
+module sip_socket_body(
+	socketHeight=5.0
+	, pinCount=3
+	, pinSpace=0.1*scale_1in
+	, pinHoleWidth=0.1*scale_1in/4
+	, pinHoleDepth=0.15*scale_1in
+//	, pinRowSpace=3.25*0.1*scale_1in
+	, pkgLength=14.0*0.1*scale_1in
+	, pkgWidth=sqrt(2)*3.0*0.1*scale_1in
+	) {
+  union () {
+    translate([-1.5*pinSpace,-(2*sqrt(2)*socketHeight)/2,-socketHeight])
+      scale([(pinCount+2)*pinSpace,2*sqrt(2)*socketHeight,socketHeight])
+	   cube(size=1.0, center=false);
+  }
+}
+
 module dip_socket() {
   difference () {
 	dip_socket_body();
@@ -216,6 +265,17 @@ module dip_socket_alternating() {
   difference () {
 	dip_socket_body();
 	dip_socket_holes_alternating(debug=1);
+  }
+}
+
+module ATmega168_w_16MHz(debug=0) {
+  difference () {
+    union () {
+	dip_socket_body();
+	translate([20.32,4.1275+5*0.1*scale_1in,0]) sip_socket_body(pinCount=3);
+    }
+	dip_socket_holes_alternating(debug=debug,pinCount=28);
+     translate([20.32,4.1275+5*0.1*scale_1in,0]) sip_socket_holes_alternating(pinCount=3);
   }
 }
 
@@ -260,4 +320,14 @@ if( render_part==7 ) {
 if( render_part==8 ) {
   echo("Rendering dip_socket_alternating()...");
   translate([0,0,5.0]) dip_socket_alternating();
+}
+
+if( render_part==9 ) {
+  echo("Rendering sip_socket_holes_alternating()...");
+  sip_socket_holes_alternating();
+}
+
+if( render_part==10 ) {
+  echo("Rendering ATmega168_w_16MHz()...");
+  ATmega168_w_16MHz();
 }
