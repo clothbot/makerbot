@@ -14,7 +14,7 @@ s/^G71/<units>metric<\/units>/g
 <\/numbers>/g
 }
 /^%AD/,/\*%$/ {
-  s/^%ADD\([1-9][0-9]\)\(.*\)\*%$/<define><aperture name="\1">\2<\/aperture><\/define>/g
+  s/^%ADD\([1-9][0-9]\)\(.*\),\([0-9][.0-9]*\)\*%$/<define><aperture name="\1"><type>\2<\/type><width>\3<\/width><\/aperture><\/define>/g
 }
 s/\*$//g
 /^D[1-9][0-9]*/,/^X*$/ {
