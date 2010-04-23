@@ -1,4 +1,5 @@
 # Converting EAGLE .GTL and .GBL files into XML to start with
+# Update: Will probably retire this in favour of XSLT applied to gerber2xml.sed output.
 # References:
 #  http://www.artwork.com/gerber/appl2.htm
 #  http://web.vtc.edu/mt/2040Sum03/Project/Gillespie/turning%20G%20code.htm
