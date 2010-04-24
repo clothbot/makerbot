@@ -44,8 +44,9 @@ assign(debug=0) {
  } // close final aperture before module
 } // close module
 
-scale([scale_1in*xScale,scale_1in*yScale,1.0]) thisObject();
-// cube(size=100.0);
+scale([scale_1in*xScale,scale_1in*yScale,1.0*xScale]) thisObject();
+scale([100,100,1]) translate([0,0,-1.0]) cube(size=1.0,center=false);
+
 </xsl:text></xsl:template>
 
 <xsl:template match="gcode">
@@ -107,7 +108,7 @@ echo(" rotDir: ",rotDir);
 echo(" atanVal: ",atanVal);
 // translate([xPos,yPos,0]) scale([1.0,1.0,xScale]) rotate([0,0,-90-rotDir*90+atanVal]) {
 // translate([xPos,yPos,0]) scale([1.0,1.0,xScale]) rotate([0,0,rotDir+atanVal]) {
- translate([xPos,yPos,0]) scale([1.0,1.0,xScale]) rotate([0,0,rotDir]) {
+ translate([xPos,yPos,0]) scale([1.0,1.0,1.0/xScale]) rotate([0,0,rotDir]) {
     scale([wireLength,aperture,1.0]) translate([0,-0.5,0]) cube(size=1.0, center=false);
     if(wireLength>aperture ) translate([wireLength,0,0]) cylinder(r=aperture/2,h=1.0);
   }
@@ -121,7 +122,7 @@ yPos=</xsl:text><xsl:value-of select="./y"/><xsl:text>)
 xNext=</xsl:text><xsl:value-of select="./x"/><xsl:text>,
 yNext=</xsl:text><xsl:value-of select="./y"/><xsl:text>)
 translate([xNext,yNext,0]) 
-  cylinder(r=aperture/2, h=xScale, center=false );
+  cylinder(r=aperture/2, h=1.0/xScale, center=false );
 assign(
 xNext=</xsl:text><xsl:value-of select="./x"/><xsl:text>,
 yNext=</xsl:text><xsl:value-of select="./y"/><xsl:text>)
