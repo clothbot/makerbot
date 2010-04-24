@@ -16,9 +16,9 @@ function atan_dir(xVal1,xVal2,yVal1,yVal2) =
 		( (yVal1-yVal2)&gt;0 ? 90.0 : -90.0 )
 	:
 		(xVal1-xVal2)&lt;0 ?
-			( (yVal1-yVal2)&lt;=0 ? 180+atan((yVal1-yVal2)/(xVal1-xVal2)) : 180+atan((yVal1-yVal2)/(xVal1-xVal2)) )
+			180+atan((yVal1-yVal2)/(xVal1-xVal2))
 		:
-			( (yVal1-yVal2)&lt;0 ? atan((yVal1-yVal2)/(xVal1-xVal2)) : atan((yVal1-yVal2)/(xVal1-xVal2)) )
+			atan((yVal1-yVal2)/(xVal1-xVal2))
 		;
 
 scale_1in=25.4;
