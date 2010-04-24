@@ -11,6 +11,16 @@
 $fa=9;
 $fs=0.1;
 
+function atan_dir(xVal1,xVal2,yVal1,yVal2) = 
+	(xVal1-xVal2)==0 ? 
+		( (yVal1-yVal2)&gt;0 ? 90.0 : -90.0 )
+	:
+		(xVal1-xVal2)&lt;0 ?
+			( (yVal1-yVal2)&lt;=0 ? 180+atan((yVal1-yVal2)/(xVal1-xVal2)) : 180+atan((yVal1-yVal2)/(xVal1-xVal2)) )
+		:
+			( (yVal1-yVal2)&lt;0 ? atan((yVal1-yVal2)/(xVal1-xVal2)) : atan((yVal1-yVal2)/(xVal1-xVal2)) )
+		;
+
 scale_1in=25.4;
 objectScale=</xsl:text><xsl:value-of select="/gcode/g70_units"/><xsl:text>;
 // xNext=0.0;
@@ -84,18 +94,23 @@ yPos=</xsl:text><xsl:value-of select="./y"/><xsl:text>)
 yNext=</xsl:text><xsl:value-of select="./y"/><xsl:text>,
 // atanRatio=(</xsl:text><xsl:value-of select="./y"/><xsl:text>-yPos)/(</xsl:text><xsl:value-of select="./x"/><xsl:text>-xPos),
 // atanVal=atan(atanRatio),
-atanVal=atan((</xsl:text><xsl:value-of select="./y"/><xsl:text>-yPos)/(</xsl:text><xsl:value-of select="./x"/><xsl:text>-xPos)),
-cylHVal=sqrt( pow(</xsl:text><xsl:value-of select="./y"/><xsl:text>-yPos,2)+pow(</xsl:text><xsl:value-of select="./x"/><xsl:text>-xPos,2) )
+ rotDir=atan_dir(</xsl:text><xsl:value-of select="./x"/><xsl:text>,xPos,</xsl:text><xsl:value-of select="./y"/><xsl:text>,yPos),
+ atanVal=atan((</xsl:text><xsl:value-of select="./y"/><xsl:text>-yPos)/(</xsl:text><xsl:value-of select="./x"/><xsl:text>-xPos)),
+wireLength=sqrt( pow(</xsl:text><xsl:value-of select="./y"/><xsl:text>-yPos,2)+pow(</xsl:text><xsl:value-of select="./x"/><xsl:text>-xPos,2) )
 ) {
 echo(" xNext: ",xNext);
 echo(" yNext: ",yNext);
 echo(" xPos: ",xPos);
 echo(" yPos: ",yPos);
+echo(" rotDir: ",rotDir);
 // echo(" atanRatio: ",atanRatio);
 echo(" atanVal: ",atanVal);
-translate([xPos,yPos,0]) scale([1.0,1.0,10*xScale]) rotate([0,0,atanVal]) rotate([0,90,0])
-//   cylinder(r=aperture/2, h=cylHVal );
-  cylinder(r=aperture/2, h=cylHVal, center=false );
+// translate([xPos,yPos,0]) scale([1.0,1.0,xScale]) rotate([0,0,-90-rotDir*90+atanVal]) {
+// translate([xPos,yPos,0]) scale([1.0,1.0,xScale]) rotate([0,0,rotDir+atanVal]) {
+ translate([xPos,yPos,0]) scale([1.0,1.0,xScale]) rotate([0,0,rotDir]) {
+    scale([wireLength,aperture,1.0]) translate([0,-0.5,0]) cube(size=1.0, center=false);
+    if(wireLength>aperture ) translate([wireLength,0,0]) cylinder(r=aperture/2,h=1.0);
+  }
 }
 assign(xPos=</xsl:text><xsl:value-of select="./x"/><xsl:text>,
 yPos=</xsl:text><xsl:value-of select="./y"/><xsl:text>)
@@ -105,8 +120,8 @@ yPos=</xsl:text><xsl:value-of select="./y"/><xsl:text>)
 <xsl:text>assign(
 xNext=</xsl:text><xsl:value-of select="./x"/><xsl:text>,
 yNext=</xsl:text><xsl:value-of select="./y"/><xsl:text>)
-translate([xNext,yNext,-1.0]) 
-  cylinder(r=aperture/2, h=1.0, center=false );
+translate([xNext,yNext,0]) 
+  cylinder(r=aperture/2, h=xScale, center=false );
 assign(
 xNext=</xsl:text><xsl:value-of select="./x"/><xsl:text>,
 yNext=</xsl:text><xsl:value-of select="./y"/><xsl:text>)
