@@ -47,7 +47,7 @@ module thisGCodeObject (debugFlag=0
 	, drawEndPtDelta=0.001
 	, flashEndPtH=1.0
 	, flashEndPtDelta=0.001
-	) {
+	) union () {
 assign(debug=debugFlag) {
 </xsl:text><xsl:for-each select="/gcode/."><xsl:apply-templates/></xsl:for-each>
 <xsl:text>if(debugFlag==1) echo("Finished.");
