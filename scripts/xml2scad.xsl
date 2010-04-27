@@ -8,8 +8,8 @@
 </xsl:text></xsl:variable>
 <xsl:template match="/">
 <xsl:text>// XSL Transform OpenSCAD
-$fa=9;
-$fs=0.1;
+$fa=36;
+$fs=1.0;
 referenceFlag=0;
 debugFlag=1;
 if(debugFlag==1) echo( "Set debugFlag=0 to minimize echo text and include this file in other OpenSCAD models.");
@@ -97,7 +97,7 @@ if(debugFlag==1) scale([scale_1in*xScale,scale_1in*yScale,1.0*xScale])
 <xsl:text>
 echo( "Using aperture </xsl:text><xsl:value-of select="@name"/><xsl:text> next...");
 }
-assign(aperture=aperture</xsl:text><xsl:value-of select="@name"/><xsl:text>/xScale) {
+assign(aperture=aperture</xsl:text><xsl:value-of select="@name"/><xsl:text>/xScale) union () {
 </xsl:text></xsl:template>
 
 <xsl:template match="d02_move"><xsl:text>// translate([</xsl:text>
