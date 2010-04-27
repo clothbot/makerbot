@@ -15,7 +15,7 @@
 // To Do:
 // - make corner pieces with integrated bearing brackets.
 
-$fa=9;
+$fa=16;
 $fs=0.1;
 
 scale_1in=25.4;
@@ -28,7 +28,8 @@ scale_1in=25.4;
 // render_part=12; // cube_corner
 // render_part=13; // nut_blank
 // render_part=14; // m3_nut
- render_part=15; // cu_pipe_socket
+// render_part=15; // cu_pipe_socket
+ render_part=16; // cu_cube_corner
 
 module mini_t_socket(
 	rotAngle=0
@@ -512,6 +513,68 @@ module cu_pipe_socket (
 }
 
 
+module cu_cube_corner() {
+ difference () {
+  union () {
+    cylinder(r=26/2+0.1*scale_1in, h=30.0, center=false);
+    translate([0,0,26]) for ( i=[0:2] ) {
+	assign(rotAngle=i*360/3-45) {
+	  rotate([90,0,rotAngle]) {
+	   translate([0,0,29.0/2])
+	    cylinder(
+		r1=8.0
+		, r2=6.0
+		, h=2.0
+		, center=false);
+	   translate([0,0,23.0/2])
+	    cylinder(
+		r=8.0
+		, h=3.0
+		, center=false);
+	  }
+	}
+    }
+    translate([0.707*18/2,0.707*18/2,0]) rotate([0,-90,-135]) 
+	cu_pipe_socket(rotAngle=0
+		, cu_pipe_b=1.414*10.0
+		, cu_pipe_z=1.414*11.0
+		, cu_pipe_r=20.0/2+3.0
+		, cu_pipe_d=20.0
+		, cu_pipe_wall=0.1*scale_1in
+		, cu_pipe_rwall=3.0
+		, cu_pipe_rdelta=10.0
+	);
+    rotate([0,0,-90]) translate([26.0/2,0,0]) 
+	cu_pipe_socket(rotAngle=0
+		, cu_pipe_z=14.0
+		, cu_pipe_r=12
+		, cu_pipe_d=15.0
+		, cu_pipe_wall=0.1*scale_1in
+		, cu_pipe_rwall=5.0
+	);
+    rotate([0,0,-180]) translate([26.0/2,0,0]) 
+	cu_pipe_socket(rotAngle=0
+		, cu_pipe_z=14.0
+		, cu_pipe_r=12
+		, cu_pipe_d=15.0
+		, cu_pipe_wall=0.1*scale_1in
+		, cu_pipe_rwall=5.0
+	);
+  }
+  union () {
+    rotate([0,0,180+45]) translate([0,0,30.0-10.0/2])
+	bearing_hole(captive_nut_count=3
+		, captive_bolt_l=16.0
+		, bearing_h=11.0
+		, axle_h_up=12.0
+		, axle_h_dn=26.0
+		, bearing_id=17.0
+		, bearing_od=23.0
+	);
+  }
+ }
+}
+
 if( render_part==1 ) {
   echo("Rendering dremel_flexshaft_mount_body()...");
   dremel_flexshaft_mount_body();
@@ -611,3 +674,7 @@ if( render_part==15 ) {
 
 }
 
+if( render_part==16 ) {
+  echo("Rendering cu_cube_corner()...");
+  cu_cube_corner();
+}
