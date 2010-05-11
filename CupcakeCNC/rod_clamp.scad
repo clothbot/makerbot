@@ -5,12 +5,13 @@
 
 $fa=15;
 $fs=0.1;
+debug=0;
 
 // render_part=1; // rod_cover_2D
 // render_part=2; // rod_cover_3D
 // render_part=3; // rod_clamp_outer
 // render_part=4; // rod_clamp_inner
-render_part=5; // rod_clamp
+ render_part=5; // rod_clamp
 
 
 module rod_cover_2D() {
@@ -47,25 +48,37 @@ module rod_clamp_outer(
   , ih=3.0 // Inner height of clamp pass-through
   , id=6.0 // Inner Diameter (rod diameter)
   , od=8.0 // Outer Diameter (clamp diameter)
+  , gap_clamp=0.5 // Gap between clamp and bracket
   ) {
+  if(debug==1) {
+    cylinder(r=od/2,h=ih,center=false);
+  }
   difference () {
     rod_cover_3D(
 	h=oh
 	);
     union () {
-	translate([0,0,-0.1]) {
-	  cylinder(h=2*0.1+oh
-		, r=od/2 );
-	 cylinder(r2=0
-	  , r1=od/2+2*0.1+ih/4
-	  , h=od/2+2*0.1+ih/4
+	translate([0,0,ih])
+	 cylinder(r2=od/2+(oh-ih)
+	  , r1=od/2+gap_clamp/2
+	  , h=oh-ih
 	  , center=false
 	 );
+	translate([0,0,-0.1]) {
+	  cylinder(h=2*0.1+oh
+		, r=od/2+gap_clamp/2 );
+
+	 rotate([0,0,45])
+	  scale([od/2+gap_clamp/2,od/2+gap_clamp/2,od/2+2*0.1+ih/4])
+		cube(size=1.0,center=false);
+	 translate([-2.5-gap_clamp/2,0,0])
+	  scale([5.0+gap_clamp,10.0+gap_clamp/2,od/2+2*0.1+ih/4])
+		cube(size=1.0,center=false);
 	}
-	translate([0,0,ih-od/2])
-	  cylinder( r1=0
-		, r2=od
-		, h=od
+	translate([0,0,ih])
+	  cylinder( r1=od/2
+		, r2=od/2+(oh-ih)+gap_clamp/2
+		, h=oh-ih+gap_clamp/2
 		, center=false);
     }
   }
@@ -76,23 +89,30 @@ module rod_clamp_inner(
   , ih=3.0 // Inner height of clamp pass-through
   , id=6.0 // Inner Diameter (rod diameter)
   , od=8.0 // Outer Diameter (clamp diameter)
+  , gap_clamp=0.5 // Gap between clamp and bracket
   ) {
  difference () {
   union () {
-   cylinder(h=oh+ih
-	, r=od/2
+   cylinder(h=oh+ih+gap_clamp
+	, r=od/2-gap_clamp/2
 	, center=false
 	);
-   translate([0,0,ih/2])
-	cylinder(r1=0
-	  , r2=od/2+ih
-	  , h=od/2+ih
+   translate([0,0,oh])
+	cylinder(r1=od/2-gap_clamp/2
+	  , r2=od/2+ih+gap_clamp/2
+	  , h=ih+gap_clamp
 	  , center=false
 	);
+   rotate([0,0,45])
+	scale([od/2-gap_clamp/2,od/2-gap_clamp/2,ih+oh+gap_clamp])
+	  cube(size=1.0,center=false);
+   translate([-2.5+gap_clamp/2,0,0])
+	scale([5.0-gap_clamp,10.0-gap_clamp/2,ih+oh+gap_clamp])
+	  cube(size=1.0,center=false);
   }
   union () {
    translate([0,0,-0.1]) {
-	cylinder(h=2*0.1+od+ih
+	cylinder(h=2*0.1+oh+ih+gap_clamp
 	  , r=id/2
 	  , center=false);
 	cylinder(r2=0
@@ -101,9 +121,8 @@ module rod_clamp_inner(
 	  , center=false
 	);
    }
-   translate([0,0,id]) {
-	scale([id/8,2*od,od]) cube(size=1.0,center=true);
-	scale([2*od,id/8,od]) cube(size=1.0,center=true);
+   translate([0,0,-0.1]) {
+	scale([gap_clamp,2*od,od]) cube(size=1.0,center=false);
    }
   }
  }
@@ -114,18 +133,21 @@ module rod_clamp(
   , ih=3.0 // Inner height of clamp pass-through
   , id=6.0 // Inner Diameter (rod diameter)
   , od=8.0 // Outer Diameter (clamp diameter)
+  , gap_clamp=0.5 // Gap between clamp and bracket
   ) {
   rod_clamp_inner(
 	oh=oh
 	, ih=ih
 	, id=id
 	, od=od-0.05*od
+	, gap_clamp=gap_clamp
 	);
   rod_clamp_outer(
 	oh=oh
 	, ih=ih
 	, id=id
 	, od=od
+	, gap_clamp=gap_clamp
 	);
 }
 
@@ -158,5 +180,6 @@ if(render_part==5) {
   echo("Rendering rod_clamp...");
   rod_clamp(
 	id=8.0
-	, od=13.0);
+	, od=14.0
+	, gap_clamp=0.25);
 }
