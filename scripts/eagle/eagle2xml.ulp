@@ -1,0 +1,152 @@
+string indentSpace="";
+
+
+void xmlprint_UL_ARC(string indentSpace, UL_ARC A) {
+  printf("%s<arc>\n", indentSpace);
+  printf("%s <angle1>%f</angle1>\n", indentSpace, A.angle1);
+  printf("%s <angle2>%f</angle2>\n", indentSpace, A.angle2);
+  printf("%s <cap>%d</cap>\n", indentSpace, A.cap);
+  printf("%s <layer>%d</layer>\n", indentSpace, A.layer);
+  printf("%s <radius>%d</radius>\n", indentSpace, A.radius);
+  printf("%s <width>%d</width>\n", indentSpace, A.width);
+  printf("%s <x1>%d</x1><y1>%d</y1>\n", indentSpace, A.x1, A.y1);
+  printf("%s <x2>%d</x2><y2>%d</y2>\n", indentSpace, A.x2, A.y2);
+  printf("%s <xc>%d</xc><yc>%d</yc>\n", indentSpace, A.xc, A.yc);
+  printf("%s</arc>\n", indentSpace);
+}
+
+void xmlprint_UL_AREA(string indentSpace, UL_AREA A) {
+  printf("%s<area>\n", indentSpace);
+  printf("%s <x1>%d</x1><y1>%d</y1>\n", indentSpace, A.x1, A.y1);
+  printf("%s <x2>%d</x2><y2>%d</y2>\n", indentSpace, A.x2, A.y2);
+  printf("%s</area>\n", indentSpace);
+}
+
+void xmlprint_piece_UL_WIRE(string indentSpace, UL_WIRE W) {
+  printf("%s<wire>\n", indentSpace);
+  if (W.arc) xmlprint_UL_ARC(indentSpace+" ", W.arc);
+  printf("%s <cap>%d</cap>\n", indentSpace, W.cap);
+  printf("%s <curve>%g</curve>\n", indentSpace, W.curve);
+  printf("%s <layer>%d</layer>\n", indentSpace, W.layer);
+  printf("%s <style>%d</style>\n", indentSpace, W.style);
+  printf("%s <width>%d</width>\n", indentSpace, W.width);
+  printf("%s <x1>%d</x1><y1>%d</y1>\n", indentSpace, W.x1, W.y1);
+  printf("%s <x2>%d</x2><y2>%d</y2>\n", indentSpace, W.x2, W.y2);
+  printf("%s</wire>\n", indentSpace);
+}
+
+void xmlprint_UL_WIRE(string indentSpace, UL_WIRE W) {
+  printf("%s<wire>\n", indentSpace);
+  if (W.arc) xmlprint_UL_ARC(indentSpace+" ", W.arc);
+  printf("%s <cap>%d</cap>\n", indentSpace, W.cap);
+  printf("%s <curve>%g</curve>\n", indentSpace, W.curve);
+  printf("%s <layer>%d</layer>\n", indentSpace, W.layer);
+  printf("%s <style>%d</style>\n", indentSpace, W.style);
+  printf("%s <width>%d</width>\n", indentSpace, W.width);
+  printf("%s <x1>%d</x1><y1>%d</y1>\n", indentSpace, W.x1, W.y1);
+  printf("%s <x2>%d</x2><y2>%d</y2>\n", indentSpace, W.x2, W.y2);
+  if (  W.style == WIRE_STYLE_LONGDASH
+	|| W.style == WIRE_STYLE_SHORTDASH
+	|| W.style == WIRE_STYLE_DASHDOT
+	 ) {
+    printf("%s <pieces>\n", indentSpace);
+    W.pieces(PieceWire) {
+      xmlprint_piece_UL_WIRE(indentSpace+"  ",PieceWire);
+    }
+    printf("%s </pieces>\n", indentSpace);
+  }
+  printf("%s</wire>\n", indentSpace);
+}
+
+void xmlprint_UL_TEXT(string indentSpace, UL_TEXT T) {
+  printf("%s<text>\n", indentSpace);
+  printf("%s <angle>%g</angle>\n", indentSpace, T.angle);
+  printf("%s <layer>%d</layer>\n", indentSpace, T.layer);
+  printf("%s <mirror>%d</mirror>\n", indentSpace, T.mirror);
+  printf("%s <ratio>%d</ratio>\n", indentSpace, T.ratio);
+  printf("%s <size>%d</size>\n", indentSpace, T.size);
+  printf("%s <spin>%d</spin>\n", indentSpace, T.spin);
+  printf("%s <value>%s</value>\n", indentSpace, T.value);
+  printf("%s <x>%d</x><y>%d</y>\n", indentSpace, T.x, T.y);
+  printf("%s <wires>\n", indentSpace);
+  T.wires(Wire) {
+    xmlprint_UL_WIRE(indentSpace+"  ", Wire);
+  }
+  printf("%s </wires>\n", indentSpace);
+  printf("%s</text>\n", indentSpace);
+}
+
+void xmlprint_UL_LABEL(string indentSpace, UL_LABEL L) {
+  printf("%s<label>\n", indentSpace);
+  xmlprint_UL_TEXT(indentSpace+" ",L.text);
+  printf("%s <x>%d</x><y>%d</y>\n", indentSpace, L.x, L.y);
+  printf("%s <xref>%d</xref>\n", indentSpace, L.xref);
+  printf("%s</label>\n", indentSpace);
+}
+
+void xmlprint_UL_PINREF(string indentSpace, UL_PINREF P) {
+  printf("%s<pinref>\n", indentSpace);
+  printf("%s  <part>%s</part>\n", indentSpace, P.part.name);
+  printf("%s  <instance>%s</instance>\n",indentSpace,  P.instance.name);
+  printf("%s  <pin>%s</pin>\n",indentSpace,  P.pin.name);
+  printf("%s</pinref>\n", indentSpace);
+}
+
+void xmlprint_UL_JUNCTION(string indentSpace, UL_JUNCTION J) {
+  printf("%s<junction>\n", indentSpace);
+  printf("%s <diameter>%d</diameter>\n", indentSpace, J.diameter);
+  printf("%s <x>%d</x>\n", indentSpace, J.x);
+  printf("%s <y>%d</y>\n", indentSpace, J.y);
+  printf("%s</junction>\n", indentSpace);
+}
+
+void xmlprint_UL_SEGMENT(string indentSpace, UL_SEGMENT S) {
+  printf("%s<segment>\n", indentSpace);
+  printf("%s <junctions>\n", indentSpace);
+  S.junctions(Junct) {
+    xmlprint_UL_JUNCTION(indentSpace+"  ",Junct);
+   }
+  printf("%s </junctions>\n", indentSpace);
+  printf("%s <labels>\n", indentSpace);
+  S.labels(Label) {
+    xmlprint_UL_LABEL(indentSpace+"  ", Label);
+  }
+  printf("%s <pinrefs>\n", indentSpace);
+  S.pinrefs(PinRef) {
+      xmlprint_UL_PINREF(indentSpace+"  ", PinRef);
+  }
+  printf("%s </pinrefs>\n", indentSpace);
+  printf("%s</segment>\n", indentSpace);
+}
+
+if (schematic) schematic(S) {
+ output(filesetext(S.name, ".net.xml"), "wt") {
+  printf("<?xml version=\"1.0\"?>\n");
+  printf("<eagle><schematic>\n");
+  printf(" <name>%s</name>\n", S.name);
+  printf(" <sheets>\n");
+  S.sheets(Sheet) {
+   xmlprint_UL_AREA("  ",Sheet.area);
+   printf("  <number>%d</number>\n",Sheet.number);
+   printf("  <nets>\n");
+   Sheet.nets(N) {
+    printf("  <net>\n");
+    if (N.class) printf("   <class>%s</class>\n", N.class.name);
+    if (N.column) printf("   <column>%s</column>\n", N.column);
+    printf("   <name>%s</name>\n", N.name);
+    printf("   <segments>\n");
+    N.segments(Segment) {
+      xmlprint_UL_SEGMENT("    ", Segment);
+//      printf("   <name>%s</name>\n", Segment.name);
+    }
+    printf("   </segments>\n");
+    printf("  </net>\n");
+   }
+   printf("  </nets>\n");
+  }
+  printf(" </sheets>\n");
+  printf("<schematic><eagle>\n");
+ }
+}
+exit(1);
+
