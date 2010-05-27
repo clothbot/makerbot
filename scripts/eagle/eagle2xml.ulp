@@ -1,5 +1,22 @@
 string indentSpace="";
 
+string str2xml(string inString) {
+  string outString="";
+  string outCharString="";
+  for (int i = 0; inString[i]; ++i) {
+    switch (inString[i]) {
+      case '&' : outCharString="&amp;";
+	break;
+      case '<' : outCharString="&lt;";
+	break;
+      case '>' : outCharString="&gt;";
+	break;
+      default : sprintf(outCharString, "%c", inString[i]);
+    }
+    sprintf(outString, "%s%s", outString, outCharString);
+  }
+  return( outString );
+}
 
 void xmlprint_UL_ARC(string indentSpace, UL_ARC A) {
   printf("%s<arc>\n", indentSpace);
@@ -20,6 +37,159 @@ void xmlprint_UL_AREA(string indentSpace, UL_AREA A) {
   printf("%s <x1>%d</x1><y1>%d</y1>\n", indentSpace, A.x1, A.y1);
   printf("%s <x2>%d</x2><y2>%d</y2>\n", indentSpace, A.x2, A.y2);
   printf("%s</area>\n", indentSpace);
+}
+
+void xmlprint_UL_CLASS(string indentSpace, UL_CLASS C) {
+  printf("%s<class>\n", indentSpace);
+  printf("%s <clearance>%d</clearance>\n", indentSpace, C.clearance);
+  printf("%s <drill>%d</drill>\n", indentSpace, C.drill);
+  printf("%s <name>%s</name>\n", indentSpace, str2xml(C.name));
+  printf("%s <number>%d</number>\n", indentSpace, C.number);
+  printf("%s <width>%d</width>\n", indentSpace, C.width);
+  printf("%s</class>\n", indentSpace);
+}
+
+void xmlprint_UL_GRID(string indentSpace, UL_GRID G) {
+  printf("%s<grid>\n", indentSpace);
+  printf("%s <distance>%g</distance>\n", indentSpace, G.distance);
+  printf("%s <dots>%d</dots>\n", indentSpace, G.dots);
+  printf("%s <multiple>%d</multiple>\n", indentSpace, G.multiple);
+  printf("%s <on>%d</on>\n", indentSpace, G.on);
+  string unitVal="";
+  switch (G.unit) {
+    case GRID_UNIT_MIC: unitVal="micron";
+	break;
+    case GRID_UNIT_MM: unitVal="mm";
+	break;
+    case GRID_UNIT_MIL: unitVal="mil";
+	break;
+    case GRID_UNIT_INCH: unitVal="inch";
+	break;
+  }
+  printf("%s <unit>%s</unit>\n", indentSpace, unitVal);
+  printf("%s <unitdist>%d</unitdist>\n", indentSpace, G.unitdist);
+  printf("%s</grid>\n", indentSpace);
+}
+
+void xmlprint_UL_JUNCTION(string indentSpace, UL_JUNCTION J) {
+  printf("%s<junction>\n", indentSpace);
+  printf("%s <diameter>%d</diameter>\n", indentSpace, J.diameter);
+  printf("%s <x>%d</x>\n", indentSpace, J.x);
+  printf("%s <y>%d</y>\n", indentSpace, J.y);
+  printf("%s</junction>\n", indentSpace);
+}
+
+void xmlprint_UL_LAYER(string indentSpace, UL_LAYER L) {
+  printf("%s<layer>\n", indentSpace);
+  printf("%s <color>%d</color>\n", indentSpace, L.color);
+  printf("%s <fill>%d</fill>\n", indentSpace, L.fill);
+  printf("%s <number>%d</number>\n", indentSpace, L.number);
+  string layerPurpose="";
+  switch (L.number) {
+    case LAYER_TOP : layerPurpose="top";
+      break;
+    case LAYER_BOTTOM : layerPurpose="bottom";
+      break;
+    case LAYER_PADS : layerPurpose="pads";
+      break;
+    case LAYER_VIAS : layerPurpose="vias";
+      break;
+    case LAYER_UNROUTED : layerPurpose="unrouted";
+      break;
+    case LAYER_DIMENSION : layerPurpose="dimension";
+      break;
+    case LAYER_TPLACE : layerPurpose="tplace";
+      break;
+    case LAYER_BPLACE : layerPurpose="bplace";
+      break;
+    case LAYER_TORIGINS : layerPurpose="torigins";
+      break;
+    case LAYER_BORIGINS : layerPurpose="borigins";
+      break;
+    case LAYER_TNAMES : layerPurpose="tnames";
+      break;
+    case LAYER_BNAMES : layerPurpose="bnames";
+      break;
+    case LAYER_TVALUES : layerPurpose="tvalues";
+      break;
+    case LAYER_BVALUES : layerPurpose="bvalues";
+      break;
+    case LAYER_TSTOP : layerPurpose="tstop";
+      break;
+    case LAYER_BSTOP : layerPurpose="bstop";
+      break;
+    case LAYER_TCREAM : layerPurpose="tcream";
+      break;
+    case LAYER_BCREAM : layerPurpose="bcream";
+      break;
+    case LAYER_TFINISH : layerPurpose="tfinish";
+      break;
+    case LAYER_BFINISH : layerPurpose="bfinish";
+      break;
+    case LAYER_TGLUE : layerPurpose="tglue";
+      break;
+    case LAYER_BGLUE : layerPurpose="bglue";
+      break;
+    case LAYER_TTEST : layerPurpose="ttest";
+      break;
+    case LAYER_BTEST : layerPurpose="btest";
+      break;
+    case LAYER_TKEEPOUT : layerPurpose="tkeepout";
+      break;
+    case LAYER_BKEEPOUT : layerPurpose="bkeepout";
+      break;
+    case LAYER_TRESTRICT : layerPurpose="trestrict";
+      break;
+    case LAYER_BRESTRICT : layerPurpose="brestrict";
+      break;
+    case LAYER_VRESTRICT : layerPurpose="vrestrict";
+      break;
+    case LAYER_DRILLS : layerPurpose="drills";
+      break;
+    case LAYER_HOLES : layerPurpose="holes";
+      break;
+    case LAYER_MILLING : layerPurpose="milling";
+      break;
+    case LAYER_MEASURES : layerPurpose="measures";
+      break;
+    case LAYER_DOCUMENT : layerPurpose="document";
+      break;
+    case LAYER_REFERENCE : layerPurpose="reference";
+      break;
+    case LAYER_TDOCU : layerPurpose="tdocu";
+      break;
+    case LAYER_BDOCU : layerPurpose="bdocu";
+      break;
+    case LAYER_NETS : layerPurpose="nets";
+      break;
+    case LAYER_BUSSES : layerPurpose="busses";
+      break;
+    case LAYER_PINS : layerPurpose="pins";
+      break;
+    case LAYER_SYMBOLS : layerPurpose="symbols";
+      break;
+    case LAYER_VALUES : layerPurpose="values";
+      break;
+    case LAYER_USER : layerPurpose="user";
+      break;
+    default : if(L.number >= LAYER_USER) {
+	  sprintf(layerPurpose, "user%d", L.number);
+	} else {
+	  sprintf(layerPurpose, "undefined%d", L.number);
+	}
+  }
+  printf("%s <purpose>%s</purpose>\n", indentSpace, layerPurpose);
+  printf("%s <used>%d</used>\n", indentSpace, L.used);
+  printf("%s <visible>%d</visible>\n", indentSpace, L.visible);
+  printf("%s</layer>\n", indentSpace);
+}
+
+void xmlprint_UL_PINREF(string indentSpace, UL_PINREF P) {
+  printf("%s<pinref>\n", indentSpace);
+  printf("%s  <part>%s</part>\n", indentSpace, str2xml(P.part.name));
+  printf("%s  <instance>%s</instance>\n",indentSpace,  str2xml(P.instance.name));
+  printf("%s  <pin>%s</pin>\n",indentSpace,  str2xml(P.pin.name));
+  printf("%s</pinref>\n", indentSpace);
 }
 
 void xmlprint_piece_UL_WIRE(string indentSpace, UL_WIRE W) {
@@ -52,6 +222,7 @@ void xmlprint_UL_WIRE(string indentSpace, UL_WIRE W) {
     printf("%s <pieces>\n", indentSpace);
     W.pieces(PieceWire) {
       xmlprint_piece_UL_WIRE(indentSpace+"  ",PieceWire);
+//      xmlprint_UL_WIRE(indentSpace+"  ", PieceWire);
     }
     printf("%s </pieces>\n", indentSpace);
   }
@@ -66,7 +237,7 @@ void xmlprint_UL_TEXT(string indentSpace, UL_TEXT T) {
   printf("%s <ratio>%d</ratio>\n", indentSpace, T.ratio);
   printf("%s <size>%d</size>\n", indentSpace, T.size);
   printf("%s <spin>%d</spin>\n", indentSpace, T.spin);
-  printf("%s <value>%s</value>\n", indentSpace, T.value);
+  printf("%s <value>%s</value>\n", indentSpace, str2xml(T.value));
   printf("%s <x>%d</x><y>%d</y>\n", indentSpace, T.x, T.y);
   printf("%s <wires>\n", indentSpace);
   T.wires(Wire) {
@@ -76,28 +247,32 @@ void xmlprint_UL_TEXT(string indentSpace, UL_TEXT T) {
   printf("%s</text>\n", indentSpace);
 }
 
+void xmlprint_UL_ATTRIBUTE(string indentSpace, UL_ATTRIBUTE A) {
+  printf("%s<attribute>\n", indentSpace);
+  printf("%s <constant>%d</constant>\n", indentSpace, A.constant);
+  printf("%s <defaultvalue>%s</defaultvalue>\n", indentSpace, str2xml(A.defaultvalue));
+  string displayFlag="";
+  switch (A.display) {
+    case ATTRIBUTE_DISPLAY_FLAG_OFF: displayFlag="off";
+	break;
+    case ATTRIBUTE_DISPLAY_FLAG_VALUE: displayFlag="value";
+	break;
+    case ATTRIBUTE_DISPLAY_FLAG_NAME: displayFlag="name";
+	break;
+  }
+  printf("%s <display>%d</display>\n", indentSpace, displayFlag);
+  printf("%s <name>%d</name>\n", indentSpace, A.name);
+  xmlprint_UL_TEXT(indentSpace+" ", A.text);
+  printf("%s <value>%s</value>\n", indentSpace, str2xml(A.value));
+  printf("%s</attribute>\n", indentSpace);
+}
+
 void xmlprint_UL_LABEL(string indentSpace, UL_LABEL L) {
   printf("%s<label>\n", indentSpace);
   xmlprint_UL_TEXT(indentSpace+" ",L.text);
   printf("%s <x>%d</x><y>%d</y>\n", indentSpace, L.x, L.y);
   printf("%s <xref>%d</xref>\n", indentSpace, L.xref);
   printf("%s</label>\n", indentSpace);
-}
-
-void xmlprint_UL_PINREF(string indentSpace, UL_PINREF P) {
-  printf("%s<pinref>\n", indentSpace);
-  printf("%s  <part>%s</part>\n", indentSpace, P.part.name);
-  printf("%s  <instance>%s</instance>\n",indentSpace,  P.instance.name);
-  printf("%s  <pin>%s</pin>\n",indentSpace,  P.pin.name);
-  printf("%s</pinref>\n", indentSpace);
-}
-
-void xmlprint_UL_JUNCTION(string indentSpace, UL_JUNCTION J) {
-  printf("%s<junction>\n", indentSpace);
-  printf("%s <diameter>%d</diameter>\n", indentSpace, J.diameter);
-  printf("%s <x>%d</x>\n", indentSpace, J.x);
-  printf("%s <y>%d</y>\n", indentSpace, J.y);
-  printf("%s</junction>\n", indentSpace);
 }
 
 void xmlprint_UL_SEGMENT(string indentSpace, UL_SEGMENT S) {
@@ -111,6 +286,7 @@ void xmlprint_UL_SEGMENT(string indentSpace, UL_SEGMENT S) {
   S.labels(Label) {
     xmlprint_UL_LABEL(indentSpace+"  ", Label);
   }
+  printf("%s </labels>\n", indentSpace);
   printf("%s <pinrefs>\n", indentSpace);
   S.pinrefs(PinRef) {
       xmlprint_UL_PINREF(indentSpace+"  ", PinRef);
@@ -119,11 +295,42 @@ void xmlprint_UL_SEGMENT(string indentSpace, UL_SEGMENT S) {
   printf("%s</segment>\n", indentSpace);
 }
 
+void xmlprint_UL_LIBRARY(string indentSpace, UL_LIBRARY L) {
+  printf("%s<library>\n", indentSpace);
+  printf("%s <description>%s</description>\n", indentSpace, str2xml(L.description));
+  xmlprint_UL_GRID(indentSpace+" ", L.grid);
+  printf("%s <headline>%s</headline>\n", indentSpace, str2xml(L.headline));
+  printf("%s <name>%s</name>\n", indentSpace, str2xml(L.name));
+  printf("%s</library>\n", indentSpace);
+}
+
 if (schematic) schematic(S) {
- output(filesetext(S.name, ".net.xml"), "wt") {
+ output(filesetext(S.name, ".sch.xml"), "wt") {
   printf("<?xml version=\"1.0\"?>\n");
   printf("<eagle><schematic>\n");
-  printf(" <name>%s</name>\n", S.name);
+  xmlprint_UL_GRID(" ",S.grid);
+  printf(" <name>%s</name>\n", str2xml(S.name));
+  printf(" <xreflabel>%s</xreflabel>\n", str2xml(S.xreflabel));
+  printf(" <attributes>\n");
+  S.attributes(Attrib) {
+    xmlprint_UL_ATTRIBUTE("  ",Attrib);
+  }
+  printf(" </attributes>\n");
+  printf(" <classes>\n");
+  S.classes(Class) {
+    xmlprint_UL_CLASS("  ",Class);
+  }
+  printf(" </classes>\n");
+  printf(" <layers>\n");
+  S.layers(Layer) {
+    xmlprint_UL_LAYER("  ",Layer);
+  }
+  printf(" </layers>\n");
+  printf(" <libraries>\n");
+  S.libraries(Library) {
+    xmlprint_UL_LIBRARY("  ",Library);
+  }
+  printf(" </libraries>\n");
   printf(" <sheets>\n");
   S.sheets(Sheet) {
    xmlprint_UL_AREA("  ",Sheet.area);
@@ -131,13 +338,12 @@ if (schematic) schematic(S) {
    printf("  <nets>\n");
    Sheet.nets(N) {
     printf("  <net>\n");
-    if (N.class) printf("   <class>%s</class>\n", N.class.name);
-    if (N.column) printf("   <column>%s</column>\n", N.column);
-    printf("   <name>%s</name>\n", N.name);
+    if (N.class) printf("   <class>%s</class>\n", str2xml(N.class.name));
+    if (N.column) printf("   <column>%s</column>\n", str2xml(N.column));
+    printf("   <name>%s</name>\n", str2xml(N.name));
     printf("   <segments>\n");
     N.segments(Segment) {
       xmlprint_UL_SEGMENT("    ", Segment);
-//      printf("   <name>%s</name>\n", Segment.name);
     }
     printf("   </segments>\n");
     printf("  </net>\n");
@@ -145,8 +351,22 @@ if (schematic) schematic(S) {
    printf("  </nets>\n");
   }
   printf(" </sheets>\n");
-  printf("<schematic><eagle>\n");
+  printf("</schematic></eagle>\n");
  }
 }
+
+if (board) board(B) {
+ output(filesetext(B.name, ".brd.xml"), "wt") {
+  printf("<?xml version=\"1.0\"?>\n");
+  printf("<eagle><board>\n");
+  xmlprint_UL_AREA(" ",B.area);
+  xmlprint_UL_GRID(" ",B.grid);
+  printf(" <name>%s</name>\n", str2xml(B.name));
+  printf(" <sheets>\n");
+  printf("<board><eagle>\n");
+ }
+}
+
+
 exit(1);
 
