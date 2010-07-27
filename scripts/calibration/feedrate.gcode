@@ -1,4 +1,4 @@
-(Feed Rate Calibration)
+(Feed Rate Calibration.)
 M104 S220 T0 (Temperature to 220 Celsius)
 G21 (Metric)
 G90 (Absolute Positioning)
