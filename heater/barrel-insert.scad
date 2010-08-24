@@ -1,6 +1,6 @@
 // Insert for barrel to heat incoming filament from the inside out.
 
-render_part=0;
+render_part=1;
 
 module barrel_insert(
 	barrel_d=6.0
@@ -43,4 +43,14 @@ module barrel_insert(
 
 if( render_part==0 ) {
   barrel_insert();
+}
+if( render_part==1 ) {
+  translate([10,10,0]) barrel_insert();
+  translate([10,-10,0]) rotate([-90,0,0]) barrel_insert();
+  translate([-10,-10,0]) rotate([180,0,0]) barrel_insert();
+  translate([-10,10,0]) rotate([0,90,0]) barrel_insert();
+  for(i=[0:4])
+    translate([0,0,2*i]) 
+	projection(cut=true) translate([0,0,i*0.5])
+	  rotate([-90,0,0]) barrel_insert();
 }
