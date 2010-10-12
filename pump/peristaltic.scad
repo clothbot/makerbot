@@ -1,109 +1,40 @@
 // Printable Peristaltic Pump
 
- render_part="bearing_623_2D";
-// render_part="bearing_623";
+use <parts.scad>
 
-module bearing_606(
-  id=6.0
-  , od=17.0
-  , thickness=6.0
-  ) {
-  difference() {
-    cylinder(r=od/2,h=thickness,center=false);
-    translate([0,0,-0.1])
-      cylinder(r=id/2,h=thickness+0.2,center=false);
-  }
-}
+function PumpRotor_OD()=50.0;
 
-module bearing_623_2D(
-  id=3.0
-  , od=10.0
-  ) {
-  $fs=0.1;
-  difference() {
-    circle($fa=15, r=od/2,center=false);
-    circle($fa=30, r=id/2,center=false);
-  }
-}
-
-module bearing_623(
-  id=3.0
-  , od=10.0
-  , thickness=4.0
-  ) {
-  linear_extrude(height=thickness, center=false,convexity=10) 
-    bearing_623_2D(id=id, od=od);
-}
-
-module marble_ball(
-  diam=25.4*3/8 // 9.525mm
-  ) {
-  sphere(r=diam/2,center=true);
-}
-
-module tygon_B_44_3(
-	od=25.4*3/16
-	, id=25.4*1/16
-	, wall_thickness=25.4*1/16
-	, min_bend_radius=25.4*1/8
+module PumpRotor(
+	od=PumpRotor_OD()
+	, id=6.0
+	, br=PumpRotor_OD()/2+Tygon_B_44_3_OD()-Tygon_B_44_3_ID()-Bearing_623_OD()/2
+	, phase_n=3
+	, bearing_od=Bearing_623_OD()
+	, bearing_id=Bearing_623_ID()
+	, bearing_th=Bearing_623_TH()
+	, wall_th=2.0
 	) {
+  
   difference() {
-    circle(r=od/2);
-    circle(r=id/2);
-  }
-}
-
-module pump_wheel(
-	wheel_d=17.0+10.0+3.0
-	, wheel_rim_h=12.0
-	, wheel_rim_w=6.0
-	, ball_inset=1.0
-	, ball_d=25.4*3/8
-	, ball_n=3
-	, tube_od=25.4*3/16
-	, tube_id=25.4*1/16
-	, motor_bracket_h=2.0
-	, bolt_head_h=3.0 // standard M3 head height
-	, bolt_head_w=5.5 // standard M3 head width
-	, bolt_w=3.0 // standard M3 bolt width
-	, motor_axle_w=6.0 // 
-	, motor_axle_set_screw_depth=3.0
-	) {
-  union() {
-    difference() {
-      cylinder(r=wheel_d/2,h=wheel_rim_h,center=false);
-      translate([0,0,-0.1]) cylinder(r=wheel_d/2-wheel_rim_w,h=wheel_rim_h+0.2,center=false);
+    union() {
+	cylinder($fa=15,$fs=0.1,r=od/2, h=phase_n*bearing_th+2*wall_th,center=false);
+	cylinder($fa=15,$fs=0.1,r1=od/2+wall_th,r2=od/2,h=wall_th,center=false);
+	translate([0,0,wall_th+phase_n*bearing_th])
+	  cylinder($fa=15,$fs=0.1,r2=od/2+wall_th,r1=od/2,h=wall_th,center=false);
     }
-    difference() {
-      cylinder(r=motor_axle_w/2+bolt_head_h+motor_axle_set_screw_depth,h=wheel_rim_h,center=false);
-      translate([0,0,-0.1]) cylinder(r=motor_axle_w/2,h=wheel_rim_h+0.2,center=false);
+    translate([0,0,-0.1]) cylinder($fa=30,$fs=0.1,r=id/2, h=0.2+phase_n*bearing_th+2*wall_th,center=false);
+    for(i=[0:phase_n-1]) assign(rotAngle=360*i/phase_n,
+	bz=wall_th+i*bearing_th) {
+      rotate([0,0,rotAngle]) {
+	  translate([br,0,bz]) cylinder($fa=15,$fs=0.1,r=bearing_od/2,h=bearing_th,center=false);
+	  translate([br,0,-0.1]) cylinder($fa=30,$fs=0.1,r=bearing_id/2,h=0.2+phase_n*bearing_th+2*wall_th,center=false);
+	 }
+      rotate([0,0,rotAngle]) {
+	  translate([-br,0,bz]) cylinder($fa=15,$fs=0.1,r=bearing_od/2,h=bearing_th,center=false);
+	  translate([-br,0,-0.1]) cylinder($fa=30,$fs=0.1,r=bearing_id/2,h=0.2+phase_n*bearing_th+2*wall_th,center=false);
+	 }
     }
   }
-
 }
 
-module motor_bracket(
-	wheel_d=17.0+10.0+3.0
-	, ball_inset=1.0
-	, ball_d=25.4*3/8
-	, tube_od=25.4*3/16
-	, tube_id=25.4*1/16
-	, motor_bracket_h=2.0
-	, bolt_head_h=3.0 // standard M3 head height
-	, bolt_head_w=5.5 // standard M3 head width
-	, w=3.0 // standard M3 bolt width
-	, motor_axle_w=6.0 // 
-	) {
-
-}
-
-if(render_part=="bearing_623_2D") {
-  echo("Rendering bearing_623_2D...");
-  bearing_623_2D();
-}
-
-if(render_part=="bearing_623") {
-  echo("Rendering bearing_623...");
-  bearing_623();
-}
-
+PumpRotor();
