@@ -34,3 +34,37 @@ module M3_Nut_DIN934_2D() {
     circle(r=M3_Diam()/2,center=true);
   }
 }
+
+function M8_Diam() =8.0+M8_Diam_Err();
+function M8_Pitch() = 1.25;
+// SCS = Socket Cap Screws
+function M8_SCS_Head_H() = 8.0;
+function M8_SCS_Head_D() = 13.0+M8_SCS_Head_D_Err();
+function M8_SCS_Head_Hex_W() = 6.0;
+
+module M8_SCS_Head_Hole(extension=0.1) {
+  linear_extrude(height=M8_SCS_Head_H()+extension, center=false,convexity=10)
+    circle(r=(M8_SCS_Head_D()+extension)/2);
+}
+
+// Metric Hex Nuts - DIN 934
+function M8_Nut_DIN934_Pitch()=1.25;
+function M8_Nut_DIN934_W()=13.0+M8_Nut_DIN934_W_Err();
+function M8_Nut_DIN934_H()=6.5;
+
+// Metric Thin Hex Nuts - DIN 934B
+function M8_Nut_DIN934B_Pitch()=1.25;
+function M8_Nut_DIN934B_W()=13.0+M8_Nut_DIN934B_W_Err();
+function M8_Nut_DIN934B_H()=4.0;
+
+module M8_Nut_DIN934_2D() {
+  $fa=15.0;
+  $fs=0.1;
+  difference() {
+    intersection_for(i=[0:2]) {
+      rotate([0,0,360*i/3]) square(size=[2*M8_Nut_DIN934_W(),M8_Nut_DIN934_W()], center=true);
+    }
+    circle(r=M8_Diam()/2,center=true);
+  }
+}
+

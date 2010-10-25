@@ -4,17 +4,10 @@ use <Calibration.scad>
 use <Generic.scad>
 use <Bearing_608.scad>
 use <ISO_Metric_Hardware.scad>
+use <Z_Axis_Parameters.scad>
 
 //render_part="Z_Bracket_Simple";
 render_part=1;
-
-function Z_Bracket_W() = 40.0; // Z Bracket Width
-function Z_Bracket_L() = 40.0; // Z Bracket Length
-function Z_Bracket_Corner_R() = 10.0; // Z Bracket Corner Radius
-// function Z_Bracket_H() = Bearing_608_H()+M3_SCS_Head_H();
-function Z_Bracket_H() = 5.0+M3_SCS_Head_H();
-function Z_Bracket_Top_M3_X_Offset() = 10.0; // Offset from center.
-function Z_Bracket_Top_M3_Y_Offset() = 10.0; // Offset from center.
 
 module Z_Bracket_Holes_2D() {
   $fa=15.0;
