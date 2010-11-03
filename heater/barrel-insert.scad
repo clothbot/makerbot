@@ -98,14 +98,15 @@ module barrel_insert_body(
 		union() {
 		  linear_extrude($fa=5, height=insert_h,center=false,convexity=10,twist=360/insert_n) union() {
 		    for(i=[0:insert_n-1]) assign(rotAngle=i*360/insert_n)
-			rotate(rotAngle) translate([0,channel_d/2])
-			  square(size=[2*channel_d,bore_d],center=false);
+			rotate(rotAngle) translate([0,bore_d/2-channel_d/2])
+			  scale([channel_d/2,0.75*channel_d]) circle(r=1.0);
+			  // square(size=[2*channel_d,bore_d],center=false);
 		  }
 		  linear_extrude($fa=5,height=insert_h,center=false,convexity=10,twist=-360/insert_n) union() {
 		    for(i=[0:insert_n-1]) assign(rotAngle=i*360/insert_n+180/insert_n)
-			rotate(rotAngle) translate([0,channel_d/2])
-			  // circle(r=channel_d/2);
-			  square(size=[2*channel_d,bore_d],center=false);
+			rotate(rotAngle) translate([0,bore_d/2-channel_d/2])
+			  scale([channel_d/2,0.75*channel_d]) circle(r=1.0);
+			  // square(size=[2*channel_d,bore_d],center=false);
 		  }
 		  translate([0,0,5*insert_h/6]) sphere(r=insert_h/6);
 		}
@@ -113,7 +114,7 @@ module barrel_insert_body(
 
 	}
 	translate([0,0,spacer_h]) {
-	    for(i=[0:sidehole_n-1]) assign(rotAngle=i*360/sidehole_n+180/sidehole_n)
+	    for(i=[0:sidehole_n-1]) assign(rotAngle=i*360/sidehole_n)
 		rotate([90,0,rotAngle]) {
 		  cylinder(r=channel_d/2,h=barrel_d/2-channel_d,center=false);
 		  //translate([0,0,barrel_d/2-channel_d]) sphere(r=channel_d/2);
@@ -126,13 +127,13 @@ module barrel_insert_body(
     intersection() {
 	cylinder(r=barrel_d/2,h=spacer_h,center=false);
 	union() {
-	  translate([0,0,spacer_h/2]) {
-	    for(i=[0:sidehole_n-1]) assign(rotAngle=i*360/sidehole_n)
-		rotate([90,0,rotAngle]) {
-		  cylinder(r=channel_d/2,h=barrel_d/2-channel_d,center=false);
-		  translate([0,0,barrel_d/2-channel_d]) sphere(r=channel_d/2);
-		}
-	  }
+//	  translate([0,0,spacer_h/2]) {
+//	    for(i=[0:sidehole_n-1]) assign(rotAngle=i*360/sidehole_n)
+//		rotate([90,0,rotAngle]) {
+//		  cylinder(r=channel_d/2,h=barrel_d/2-channel_d,center=false);
+//		  translate([0,0,barrel_d/2-channel_d]) sphere(r=channel_d/2);
+//		}
+//	  }
 	  linear_extrude(height=spacer_h,center=false,convexity=10,twist=180/sidehole_n) union() {
 	    for(i=[0:sidehole_n-1]) assign(rotAngle=i*360/sidehole_n+180/sidehole_n)
 		rotate(rotAngle) translate([0,barrel_d/2-channel_d])
@@ -145,7 +146,12 @@ module barrel_insert_body(
 	  }
 	}
     }
-	translate([0,0,spacer_h/2]) scale([spacer_h/3,spacer_h/3,spacer_h/2]) sphere(r=1.0);
+	scale([spacer_h/3,spacer_h/3,spacer_h/2]) sphere(r=1.0);
+	for(i=[0:sidehole_n-1]) assign(rotAngle=i*360/sidehole_n+180/sidehole_n)
+		rotate([90,0,rotAngle]) {
+		  cylinder(r=channel_d/2,h=barrel_d/2-channel_d,center=false);
+		  //translate([0,0,barrel_d/2-channel_d]) sphere(r=channel_d/2);
+	}
   }
 }
 
