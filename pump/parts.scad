@@ -56,8 +56,10 @@ module Bearing_623(
     Bearing_623_2D(id=id, od=od);
 }
 
+function Marble_D()=25.4*3/8; // marble diameter
+
 module marble_ball(
-  diam=25.4*3/8 // 9.525mm
+  diam=Marble_D() // 9.525mm
   ) {
   sphere(r=diam/2,center=true);
 }

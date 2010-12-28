@@ -1,5 +1,8 @@
 // Printable Peristaltic Pump
 
+// render_part=1; // PumpRotor()
+render_part=2; // MarblePumpRotor()
+
 use <parts.scad>
 
 function PumpRotor_OD()=50.0;
@@ -49,4 +52,14 @@ module PumpRotor(
   }
 }
 
-PumpRotor();
+module MarblePumpRotor()
+
+if(render_part==1) {
+  echo("Rendering PumpRotor()...");
+  PumpRotor();
+}
+
+if(render_part==2) {
+  echo("Rendering MarblePumpRotor()...");
+  MarblePumpRotor();
+}
