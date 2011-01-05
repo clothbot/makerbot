@@ -1,26 +1,60 @@
+// Parametric Gear Generation
+//
+// Derived from:
 // Parametric Involute Bevel and Spur Gears by GregFrost
 // It is licensed under the Creative Commons - GNU GPL license.
 // © 2010 by GregFrost
 // http://www.thingiverse.com/thing:3575
 
-// Simple Test:
-//gear (circular_pitch=700,
-//	gear_thickness = 12,
-//	rim_thickness = 15,
-//	hub_thickness = 17,
-//	circles=8);
+debug_flag=1;
 
-//Complex Spur Gear Test:
-//test_gears ();
+render_part=0; // gear_shape()
+// render_part=1; // gear()
+//render_part=2; // test_gears()
+// render_part=3; // meshing_double_helix()
+//render_part=4; // test_backlash()
+//render_part=5; // bevel_gear_pair()
 
-// Meshing Double Helix:
-meshing_double_helix ();
+function pitch_diameter2circular_pitch(num_teeth,pitch_d) = 180*pitch_d/num_teeth;
 
-// Demonstrate the backlash option for Spur gears.
-//test_backlash ();
+if(render_part==0) {
+  echo("2D gear_shape()...");
+  // 	pitch_diameter  =  number_of_teeth * circular_pitch / 180;
+  // 
+  translate([0,0,-1])circle(r=30/2);
+  gear_shape(circular_pitch=pitch_diameter2circular_pitch(13,30)
+	, number_of_teeth=13
+	);
+}
 
-// Demonstrate how to make meshing bevel gears.
-//bevel_gear_pair ();
+if(render_part==1) {
+  echo("Simple Test: gear()...");
+gear (circular_pitch=700,
+	gear_thickness = 12,
+	rim_thickness = 15,
+	hub_thickness = 17,
+	circles=8);
+}
+
+if(render_part==2) {
+  echo("Complex Spur Gear Test: test_gears()...");
+  test_gears ();
+}
+
+if(render_part==3) {
+  echo("Meshing Double Helix: meshing_double_helix()...");
+  meshing_double_helix ();
+}
+
+if(render_part==4) {
+  echo("Demonstrate the backlash option for Spur gears. test_backlash()...");
+  test_backlash ();
+}
+
+if(render_part==5) {
+  echo("Demonstrate how to make meshing bevel gears. bevel_gear_pair()...");
+  bevel_gear_pair ();
+}
 
 pi=3.1415926535897932384626433832795;
 
@@ -349,13 +383,21 @@ module gear (
 			{
 				linear_extrude (height=rim_thickness, convexity=10, twist=twist)
 				gear_shape (
-					number_of_teeth,
-					pitch_radius = pitch_radius,
-					root_radius = root_radius,
-					base_radius = base_radius,
-					outer_radius = outer_radius,
-					half_thick_angle = half_thick_angle,
-					involute_facets=involute_facets);
+						number_of_teeth=number_of_teeth,
+						circular_pitch=circular_pitch,
+						diametral_pitch=diametral_pitch,
+						pressure_angle=pressure_angle,
+						clearance = clearance,
+						gear_thickness=gear_thickness,
+						rim_thickness=rim_thickness,
+						rim_width=rim_width,
+						hub_thickness=hub_thickness,
+						hub_diameter=hub_diameter,
+						bore_diameter=bore_diameter,
+						circles=circles,
+						backlash=backlash,
+						twist=twist,
+						involute_facets=involute_facets	);
 
 				if (gear_thickness < rim_thickness)
 					translate ([0,0,gear_thickness])
@@ -382,14 +424,54 @@ module gear (
 }
 
 module gear_shape (
-	number_of_teeth,
-	pitch_radius,
-	root_radius,
-	base_radius,
-	outer_radius,
-	half_thick_angle,
-	involute_facets)
-{
+	number_of_teeth=15,
+	circular_pitch=false, 
+	diametral_pitch=false,
+	pressure_angle=28,
+	clearance = 0.2,
+	backlash=0,
+	involute_facets=0
+	) {
+
+	if (circular_pitch==false && diametral_pitch==false) 
+		echo("MCAD ERROR: gear module needs either a diametral_pitch or circular_pitch");
+
+	//Convert diametrial pitch to our native circular pitch
+	circular_pitch = (circular_pitch!=false?circular_pitch:180/diametral_pitch);
+	if(debug_flag==1) {
+	  echo("  Circular Pitch:",circular_pitch);
+	}
+
+	// Pitch diameter: Diameter of pitch circle.
+	pitch_diameter  =  number_of_teeth * circular_pitch / 180;
+	pitch_radius = pitch_diameter/2;
+	if(debug_flag==1) {
+	  echo ("  Teeth:", number_of_teeth, " Pitch radius:", pitch_radius);
+	}
+
+	// Base Circle
+	base_radius = pitch_radius*cos(pressure_angle);
+	if(debug_flag==1) {
+	  echo("  Base Radius:", base_radius);
+	}
+
+	// Diametrial pitch: Number of teeth per unit length.
+	pitch_diametrial = number_of_teeth / pitch_diameter;
+
+	// Addendum: Radial distance from pitch circle to outside circle.
+	addendum = 1/pitch_diametrial;
+
+	//Outer Circle
+	outer_radius = pitch_radius+addendum;
+
+	// Dedendum: Radial distance from pitch circle to root diameter
+	dedendum = addendum + clearance;
+
+	// Root diameter: Diameter of bottom of tooth spaces.
+	root_radius = pitch_radius-dedendum;
+	backlash_angle = backlash / pitch_radius * 180 / pi;
+	half_thick_angle = (360 / number_of_teeth - backlash_angle) / 4;
+
 	union()
 	{
 		rotate (half_thick_angle) circle ($fn=number_of_teeth*2, r=root_radius);
