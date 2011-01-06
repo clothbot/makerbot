@@ -28,7 +28,7 @@ module PlanetaryGear_2D(
 	);
   for( i=[0:roller_n-1] ) {
     rotate(360*i/roller_n) translate([drive_gear_pitch_d/2+roller_gear_pitch_d/2,0])
-	rotate(-360*(i/roller_n)*(drive_gear_num_teeth/roller_gear_num_teeth))
+	rotate(-360*i/roller_n-360*(2/roller_gear_num_teeth)*(outer_num_teeth*i/roller_n))
 	gear_shape(
 	circular_pitch=pitch_diameter2circular_pitch(roller_gear_num_teeth,roller_gear_pitch_d)
 	, number_of_teeth=roller_gear_num_teeth
