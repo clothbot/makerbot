@@ -24,6 +24,7 @@ if(render_part==0) {
   translate([0,0,-1])circle(r=30/2);
   gear_shape(circular_pitch=pitch_diameter2circular_pitch(13,30)
 	, number_of_teeth=13
+	, pressure_angle=30
 	);
 }
 
