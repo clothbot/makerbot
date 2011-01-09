@@ -3,7 +3,8 @@ use <parametric_involute_gear.scad>
 debug_flag=1;
 // render_part=1; // gear_shape_evolute_mask();
 // render_part=2; // PlanetaryGear_2D();
-render_part=3; // PlanetaryGear_2D_Animated();
+//render_part=3; // PlanetaryGear_2D_Animated();
+render_part=4; // PlanetaryGear_3D();
 
 module gear_shape_evolute_mask(
 	clearance=0.2
@@ -154,6 +155,12 @@ module PlanetaryGear_2D_Rotated(
   }
 }
 
+module PlanetaryGear_3D(
+	height=4.0
+	) {
+  linear_extrude(file="planetary_gears_r15_d21.dxf", height=height, convexity=10);
+}
+
 if(render_part==1) {
   echo("Rendering gear_shape_evolute_mask()...");
   gear_shape_evolute_mask();
@@ -169,3 +176,9 @@ if(render_part==3) {
   echo("Rendering PlanetaryGear_2D_Rotated()...");
   PlanetaryGear_2D_Rotated(drive_gear_angle=360*$t);
 }
+
+if(render_part==4) {
+  echo("Rendering PlanetaryGear_3D()...");
+  PlanetaryGear_3D();
+}
+
