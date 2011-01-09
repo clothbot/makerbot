@@ -15,7 +15,7 @@ render_part=0; // gear_shape()
 //render_part=4; // test_backlash()
 //render_part=5; // bevel_gear_pair()
 
-function pitch_diameter2circular_pitch(num_teeth,pitch_d) = 180*pitch_d/num_teeth;
+function pitch_diameter2circular_pitch(num_teeth,pitch_d,shrink=0.1) = 180*pitch_d/num_teeth-shrink;
 
 if(render_part==0) {
   echo("2D gear_shape()...");
