@@ -96,12 +96,12 @@ module PlanetaryGear_2D(
 module PlanetaryGear_2D_Rotated(
 	clearance=0.1
 	, outer_wall_th=5.0
-	, roller_gear_pitch_d=15
-	, roller_gear_num_teeth=15
+	, roller_gear_pitch_d=27
+	, roller_gear_num_teeth=27
 	, roller_gear_axle_d=3.0
 	, roller_n=6
-	, drive_gear_pitch_d=21
-	, drive_gear_num_teeth=21
+	, drive_gear_pitch_d=33
+	, drive_gear_num_teeth=33
 	, drive_gear_axle_d=3.0
 	, drive_gear_angle=0
 	, pressure_angle=26
@@ -149,7 +149,7 @@ module PlanetaryGear_2D_Rotated(
 	    , clearance=clearance
 	    , pressure_angle=pressure_angle
 	  );
-	  //circle(r=roller_gear_axle_d/2);
+	  circle(r=roller_gear_axle_d/2);
 	  translate([roller_gear_pitch_d/4,0]) circle($fs=0.1,r=roller_gear_pitch_d/20);
 	}
   }
@@ -158,7 +158,8 @@ module PlanetaryGear_2D_Rotated(
 module PlanetaryGear_3D(
 	height=4.0
 	) {
-  linear_extrude(file="planetary_gears_r15_d21.dxf", height=height, convexity=10);
+//  linear_extrude(file="planetary_gears_r15_d21.dxf", height=height, convexity=10);
+  linear_extrude(file="planetary_gears_r27_d33.dxf", height=height, convexity=10);
 }
 
 if(render_part==1) {
