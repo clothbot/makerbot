@@ -4,7 +4,8 @@ debug_flag=1;
 // render_part=1; // gear_shape_evolute_mask();
 // render_part=2; // PlanetaryGear_2D();
 //render_part=3; // PlanetaryGear_2D_Animated();
-render_part=4; // PlanetaryGear_3D();
+// render_part=4; // PlanetaryGear_3D();
+render_part=5; // PlanetaryGear_Constructor();
 
 module gear_shape_evolute_mask(
 	clearance=0.2
@@ -155,6 +156,40 @@ module PlanetaryGear_2D_Rotated(
   }
 }
 
+module PlanetaryGear_Constructor(
+	roller_n=6
+	, roller_d=27.0
+	, roller_num_teeth=27
+	, drive_d=33
+	, drive_num_teeth=33
+	, drive_angle=0
+	) {
+  // Drive gear object is child(0)
+  // Roller gear object is child(1)
+  // Outer gear object is child(2)
+  outer_d=2*roller_d+drive_d;
+  outer_num_teeth=outer_d*drive_num_teeth/drive_d;
+  roller_angle_ratio=(drive_d/(drive_d+roller_d))*(outer_d/(2*roller_d))*(roller_num_teeth/outer_num_teeth);
+  if(debug_flag==1) {
+    echo("PlanetaryGear_Constructor:");
+    echo("  roller_n:",roller_n);
+    echo("  roller_d:",roller_d);
+    echo("  roller_num_teeth:",roller_num_teeth);
+    echo("  drive_d:",drive_d);
+    echo("  drive_num_teeth:",drive_num_teeth);
+    echo("  outer_d:",outer_d);
+    echo("  outer_num_teeth:",outer_num_teeth);
+  }
+  rotate(drive_gear_angle) child(0);
+  for( i=[0:roller_n-1] ) assign(roller_angle=drive_angle*roller_angle_ratio
+	, delta_angle=360*i/roller_n) {
+    rotate(-delta_angle+roller_angle) translate([drive_d/2+roller_d/2,0])
+	rotate(-(roller_angle-delta_angle)*(outer_d/roller_d) ) child(1);
+  }
+  child(2);
+}
+
+
 module PlanetaryGear_3D(
 	height=4.0
 	) {
@@ -182,4 +217,84 @@ if(render_part==4) {
   echo("Rendering PlanetaryGear_3D()...");
   PlanetaryGear_3D();
 }
+
+  clearance=0.1;
+  outer_wall_th=5.0;
+  roller_gear_pitch_d=27;
+  roller_gear_num_teeth=27;
+  roller_gear_axle_d=3.0;
+  roller_n=6;
+  drive_gear_pitch_d=33;
+  drive_gear_num_teeth=33;
+  drive_gear_axle_d=3.0;
+  drive_gear_angle=0;
+  pressure_angle=26;
+  shrink=1;
+
+module drive_gear() {
+	difference() {
+	    gear_shape(
+		circular_pitch=pitch_diameter2circular_pitch(drive_gear_num_teeth,drive_gear_pitch_d,shrink)
+		, number_of_teeth=drive_gear_num_teeth
+		, clearance=clearance
+		, pressure_angle=pressure_angle
+		);
+	    circle($fs=0.1,r=drive_gear_axle_d/2);
+	    translate([drive_gear_pitch_d/4,0]) circle($fs=0.1,r=drive_gear_pitch_d/20);
+	}
+}
+
+module roller_gear() {
+	difference() {
+	  gear_shape(
+	    circular_pitch=pitch_diameter2circular_pitch(roller_gear_num_teeth,roller_gear_pitch_d,shrink)
+	    , number_of_teeth=roller_gear_num_teeth
+	    , clearance=clearance
+	    , pressure_angle=pressure_angle
+	  );
+	  circle(r=roller_gear_axle_d/2);
+	  translate([roller_gear_pitch_d/4,0]) circle($fs=0.1,r=roller_gear_pitch_d/20);
+	}
+}
+
+module outer_gear( clearance=0.1
+	, roller_d=27
+	, drive_d=33
+	, drive_num_teeth=33
+	, outer_wall_th=5.0
+	, roller_n=6
+	, pressure_angle=26
+	, shrink=1
+	) {
+  outer_d=2*roller_d+drive_d;
+  outer_num_teeth=outer_d*drive_num_teeth/drive_d;
+	difference() {
+	    circle(r=(outer_d+2*outer_wall_th)/2);
+	    gear_shape(
+		circular_pitch=pitch_diameter2circular_pitch(outer_num_teeth,outer_d+2*clearance,shrink=-shrink)
+		, number_of_teeth=outer_num_teeth
+		, clearance=-2*clearance
+		, pressure_angle=pressure_angle
+		);
+	}
+}
+
+if(render_part==5) {
+  echo("Rendering PlanetaryGear_Constructor()...");
+  PlanetaryGear_Constructor(	roller_n=roller_n
+	, roller_d=roller_gear_pitch_d
+	, roller_num_teeth=roller_gear_num_teeth
+	, drive_d=drive_gear_pitch_d
+	, drive_num_teeth=drive_gear_num_teeth
+	, drive_angle=drive_gear_angle
+	) {
+	// Drive Gear
+	drive_gear();
+	// Roller Gear
+	roller_gear();
+	// Outer Gear
+	outer_gear();
+  }
+}
+
 
