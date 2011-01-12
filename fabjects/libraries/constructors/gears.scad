@@ -30,20 +30,17 @@ module gear_generator_negative( clearance=0.1
 	, neg_num_teeth=33
 	, neg_addendum=0.5
 	, neg_dedendum=0.5
-	, steps_per_tooth=8
+	, steps_per_tooth=1
 	) {
   outer_d=2*pos_pitch_circle_d+neg_pitch_circle_d;
   outer_num_teeth=outer_d*neg_num_teeth/neg_pitch_circle_d;
   pos_angle_ratio=(neg_pitch_circle_d/(neg_pitch_circle_d+pos_pitch_circle_d))*(pos_pitch_circle_d/(2*pos_pitch_circle_d))*(pos_num_teeth/outer_num_teeth);
-  // child(0) is the hub blank
-  // child(1) is the positive gear
-  difference() {
-    child(0);
-    for(tooth_i=[0:neg_num_teeth-1])
-      for(tooth_step=[0:steps_per_tooth-1]) 
-	assign(rotAngle=360*tooth_i/neg_num_teeth+360*tooth_step/(neg_num_teeth*steps_per_tooth))
+  // child(0) is the positive gear
+  union() {
+    for(tooth_i=[0:neg_num_teeth*steps_per_tooth-1])
+	assign(rotAngle=360*tooth_i/(neg_num_teeth*steps_per_tooth))
 	  rotate(rotAngle) translate([pos_pitch_circle_d/2+neg_pitch_circle_d/2,0,0])
-	    rotate(-rotAngle*outer_d/neg_pitch_circle_d) child(1);
+	    rotate(-rotAngle*outer_d/neg_pitch_circle_d) child(0);
   }
 }
 
@@ -57,9 +54,10 @@ module test_gear_generator_positive() {
 	, neg_num_teeth=33
 	) {
     // child(0) is the hub object
-    cylinder(r=27/2,h=4.0,center=true);
+    cylinder(r=0,h=4.0,center=true);
     // child(1) is tooth object
-    cube(size=[1.0,1.0,2.0],center=true);
+    cube(size=[2.0,1.0,2.0],center=true);
+    //cylinder(r=0.5,h=2.0,center=true);
   }
 }
 
@@ -78,10 +76,8 @@ if(render_part==2) {
 	, neg_num_teeth=33
 	, neg_addendum=0.5
 	, neg_dedendum=0.5
-	, steps_per_tooth=8
+	, steps_per_tooth=7
 	) {
-    // child(0) is the hub object
-    cylinder(r=33/2,h=6.0,center=true);
     test_gear_generator_positive();
   }
 }
