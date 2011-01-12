@@ -262,8 +262,8 @@ module drive_gear_dxf(
 
 module roller_gear_dxf(
 	clearance=0.1
-	, roller_gear_num_teeth=33
-	, roller_gear_pitch_d=33
+	, roller_gear_num_teeth=27
+	, roller_gear_pitch_d=27
 	, shrink=1
 	, pressure_angle=26
 	, drive_gear_axle_d=3.0
@@ -321,11 +321,11 @@ if(render_part==5) {
 	, drive_angle=drive_gear_angle
 	) {
 	// Drive Gear
-	drive_gear();
+	drive_gear_dxf();
 	// Roller Gear
-	roller_gear();
+	roller_gear_dxf();
 	// Outer Gear
-	outer_gear();
+	outer_gear_dxf();
   }
 }
 
