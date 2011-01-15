@@ -7,7 +7,9 @@ use <ISO_Metric_Hardware.scad>
 use <Z_Axis_Parameters.scad>
 
 //render_part="Z_Bracket_Simple";
-render_part=3;
+//render_part=1; // Z_Bracket_Simple
+//render_part=2; // Z_Bracket_Simple_Nuts
+render_part=3; // Z_Sleave_M8_Locking
 
 module Z_Bracket_Holes_2D() {
   $fa=15.0;

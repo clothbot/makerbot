@@ -25,3 +25,5 @@ Z_Sleave_M8_Locking :
 	@echo "Processing $@..."
 	$(OPENSCAD) -D render_part=3 -s $@.stl Z_608_Bearing_Bracket.scad
 
+clean :
+	$(RM) *.stl
