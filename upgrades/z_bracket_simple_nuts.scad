@@ -1,51 +1,27 @@
 // Z-Bracket - Simple with Nut Holes
 
-use_calibrated_dims=0;
 render_part=0; // Calibration_Part();
-// use_calibrated_dims=1;
 //render_part=1; // Z_Bracket_Holes_2D();
-
-if(use_calibrated_dims==0) {
-  // 608 Bearing Dimensions
-  bearing_608_od=22.0;
-  bearing_608_id=8.0;
-  bearing_608_h=7.0;
-  // ISO Metric Hardware
-  m3_d=3.0;
-  m3_scs_head_h=3.0;
-  m3_scs_head_d=5.5;
-  m3_scs_head_hex_w=2.5;
-  m3_nut_din934_w=5.5;
-  m3_nut_din934_h=2.4;
-  // MakerBot Cupcake Z-Bracket Critical Dimensions
-  z_bracket_w = 40.0; // Z Bracket Width
-  z_bracket_l = 40.0; // Z Bracket Length
-  z_bracket_h = 5.0+2*m3_nut_din934_h;
-  z_bracket_corner_r = 10.0; // Z Bracket Corner Radius
-  z_bracket_top_m3_x_offset=10.0; // Z Bracket M3 Bolt hole position, x offset from center
-  z_bracket_top_m3_y_offset=10.0; // Z Bracket M3 Bolt hole position, y offset from center
-}
-if(use_calibrated_dims==1) {
-  hole_widen=1.0;
-  // 608 Bearing Dimensions
-  bearing_608_od=22.0+hole_widen+0.5;
-  bearing_608_id=8.0;
-  bearing_608_h=7.0;
-  // ISO Metric Hardware
-  m3_d=3.0+hole_widen;
-  m3_scs_head_h=3.0;
-  m3_scs_head_d=5.5+hole_widen;
-  m3_scs_head_hex_w=2.5;
-  m3_nut_din934_w=5.5+hole_widen;
-  m3_nut_din934_h=2.4;
-  // MakerBot Cupcake Z-Bracket Critical Dimensions
-  z_bracket_w = 40.0; // Z Bracket Width
-  z_bracket_l = 40.0; // Z Bracket Length
-  z_bracket_h = 5.0+2*m3_nut_din934_h;
-  z_bracket_corner_r = 10.0; // Z Bracket Corner Radius
-  z_bracket_top_m3_x_offset=10.0; // Z Bracket M3 Bolt hole position, x offset from center
-  z_bracket_top_m3_y_offset=10.0; // Z Bracket M3 Bolt hole position, y offset from center
-}
+// hole_widen=0.0;
+hole_widen=1.0;
+// 608 Bearing Dimensions
+bearing_608_od=22.5+hole_widen;
+bearing_608_id=8.0;
+bearing_608_h=7.0;
+// ISO Metric Hardware
+m3_d=3.0+hole_widen;
+m3_scs_head_h=3.0;
+m3_scs_head_d=5.5+hole_widen;
+m3_scs_head_hex_w=2.5;
+m3_nut_din934_w=5.5+hole_widen;
+m3_nut_din934_h=2.4;
+// MakerBot Cupcake Z-Bracket Critical Dimensions
+z_bracket_w = 40.0; // Z Bracket Width
+z_bracket_l = 40.0; // Z Bracket Length
+z_bracket_h = 5.0+2*m3_nut_din934_h;
+z_bracket_corner_r = 10.0; // Z Bracket Corner Radius
+z_bracket_top_m3_x_offset=10.0; // Z Bracket M3 Bolt hole position, x offset from center
+z_bracket_top_m3_y_offset=10.0; // Z Bracket M3 Bolt hole position, y offset from center
 
 module Nut_Hole_2D(w=1.0) {
   intersection_for(i=[0:2]) {
