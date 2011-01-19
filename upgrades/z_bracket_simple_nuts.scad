@@ -1,11 +1,11 @@
 // Z-Bracket - Simple with Nut Holes
 
 render_part=0; // Calibration_Part();
-//render_part=1; // Z_Bracket_Holes_2D();
-// hole_widen=0.0;
-hole_widen=1.0;
+render_part=1; // Z_Bracket_Holes_2D();
+hole_widen=0.0;
+// hole_widen=1.0;
 // 608 Bearing Dimensions
-bearing_608_od=22.5+hole_widen;
+bearing_608_od=22.0+hole_widen;
 bearing_608_id=8.0;
 bearing_608_h=7.0;
 // ISO Metric Hardware
