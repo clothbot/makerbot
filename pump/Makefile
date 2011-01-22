@@ -1,78 +1,60 @@
 OPENSCAD=/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD
 
+BUILD_DIR = ./build
+
+DXF_FILES = drive_gear_w_hub_holes.dxf \
+	roller_gear_w_hub_holes.dxf \
+	outer_gear.dxf \
+	outer_gear_w_mount_holes.dxf \
+	outer_tube_retainer.dxf \
+	roller_gear_tube_retainer.dxf \
+	roller_gear_tube_compressor.dxf \
+	roller_gear_rim.dxf \
+	drive_gear_rim.dxf \
+	outer_gear_rim.dxf
+
 default : usage
 
 usage :
 	@echo "Usage:"
 	@echo "  make all"
-	@echo "  make drive_gear.dxf"
-	@echo "  make roller_gear.dxf"
-	@echo "  make outer_gear.dxf"
-#	@echo "  make drive_gear.stl"
-#	@echo "  make roller_gear.stl"
-#	@echo "  make outer_gear.stl"
+	@echo "DXF Files:"
+	@echo "	$(DXF_FILES)"
 
-# all : drive_gear.dxf roller_gear.dxf outer_gear.dxf
-all : drive_gear.stl roller_gear.stl outer_gear.stl
+all :  $(BUILD_DIR) $(DXF_FILES)
 
-drive_gear.scad :
-	echo "use <planetary_gears.scad>" > drive_gear.scad
-	echo "if(render_part==1) drive_gear_dxf(" >> drive_gear.scad
-	echo "	clearance=0.1" >> drive_gear.scad
-	echo "	, outer_wall_th=5.0" >> drive_gear.scad
-	echo "	, drive_gear_pitch_d=33" >> drive_gear.scad
-	echo "	, drive_gear_pitch_num_teeth=33" >> drive_gear.scad
-	echo "	, drive_gear_axle_d=3.0" >> drive_gear.scad
-	echo "	, pressure_angle=26" >> drive_gear.scad
-	echo "	, shrink=1" >> drive_gear.scad
-	echo ");" >> drive_gear.scad
-	echo "if(render_part==2) linear_extrude(file="'"'"drive_gear.dxf"'"'",height=4.0);" >> drive_gear.scad
+$(BUILD_DIR) :
+	mkdir -p $(BUILD_DIR)
 
-drive_gear.dxf : drive_gear.scad
-	$(OPENSCAD) -D render_part=1 -x drive_gear.dxf drive_gear.scad
+drive_gear_w_hub_holes.dxf : 
+	$(OPENSCAD) -D render_part=1 -x $(BUILD_DIR)/$@ render_pump_parts.scad
 
-drive_gear.stl : drive_gear.dxf
-	$(OPENSCAD) -D render_part=2 -s drive_gear.stl drive_gear.scad
+roller_gear_w_hub_holes.dxf :
+	$(OPENSCAD) -D render_part=2 -x $(BUILD_DIR)/$@ render_pump_parts.scad
 
-roller_gear.scad :
-	echo "use <planetary_gears.scad>" > roller_gear.scad
-	echo "if(render_part==1) roller_gear_dxf(" >> roller_gear.scad
-	echo "	clearance=0.1" >> roller_gear.scad
-	echo "	,outer_wall_th=5.0" >> roller_gear.scad
-	echo "	,roller_gear_pitch_d=27" >> roller_gear.scad
-	echo "	,roller_gear_pitch_num_teeth=27" >> roller_gear.scad
-	echo "	,roller_gear_axle_d=3.0" >> roller_gear.scad
-	echo "	,pressure_angle=26" >> roller_gear.scad
-	echo "	,shrink=1" >> roller_gear.scad
-	echo ");" >> roller_gear.scad
-	echo "if(render_part==2) linear_extrude(file="'"'"roller_gear.dxf"'"'",height=4.0);" >> roller_gear.scad
+outer_gear.dxf :
+	$(OPENSCAD) -D render_part=3 -x $(BUILD_DIR)/$@ render_pump_parts.scad
 
-roller_gear.dxf : roller_gear.scad
-	$(OPENSCAD) -D render_part=1 -x roller_gear.dxf roller_gear.scad
+outer_gear_w_mount_holes.dxf :
+	$(OPENSCAD) -D render_part=4 -x $(BUILD_DIR)/$@ render_pump_parts.scad
 
-roller_gear.stl : roller_gear.dxf
-	$(OPENSCAD) -D render_part=2 -s roller_gear.stl roller_gear.scad
+outer_tube_retainer.dxf :
+	$(OPENSCAD) -D render_part=5 -x $(BUILD_DIR)/$@ render_pump_parts.scad
 
-outer_gear.scad :
-	echo "use <planetary_gears.scad>" > outer_gear.scad
-	echo "if(render_part==1) outer_gear_dxf(" >> outer_gear.scad
-	echo "	clearance=0.1" >> outer_gear.scad
-	echo "	, outer_wall_th=5.0" >> outer_gear.scad
-	echo "	, outer_gear_pitch_d=27" >> outer_gear.scad
-	echo "	, outer_gear_pitch_num_teeth=27" >> outer_gear.scad
-	echo "	, outer_gear_axle_d=3.0" >> outer_gear.scad
-	echo "	, pressure_angle=26" >> outer_gear.scad
-	echo "	, shrink=1" >> outer_gear.scad
-	echo ");" >> outer_gear.scad
-	echo "if(render_part==2) linear_extrude(file="'"'"outer_gear.dxf"'"'",height=4.0);" >> outer_gear.scad
+roller_gear_tube_retainer.dxf :
+	$(OPENSCAD) -D render_part=6 -x $(BUILD_DIR)/$@ render_pump_parts.scad
 
-outer_gear.dxf : outer_gear.scad
-	$(OPENSCAD) -D render_part=1 -x outer_gear.dxf outer_gear.scad
+roller_gear_tube_compressor.dxf :
+	$(OPENSCAD) -D render_part=7 -x $(BUILD_DIR)/$@ render_pump_parts.scad
 
-outer_gear.stl : outer_gear.dxf
-	$(OPENSCAD) -D render_part=2 -s outer_gear.stl outer_gear.scad
+roller_gear_rim.dxf :
+	$(OPENSCAD) -D render_part=8 -x $(BUILD_DIR)/$@ render_pump_parts.scad
+
+drive_gear_rim.dxf :
+	$(OPENSCAD) -D render_part=9 -x $(BUILD_DIR)/$@ render_pump_parts.scad
+
+outer_gear_rim.dxf :
+	$(OPENSCAD) -D render_part=10 -x $(BUILD_DIR)/$@ render_pump_parts.scad
 
 clean :
-	$(RM) roller_gear.scad drive_gear.scad outer_gear.scad
-	$(RM) roller_gear.dxf drive_gear.dxf outer_gear.dxf
-	$(RM) roller_gear.stl drive_gear.stl outer_gear.stl
+	$(RM) -r $(BUILD_DIR)
