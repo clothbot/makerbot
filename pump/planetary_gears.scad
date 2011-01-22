@@ -5,7 +5,8 @@ debug_flag=1;
 // render_part=2; // PlanetaryGear_2D();
 //render_part=3; // PlanetaryGear_2D_Animated();
 // render_part=4; // PlanetaryGear_3D();
-render_part=5; // PlanetaryGear_Constructor();
+// render_part=5; // PlanetaryGear_Constructor();
+render_part=6; // Universal Mounting Hub PlanetaryGear_Constructor();
 
 module gear_shape_evolute_mask(
 	clearance=0.2
@@ -231,6 +232,10 @@ if(render_part==4) {
   pressure_angle=26;
   shrink=1;
 
+  hub_hole_d=25.4*0.1120;
+  hub_hole_offset=25.4*0.25;
+
+
 module drive_gear_dxf(
 	clearance=0.1
 	, drive_gear_num_teeth=33
@@ -260,6 +265,39 @@ module drive_gear_dxf(
 	}
 }
 
+
+module drive_gear_w_hub_holes_dxf(
+	clearance=0.1
+	, drive_gear_num_teeth=33
+	, drive_gear_pitch_d=33
+	, shrink=1
+	, pressure_angle=26
+	, drive_gear_axle_d=5.0+0.2
+	, hole_d_even=25.4*0.1120
+	, hole_d_odd=3.0+0.2
+	, hole_offset_even=25.4*0.25
+	, hole_offset_odd=sqrt(2)*4
+	, hole_n=8
+	) {
+	difference() {
+	    gear_shape(
+		circular_pitch=pitch_diameter2circular_pitch(drive_gear_num_teeth,drive_gear_pitch_d,shrink)
+		, number_of_teeth=drive_gear_num_teeth
+		, clearance=clearance
+		, pressure_angle=pressure_angle
+		);
+	    circle($fs=0.1,r=drive_gear_axle_d/2);
+	    for(i=[0:hole_n-1]) rotate(360*i/hole_n) {
+	     if(i%2==0) translate([hole_offset_even,0]) {
+		circle($fs=0.1,r=hole_d_even/2);
+	     }
+	     if(i%2==1) translate([hole_offset_odd,0]) {
+		circle($fs=0.1,r=hole_d_odd/2);
+	     }
+	    }
+	}
+}
+
 module roller_gear_dxf(
 	clearance=0.1
 	, roller_gear_num_teeth=27
@@ -281,13 +319,48 @@ module roller_gear_dxf(
 	  );
 	  circle($fs=0.1,r=roller_gear_axle_d/2);
 	  for(i=[0:hole_n-1]) rotate(360*i/hole_n) {
-	    translate([hole_offset,0]) {
-		if(i%2==0) circle($fs=0.1,r=hole_d_even/2);
-		if(i%2==1) circle($fs=0.1,r=hole_d_odd/2);
+	    if(i%2==0) translate([hole_offset,0]) {
+		circle($fs=0.1,r=hole_d_even/2);
+	    }
+	    if(i%2==1) translate([hole_offset,0]) {
+		circle($fs=0.1,r=hole_d_odd/2);
 	    }
 	  }
 	}
 }
+
+module roller_gear_w_hub_holes_dxf(
+	clearance=0.1
+	, roller_gear_num_teeth=27
+	, roller_gear_pitch_d=27
+	, shrink=1
+	, pressure_angle=26
+	, roller_gear_axle_d=5.0+0.2
+	, hole_d_even=25.4*0.1120
+	, hole_d_odd=3.0+0.2
+	, hole_offset_even=25.4*0.25
+	, hole_offset_odd=sqrt(2)*4
+	, hole_n=8
+	) {
+	difference() {
+	  gear_shape(
+	    circular_pitch=pitch_diameter2circular_pitch(roller_gear_num_teeth,roller_gear_pitch_d,shrink)
+	    , number_of_teeth=roller_gear_num_teeth
+	    , clearance=clearance
+	    , pressure_angle=pressure_angle
+	  );
+	  circle($fs=0.1,r=roller_gear_axle_d/2);
+	  for(i=[0:hole_n-1]) rotate(360*i/hole_n) {
+	    if(i%2==0) translate([hole_offset_even,0]) {
+		circle($fs=0.1,r=hole_d_even/2);
+	    }
+	    if(i%2==1) translate([hole_offset_odd,0]) {
+		circle($fs=0.1,r=hole_d_odd/2);
+	    }
+	  }
+	}
+}
+
 
 module outer_gear_dxf( clearance=0.1
 	, roller_d=27
@@ -324,6 +397,24 @@ if(render_part==5) {
 	drive_gear_dxf();
 	// Roller Gear
 	roller_gear_dxf();
+	// Outer Gear
+	outer_gear_dxf();
+  }
+}
+
+if(render_part==6) {
+  echo("Rendering Universal Hub PlanetaryGear_Constructor()...");
+  PlanetaryGear_Constructor(	roller_n=roller_n
+	, roller_d=roller_gear_pitch_d
+	, roller_num_teeth=roller_gear_num_teeth
+	, drive_d=drive_gear_pitch_d
+	, drive_num_teeth=drive_gear_num_teeth
+	, drive_angle=drive_gear_angle
+	) {
+	// Drive Gear
+	drive_gear_w_hub_holes_dxf();
+	// Roller Gear
+	roller_gear_w_hub_holes_dxf();
 	// Outer Gear
 	outer_gear_dxf();
   }
