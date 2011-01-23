@@ -29,7 +29,7 @@ usage :
 	@echo "  make all"
 	@echo "  make dxf_files"
 	@echo "  make dxf_files layer_files"
-	@echo "  make layer_stack.stl"
+	@echo "  make layer_stack.stl (not recommended)"
 	@echo "DXF Files:"
 	@echo "	$(DXF_FILES)"
 	@echo "Layer Files:"
