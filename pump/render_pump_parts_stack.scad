@@ -1,12 +1,17 @@
 //
-use <parts.scad>
+// use <parts.scad>
 roller_d=27;
 roller_num_teeth=27;
 drive_d=33;
 drive_num_teeth=33;
 roller_n=6;
 sheet_th=3.0;
+tube_od=25.4*3/16;
+tube_id=25.4*1/16;
+tube_th=25.4*1/16;
+tube_layer_th=tube_od+tube_id;
 
+stack_space=0.1;
 render_stack=0;
 layer=0; //rim layer
 //layer=1; // gear layer
@@ -26,12 +31,12 @@ module drive_gear_w_hub_holes() {
 
 module drive_gear_stack(h=sheet_th) {
   linear_extrude(height=h,convexity=10,center=false) drive_gear_rim();
-  translate([0,0,h]) linear_extrude(height=h,convexity=10,center=false) drive_gear_w_hub_holes();
-  translate([0,0,2*h]) linear_extrude(height=h,convexity=10,center=false) drive_gear_rim();
-  translate([0,0,3*h]) linear_extrude(height=h,convexity=10,center=false) drive_gear_rim();
-  translate([0,0,4*h]) linear_extrude(height=h,convexity=10,center=false) drive_gear_rim();
-  translate([0,0,5*h]) linear_extrude(height=h,convexity=10,center=false) drive_gear_w_hub_holes();
-  translate([0,0,6*h]) linear_extrude(height=h,convexity=10,center=false) drive_gear_rim();
+  translate([0,0,h+stack_space]) linear_extrude(height=h,convexity=10,center=false) drive_gear_w_hub_holes();
+  translate([0,0,2*(h+stack_space)]) linear_extrude(height=h,convexity=10,center=false) drive_gear_rim();
+  translate([0,0,2*(h+stack_space)+tube_layer_th]) linear_extrude(height=h,convexity=10,center=false) drive_gear_rim();
+  translate([0,0,3*(h+stack_space)+tube_layer_th]) linear_extrude(height=h,convexity=10,center=false) drive_gear_rim();
+  translate([0,0,4*(h+stack_space)+tube_layer_th]) linear_extrude(height=h,convexity=10,center=false) drive_gear_w_hub_holes();
+  translate([0,0,5*(h+stack_space)+tube_layer_th]) linear_extrude(height=h,convexity=10,center=false) drive_gear_rim();
 
 }
 
@@ -64,12 +69,12 @@ module outer_tube_retainer_w_exit() {
 
 module outer_gear_stack(h=sheet_th) {
   linear_extrude(height=h,convexity=10,center=false) outer_gear_rim();
-  translate([0,0,h]) linear_extrude(height=h,convexity=10,center=false) outer_gear_w_mount_holes();
-  translate([0,0,2*h]) linear_extrude(height=h,convexity=10,center=false) outer_gear_rim();
-  translate([0,0,3*h]) linear_extrude(height=h,convexity=10,center=false) outer_tube_retainer_w_exit();
-  translate([0,0,4*h]) linear_extrude(height=h,convexity=10,center=false) outer_gear_rim();
-  translate([0,0,5*h]) linear_extrude(height=h,convexity=10,center=false) outer_gear_w_mount_holes();
-  translate([0,0,6*h]) linear_extrude(height=h,convexity=10,center=false) outer_gear_rim();
+  translate([0,0,h+stack_space]) linear_extrude(height=h,convexity=10,center=false) outer_gear_w_mount_holes();
+  translate([0,0,2*(h+stack_space)]) linear_extrude(height=h,convexity=10,center=false) outer_gear_rim();
+  translate([0,0,2*(h+stack_space)+tube_layer_th]) linear_extrude(height=h,convexity=10,center=false) outer_tube_retainer_w_exit();
+  translate([0,0,3*(h+stack_space)+tube_layer_th]) linear_extrude(height=h,convexity=10,center=false) outer_gear_rim();
+  translate([0,0,4*(h+stack_space)+tube_layer_th]) linear_extrude(height=h,convexity=10,center=false) outer_gear_w_mount_holes();
+  translate([0,0,5*(h+stack_space)+tube_layer_th]) linear_extrude(height=h,convexity=10,center=false) outer_gear_rim();
 }
 
 if(render_stack==0 && layer==0) outer_gear_rim();
@@ -100,15 +105,15 @@ module roller_gear_tube_compressor() {
 
 module roller_gear_stack(index=0,h=sheet_th) {
 	linear_extrude(height=h,convexity=10,center=false) roller_gear_rim();
-	translate([0,0,h]) linear_extrude(height=h,convexity=10,center=false) roller_gear_w_hub_holes();
-	translate([0,0,2*h]) linear_extrude(height=h,convexity=10,center=false) roller_gear_rim();
-	if(index%3 != 0) translate([0,0,3*h]) linear_extrude(height=h,convexity=10,center=false) 
+	translate([0,0,h+stack_space]) linear_extrude(height=h,convexity=10,center=false) roller_gear_w_hub_holes();
+	translate([0,0,2*(h+stack_space)]) linear_extrude(height=h,convexity=10,center=false) roller_gear_rim();
+	if(index%3 != 0) translate([0,0,2*(h+stack_space)+tube_layer_th]) linear_extrude(height=h,convexity=10,center=false) 
 		roller_gear_tube_retainer();
-	if(index%3 == 0) translate([0,0,3*h]) linear_extrude(height=h,convexity=10,center=false) 
+	if(index%3 == 0) translate([0,0,2*(h+stack_space)+tube_layer_th]) linear_extrude(height=h,convexity=10,center=false) 
 		roller_gear_tube_compressor();
-	translate([0,0,4*h]) linear_extrude(height=h,convexity=10,center=false) roller_gear_rim();
-	translate([0,0,5*h]) linear_extrude(height=h,convexity=10,center=false) roller_gear_w_hub_holes();
-	translate([0,0,6*h]) linear_extrude(height=h,convexity=10,center=false) roller_gear_rim();
+	translate([0,0,3*(h+stack_space)+tube_layer_th]) linear_extrude(height=h,convexity=10,center=false) roller_gear_rim();
+	translate([0,0,4*(h+stack_space)+tube_layer_th]) linear_extrude(height=h,convexity=10,center=false) roller_gear_w_hub_holes();
+	translate([0,0,5*(h+stack_space)+tube_layer_th]) linear_extrude(height=h,convexity=10,center=false) roller_gear_rim();
 
 }
 

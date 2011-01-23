@@ -29,6 +29,7 @@ usage :
 	@echo "  make all"
 	@echo "  make dxf_files"
 	@echo "  make dxf_files layer_files"
+	@echo "  make layer_stack.stl"
 	@echo "DXF Files:"
 	@echo "	$(DXF_FILES)"
 	@echo "Layer Files:"
@@ -97,6 +98,8 @@ layer5.dxf :
 layer6.dxf :
 	$(OPENSCAD) -D render_stack=0 -D layer=6 -x $(BUILD_DIR)/$@ render_pump_parts_stack.scad
 
+layer_stack.stl :
+	$(OPENSCAD) -D render_stack=1 -D layer=0 -s $(BUILD_DIR)/$@ render_pump_parts_stack.scad
 
 clean :
 	$(RM) -r $(BUILD_DIR)
