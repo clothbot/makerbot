@@ -24,7 +24,9 @@ LAYER_FILES = layer0.dxf \
 	layer5.dxf \
 	layer6.dxf \
 	layer7.dxf \
-	layer8.dxf
+	layer8.dxf \
+	layer9.dxf \
+	layer10.dxf
 
 default : usage
 
@@ -113,6 +115,12 @@ layer7.dxf :
 
 layer8.dxf :
 	$(OPENSCAD) -D render_stack=0 -D layer=8 -x $(BUILD_DIR)/$@ render_pump_parts_stack.scad
+
+layer9.dxf :
+	$(OPENSCAD) -D render_stack=0 -D layer=9 -x $(BUILD_DIR)/$@ render_pump_parts_stack.scad
+
+layer10.dxf :
+	$(OPENSCAD) -D render_stack=0 -D layer=10 -x $(BUILD_DIR)/$@ render_pump_parts_stack.scad
 
 layer_stack.stl :
 	$(OPENSCAD) -D render_stack=1 -D layer=0 -s $(BUILD_DIR)/$@ render_pump_parts_stack.scad

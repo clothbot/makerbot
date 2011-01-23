@@ -104,12 +104,14 @@ module roller_gear_tube_retainer_dxf(
 	, hole_offset_even=25.4*0.25
 	, hole_offset_odd=sqrt(2)*4
 	, hole_n=8
+	, alignment_hole_d=1.6
 	) {
   $fs=0.1;
   $fa=15.0;
   difference() {
     circle($fs=0.1,$fa=1.0,r=roller_d/2-tube_d/2);
     circle($fs=0.1,r=roller_gear_axle_d/2);
+    rotate(360/(2*hole_n)) translate([hole_offset_even+hole_d_even/2+alignment_hole_d,0]) circle($fs=0.1,r=alignment_hole_d/2);
     for(i=[0:hole_n-1]) rotate(360*i/hole_n) {
 	if(i%2==0) translate([hole_offset_even,0]) {
 	  circle($fs=0.1,r=hole_d_even/2);
@@ -140,12 +142,14 @@ module roller_gear_tube_compressor_dxf(
 	, hole_offset_even=25.4*0.25
 	, hole_offset_odd=sqrt(2)*4
 	, hole_n=8
+	, alignment_hole_d=1.6
 	) {
   $fs=0.1;
   $fa=15.0;
   difference() {
     circle($fs=0.1,$fa=1.0,r=roller_d/2-tube_d/2+tube_id+tube_compress);
     circle($fs=0.1,r=roller_gear_axle_d/2);
+    rotate(360/(2*hole_n)) translate([hole_offset_even+hole_d_even/2+alignment_hole_d,0]) circle($fs=0.1,r=alignment_hole_d/2);
     for(i=[0:hole_n-1]) rotate(360*i/hole_n) {
 	if(i%2==0) translate([hole_offset_even,0]) {
 	  circle($fs=0.1,r=hole_d_even/2);
@@ -177,12 +181,14 @@ module roller_gear_rim_dxf(
 	, hole_offset_odd=sqrt(2)*4
 	, hole_n=8
 	, shrink=0.1
+	, alignment_hole_d=1.6
 	) {
   $fs=0.1;
   $fa=15.0;
   difference() {
     circle($fs=0.1, $fa=1.0, r=roller_d/2-shrink);
     circle($fs=0.1,r=roller_gear_axle_d/2);
+    rotate(360/(2*hole_n)) translate([hole_offset_even+hole_d_even/2+alignment_hole_d,0]) circle($fs=0.1,r=alignment_hole_d/2);
     for(i=[0:hole_n-1]) rotate(360*i/hole_n) {
 	if(i%2==0) translate([hole_offset_even,0]) {
 	  circle($fs=0.1,r=hole_d_even/2);
@@ -214,12 +220,14 @@ module drive_gear_rim_dxf(
 	, hole_offset_odd=sqrt(2)*4
 	, hole_n=8
 	, shrink=0.1
+	, alignment_hole_d=1.6
 	) {
   $fs=0.1;
   $fa=15.0;
   difference() {
     circle($fs=0.1,$fa=1.0,r=drive_d/2-shrink);
     circle($fs=0.1,r=roller_gear_axle_d/2);
+    rotate(360/(2*hole_n)) translate([hole_offset_even+hole_d_even/2+alignment_hole_d,0]) circle($fs=0.1,r=alignment_hole_d/2);
     for(i=[0:hole_n-1]) rotate(360*i/hole_n) {
 	if(i%2==0) translate([hole_offset_even,0]) {
 	  circle($fs=0.1,r=hole_d_even/2);
