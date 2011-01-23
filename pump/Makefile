@@ -14,15 +14,31 @@ DXF_FILES = drive_gear_w_hub_holes.dxf \
 	drive_gear_rim.dxf \
 	outer_gear_rim.dxf
 
+LAYER_FILES = layer0.dxf \
+	layer1.dxf \
+	layer2.dxf \
+	layer3.dxf \
+	layer4.dxf \
+	layer5.dxf \
+	layer6.dxf
+
 default : usage
 
 usage :
 	@echo "Usage:"
 	@echo "  make all"
+	@echo "  make dxf_files"
+	@echo "  make dxf_files layer_files"
 	@echo "DXF Files:"
 	@echo "	$(DXF_FILES)"
+	@echo "Layer Files:"
+	@echo " $(LAYER_FILES)"
 
-all :  $(BUILD_DIR) $(DXF_FILES)
+all :  $(BUILD_DIR) $(DXF_FILES) $(LAYER_FILES)
+
+dxf_files : $(BUILD_DIR) $(DXF_FILES)
+
+layer_files : $(LAYER_FILES)
 
 $(BUILD_DIR) :
 	mkdir -p $(BUILD_DIR)
@@ -59,6 +75,28 @@ outer_gear_rim.dxf :
 
 outer_tube_retainer_w_exit.dxf :
 	$(OPENSCAD) -D render_part=11 -x $(BUILD_DIR)/$@ render_pump_parts.scad
+
+layer0.dxf :
+	$(OPENSCAD) -D render_stack=0 -D layer=0 -x $(BUILD_DIR)/$@ render_pump_parts_stack.scad
+
+layer1.dxf :
+	$(OPENSCAD) -D render_stack=0 -D layer=1 -x $(BUILD_DIR)/$@ render_pump_parts_stack.scad
+
+layer2.dxf :
+	$(OPENSCAD) -D render_stack=0 -D layer=2 -x $(BUILD_DIR)/$@ render_pump_parts_stack.scad
+
+layer3.dxf :
+	$(OPENSCAD) -D render_stack=0 -D layer=3 -x $(BUILD_DIR)/$@ render_pump_parts_stack.scad
+
+layer4.dxf :
+	$(OPENSCAD) -D render_stack=0 -D layer=4 -x $(BUILD_DIR)/$@ render_pump_parts_stack.scad
+
+layer5.dxf :
+	$(OPENSCAD) -D render_stack=0 -D layer=5 -x $(BUILD_DIR)/$@ render_pump_parts_stack.scad
+
+layer6.dxf :
+	$(OPENSCAD) -D render_stack=0 -D layer=6 -x $(BUILD_DIR)/$@ render_pump_parts_stack.scad
+
 
 clean :
 	$(RM) -r $(BUILD_DIR)
