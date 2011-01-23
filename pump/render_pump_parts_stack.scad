@@ -20,6 +20,8 @@ layer=1; // gear layer
 //layer=4; // rim layer
 //layer=5; // gear layer
 //layer=6; // rim layer
+//layer=7; // stepper spacer layer
+//layer=8; // stepper base layer
 
 module drive_gear_rim() {
   import_dxf(file="build/drive_gear_rim.dxf");
@@ -66,6 +68,14 @@ module outer_tube_retainer_w_exit() {
   import_dxf(file="build/outer_tube_retainer_w_exit.dxf");
 }
 
+module outer_stepper_spacer() {
+  import_dxf(file="build/outer_stepper_spacer.dxf");
+}
+
+module outer_stepper_base() {
+  import_dxf(file="build/outer_stepper_base.dxf");
+}
+
 
 module outer_gear_stack(h=sheet_th) {
   linear_extrude(height=h,convexity=10,center=false) outer_gear_rim();
@@ -75,6 +85,8 @@ module outer_gear_stack(h=sheet_th) {
   translate([0,0,4*(h+stack_space)+tube_layer_th]) linear_extrude(height=h,convexity=10,center=false) outer_gear_rim();
   translate([0,0,5*(h+stack_space)+tube_layer_th]) linear_extrude(height=h,convexity=10,center=false) outer_gear_w_mount_holes();
   translate([0,0,6*(h+stack_space)+tube_layer_th]) linear_extrude(height=h,convexity=10,center=false) outer_gear_rim();
+  translate([0,0,7*(h+stack_space)+tube_layer_th]) linear_extrude(height=h,convexity=10,center=false) outer_stepper_spacer();
+  translate([0,0,8*(h+stack_space)+tube_layer_th]) linear_extrude(height=h,convexity=10,center=false) outer_stepper_base();
 }
 
 if(render_stack==0 && layer==0) outer_gear_rim();
@@ -84,6 +96,8 @@ if(render_stack==0 && layer==3) outer_tube_retainer_w_exit();
 if(render_stack==0 && layer==4) outer_gear_rim();
 if(render_stack==0 && layer==5) outer_gear_w_mount_holes();
 if(render_stack==0 && layer==6) outer_gear_rim();
+if(render_stack==0 && layer==7) outer_stepper_spacer();
+if(render_stack==0 && layer==8) outer_stepper_base();
 
 if(render_stack==1) outer_gear_stack();
 

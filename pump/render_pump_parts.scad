@@ -13,7 +13,9 @@ use <planetary_gears.scad>
 // render_part=8; // roller_gear_rim_dxf();
 // render_part=9; // drive_gear_rim_dxf();
 // render_part=10; // outer_gear_rim_dxf();
-render_part=11; // outer_tube_retainer_w_exit_dxf();
+// render_part=11; // outer_tube_retainer_w_exit_dxf();
+render_part=12; // outer_stepper_spacer_dxf();
+render_part=13; // outer_stepper_base_dxf();
 
 if(render_part==1) {
   echo("Rendering drive_gear_w_hub_holes_dxf()...");
@@ -307,5 +309,97 @@ module outer_tube_retainer_w_exit_dxf(
 if(render_part==11) {
   echo("Rendering outer_tube_retainer_w_exit_dxf()...");
   outer_tube_retainer_w_exit_dxf();
+}
+
+module outer_stepper_spacer_dxf(
+	roller_d=27
+	, drive_d=33
+	, roller_n=6
+	, outer_wall_th=10.0
+	, hole_d_even=25.4*0.1120
+	, hole_d_odd=3.0+0.2
+	, tube_d=Tygon_B_44_3_OD()
+	, shrink=0.1
+	, drive_hub_d=25.4*0.75
+	, stepper_axle_d=5.0
+	, stepper_bearing_d=22.0
+	, stepper_bolt_head_d=5.5
+	, stepper_bolt_d=3.0
+	, stepper_bolt_space_dx=31
+	, stepper_bolt_space_dy=31
+	, stepper_case_dx=42.3
+	, stepper_case_dy=42.3
+	) {
+  $fs=0.1;
+  $fa=15.0;
+  difference() {
+    union() {
+      circle(r=drive_d/2+roller_d+outer_wall_th);
+      for(i=[0:2*roller_n-1]) rotate(360*i/(2*roller_n)) {
+        translate([drive_d/2+roller_d+outer_wall_th+hole_d_odd/2,0]) 
+	    circle(r=hole_d_odd/2+outer_wall_th/2);
+      }
+    }
+    circle($fs=0.1, $fa=1.0, r=drive_hub_d/2+shrink);
+    translate([stepper_bolt_space_dx/2,stepper_bolt_space_dy/2]) circle(r=stepper_bolt_head_d/2+shrink);
+    translate([-stepper_bolt_space_dx/2,stepper_bolt_space_dy/2]) circle(r=stepper_bolt_head_d/2+shrink);
+    translate([-stepper_bolt_space_dx/2,-stepper_bolt_space_dy/2]) circle(r=stepper_bolt_head_d/2+shrink);
+    translate([stepper_bolt_space_dx/2,-stepper_bolt_space_dy/2]) circle(r=stepper_bolt_head_d/2+shrink);
+    for(i=[0:2*roller_n-1]) rotate(360*i/(2*roller_n)) {
+      translate([drive_d/2+roller_d+outer_wall_th+hole_d_odd/2,0]) 
+	    circle(r=hole_d_odd/2);
+    }
+  }
+}
+
+if(render_part==12) {
+  echo("Rendering outer_stepper_spacer_dxf()...");
+  outer_stepper_spacer_dxf();
+}
+
+module outer_stepper_base_dxf(
+	roller_d=27
+	, drive_d=33
+	, roller_n=6
+	, outer_wall_th=10.0
+	, hole_d_even=25.4*0.1120
+	, hole_d_odd=3.0+0.2
+	, tube_d=Tygon_B_44_3_OD()
+	, shrink=0.1
+	, drive_hub_d=25.4*0.75
+	, stepper_axle_d=5.0
+	, stepper_bearing_d=22.0
+	, stepper_bolt_head_d=5.5
+	, stepper_bolt_d=3.0
+	, stepper_bolt_space_dx=31
+	, stepper_bolt_space_dy=31
+	, stepper_case_dx=42.3
+	, stepper_case_dy=42.3
+	) {
+  $fs=0.1;
+  $fa=15.0;
+  difference() {
+    union() {
+      circle(r=drive_d/2+roller_d+outer_wall_th);
+      for(i=[0:2*roller_n-1]) rotate(360*i/(2*roller_n)) {
+        translate([drive_d/2+roller_d+outer_wall_th+hole_d_odd/2,0]) 
+	    circle(r=hole_d_odd/2+outer_wall_th/2);
+      }
+    }
+    circle($fs=0.1, $fa=1.0, r=stepper_bearing_d/2+shrink);
+    translate([stepper_bolt_space_dx/2,stepper_bolt_space_dy/2]) circle(r=stepper_bolt_d/2+shrink);
+    translate([-stepper_bolt_space_dx/2,stepper_bolt_space_dy/2]) circle(r=stepper_bolt_d/2+shrink);
+    translate([-stepper_bolt_space_dx/2,-stepper_bolt_space_dy/2]) circle(r=stepper_bolt_d/2+shrink);
+    translate([stepper_bolt_space_dx/2,-stepper_bolt_space_dy/2]) circle(r=stepper_bolt_d/2+shrink);
+    for(i=[0:2*roller_n-1]) rotate(360*i/(2*roller_n)) {
+      translate([drive_d/2+roller_d+outer_wall_th+hole_d_odd/2,0]) 
+	    circle(r=hole_d_odd/2);
+    }
+  }
+}
+
+if(render_part==13) {
+  echo("Rendering outer_stepper_base_dxf()...");
+  outer_stepper_base_dxf();
 }
 

@@ -12,7 +12,9 @@ DXF_FILES = drive_gear_w_hub_holes.dxf \
 	roller_gear_tube_compressor.dxf \
 	roller_gear_rim.dxf \
 	drive_gear_rim.dxf \
-	outer_gear_rim.dxf
+	outer_gear_rim.dxf \
+	outer_stepper_spacer.dxf \
+	outer_stepper_base.dxf
 
 LAYER_FILES = layer0.dxf \
 	layer1.dxf \
@@ -20,7 +22,9 @@ LAYER_FILES = layer0.dxf \
 	layer3.dxf \
 	layer4.dxf \
 	layer5.dxf \
-	layer6.dxf
+	layer6.dxf \
+	layer7.dxf \
+	layer8.dxf
 
 default : usage
 
@@ -77,6 +81,12 @@ outer_gear_rim.dxf :
 outer_tube_retainer_w_exit.dxf :
 	$(OPENSCAD) -D render_part=11 -x $(BUILD_DIR)/$@ render_pump_parts.scad
 
+outer_stepper_spacer.dxf :
+	$(OPENSCAD) -D render_part=12 -x $(BUILD_DIR)/$@ render_pump_parts.scad
+
+outer_stepper_base.dxf :
+	$(OPENSCAD) -D render_part=13 -x $(BUILD_DIR)/$@ render_pump_parts.scad
+
 layer0.dxf :
 	$(OPENSCAD) -D render_stack=0 -D layer=0 -x $(BUILD_DIR)/$@ render_pump_parts_stack.scad
 
@@ -97,6 +107,12 @@ layer5.dxf :
 
 layer6.dxf :
 	$(OPENSCAD) -D render_stack=0 -D layer=6 -x $(BUILD_DIR)/$@ render_pump_parts_stack.scad
+
+layer7.dxf :
+	$(OPENSCAD) -D render_stack=0 -D layer=7 -x $(BUILD_DIR)/$@ render_pump_parts_stack.scad
+
+layer8.dxf :
+	$(OPENSCAD) -D render_stack=0 -D layer=8 -x $(BUILD_DIR)/$@ render_pump_parts_stack.scad
 
 layer_stack.stl :
 	$(OPENSCAD) -D render_stack=1 -D layer=0 -s $(BUILD_DIR)/$@ render_pump_parts_stack.scad
