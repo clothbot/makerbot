@@ -278,6 +278,7 @@ module drive_gear_w_hub_holes_dxf(
 	, hole_offset_even=25.4*0.25
 	, hole_offset_odd=sqrt(2)*4
 	, hole_n=8
+	, alignment_hole_d=1.6
 	) {
 	difference() {
 	    gear_shape(
@@ -287,6 +288,8 @@ module drive_gear_w_hub_holes_dxf(
 		, pressure_angle=pressure_angle
 		);
 	    circle($fs=0.1,r=drive_gear_axle_d/2);
+	    // alignment hole
+	    rotate(360/(2*hole_n)) translate([hole_offset_even+hole_d_even/2+alignment_hole_d,0]) circle($fs=0.1,r=alignment_hole_d/2);
 	    for(i=[0:hole_n-1]) rotate(360*i/hole_n) {
 	     if(i%2==0) translate([hole_offset_even,0]) {
 		circle($fs=0.1,r=hole_d_even/2);
@@ -341,6 +344,7 @@ module roller_gear_w_hub_holes_dxf(
 	, hole_offset_even=25.4*0.25
 	, hole_offset_odd=sqrt(2)*4
 	, hole_n=8
+	, alignment_hole_d=1.6
 	) {
 	difference() {
 	  gear_shape(
@@ -350,6 +354,8 @@ module roller_gear_w_hub_holes_dxf(
 	    , pressure_angle=pressure_angle
 	  );
 	  circle($fs=0.1,r=roller_gear_axle_d/2);
+	  // alignment hole
+	  rotate(360/(2*hole_n)) translate([hole_offset_even+hole_d_even/2+alignment_hole_d,0]) circle($fs=0.1,r=alignment_hole_d/2);
 	  for(i=[0:hole_n-1]) rotate(360*i/hole_n) {
 	    if(i%2==0) translate([hole_offset_even,0]) {
 		circle($fs=0.1,r=hole_d_even/2);
