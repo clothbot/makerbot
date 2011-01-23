@@ -119,8 +119,8 @@ for(i=[0:roller_n-1]) rotate([0,0,360*i/roller_n]) {
 	if(render_stack==0 && layer==1) roller_gear_w_hub_holes();
 	if(render_stack==0 && layer==2) roller_gear_rim();
 	if(render_stack==0 && layer==3) {
-		if(index%3 != 0) roller_gear_tube_retainer();
-		if(index%3 == 0) roller_gear_tube_compressor();
+		if(i%3 != 0) roller_gear_tube_retainer();
+		if(i%3 == 0) roller_gear_tube_compressor();
 	}
 	if(render_stack==0 && layer==4) roller_gear_rim();
 	if(render_stack==0 && layer==5) roller_gear_w_hub_holes();
