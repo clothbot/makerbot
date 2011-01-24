@@ -12,10 +12,10 @@ tube_th=25.4*1/16;
 tube_layer_th=tube_od+tube_id;
 
 stack_space=0.1;
-render_stack=1;
-layer=0; // stepper base layer
+render_stack=0;
+// layer=0; // stepper base layer
 //layer=1; // stepper spacer layer
-//layer=2; //rim layer
+layer=2; //rim layer
 // layer=3; // gear layer
 //layer=4; //rim layer
 //layer=5; // tube layer
@@ -24,6 +24,12 @@ layer=0; // stepper base layer
 //layer=8; // rim layer
 //layer=9; // stepper spacer layer
 //layer=10; // stepper base layer
+
+module outer_hex_cell() {
+  import_dxf(file="build/outer_hex_cell.dxf");
+}
+
+if(render_stack==0) outer_hex_cell();
 
 module drive_gear_rim() {
   import_dxf(file="build/drive_gear_rim.dxf");

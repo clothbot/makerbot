@@ -14,8 +14,9 @@ use <planetary_gears.scad>
 // render_part=9; // drive_gear_rim_dxf();
 // render_part=10; // outer_gear_rim_dxf();
 // render_part=11; // outer_tube_retainer_w_exit_dxf();
-render_part=12; // outer_stepper_spacer_dxf();
-render_part=13; // outer_stepper_base_dxf();
+// render_part=12; // outer_stepper_spacer_dxf();
+// render_part=13; // outer_stepper_base_dxf();
+render_part=14; // outer_hex_cell_dxf();
 
 if(render_part==1) {
   echo("Rendering drive_gear_w_hub_holes_dxf()...");
@@ -409,5 +410,37 @@ module outer_stepper_base_dxf(
 if(render_part==13) {
   echo("Rendering outer_stepper_base_dxf()...");
   outer_stepper_base_dxf();
+}
+
+module outer_hex_cell_dxf(
+	roller_d=27
+	, drive_d=33
+	, roller_n=6
+	, outer_wall_th=10.0
+	, hole_d_even=25.4*0.1120
+	, hole_d_odd=3.0+0.2
+	, tube_d=Tygon_B_44_3_OD()
+	, hex_w=70.0
+	, hex_th=6.0
+	) {
+  $fs=0.1;
+  $fa=15.0;
+  difference() {
+    intersection_for(i=[0:2]) 
+      rotate(360*i/3) square(size=[2*hex_w,4*hex_w],center=true);
+    intersection_for(i=[0:2]) 
+      rotate(360*i/3) square(size=[2*hex_w-2*hex_th,4*hex_w],center=true);
+    for(i=[0:5]) rotate(360*i/6+30) {
+	translate([2*hex_w/sqrt(3),0]) circle(r=hole_d_odd/2);
+    }
+    for(i=[0:5]) rotate(360*i/6) {
+	translate([hex_w-hex_th/2,0]) circle(r=hole_d_odd/2);
+    }
+  }
+}
+
+if(render_part==14) {
+  echo("Rendering outer_hex_cell_dxf()...");
+  outer_hex_cell_dxf();
 }
 
