@@ -28,6 +28,10 @@ LAYER_FILES = layer0.dxf \
 	layer9.dxf \
 	layer10.dxf
 
+STL_FILES = outer_gear_w_mount_holes.stl \
+	roller_gear_w_hub_holes.stl \
+	drive_gear_w_hub_holes.stl
+
 default : usage
 
 usage :
@@ -35,6 +39,7 @@ usage :
 	@echo "  make all"
 	@echo "  make dxf_files"
 	@echo "  make dxf_files layer_files"
+	@echo "  make stl_files"
 	@echo "  make layer_stack.stl (not recommended)"
 	@echo "DXF Files:"
 	@echo "	$(DXF_FILES)"
@@ -46,6 +51,8 @@ all :  $(BUILD_DIR) $(DXF_FILES) $(LAYER_FILES)
 dxf_files : $(BUILD_DIR) $(DXF_FILES)
 
 layer_files : $(LAYER_FILES)
+
+stl_files : $(STL_FILES)
 
 $(BUILD_DIR) :
 	mkdir -p $(BUILD_DIR)
@@ -124,6 +131,15 @@ layer10.dxf :
 
 layer_stack.stl :
 	$(OPENSCAD) -D render_stack=1 -D layer=0 -s $(BUILD_DIR)/$@ render_pump_parts_stack.scad
+
+roller_gear_w_hub_holes.stl :
+	$(OPENSCAD) -D render_part=15 -s $(BUILD_DIR)/$@ render_pump_parts.scad
+
+outer_gear_w_mount_holes.stl :
+	$(OPENSCAD) -D render_part=16 -s $(BUILD_DIR)/$@ render_pump_parts.scad
+
+drive_gear_w_hub_holes.stl :
+	$(OPENSCAD) -D render_part=17 -s $(BUILD_DIR)/$@ render_pump_parts.scad
 
 clean :
 	$(RM) -r $(BUILD_DIR)

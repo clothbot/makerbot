@@ -3,7 +3,7 @@ use <parts.scad>
 use <parametric_involute_gear.scad>
 use <planetary_gears.scad>
 
-//render_part=1; // drive_gear_w_hub_holes_dxf();
+render_part=1; // drive_gear_w_hub_holes_dxf();
 //render_part=2; // roller_gear_w_hub_holes_dxf();
 //render_part=3; // outer_gear_dxf();
 //render_part=4; // outer_gear_w_mount_holes_dxf();
@@ -16,7 +16,11 @@ use <planetary_gears.scad>
 // render_part=11; // outer_tube_retainer_w_exit_dxf();
 // render_part=12; // outer_stepper_spacer_dxf();
 // render_part=13; // outer_stepper_base_dxf();
-render_part=14; // outer_hex_cell_dxf();
+// render_part=14; // outer_hex_cell_dxf();
+//render_part=15; // roller_gear_w_hub_holes_stl();
+//render_part=16; // outer_gear_w_mount_holes_dstl();
+render_part=17; // drive_gear_w_hub_holes_stl();
+
 
 if(render_part==1) {
   echo("Rendering drive_gear_w_hub_holes_dxf()...");
@@ -33,6 +37,25 @@ if(render_part==3) {
   outer_gear_dxf(outer_wall_th=10.0);
 }
 
+module outer_gear_mount_dxf(
+	roller_d=27
+	, drive_d=33
+	, roller_n=6
+	, outer_wall_th=10.0
+	, hole_d_even=25.4*0.1120
+	, hole_d_odd=3.0+0.2
+	) {
+  $fs=0.1;
+  $fa=15.0;
+  union()  for(i=[0:2*roller_n-1]) rotate(360*i/(2*roller_n)) {
+      translate([drive_d/2+roller_d+outer_wall_th+hole_d_odd/2,0]) 
+	  difference() {
+	    circle(r=hole_d_odd/2+outer_wall_th/2);
+	    circle(r=hole_d_odd/2);
+	}
+    }
+}
+
 module outer_gear_w_mount_holes_dxf(
 	roller_d=27
 	, drive_d=33
@@ -46,13 +69,7 @@ module outer_gear_w_mount_holes_dxf(
   union() {
     //import_dxf(file="outer_gear.dxf");
     outer_gear_dxf(outer_wall_th=outer_wall_th);
-    for(i=[0:2*roller_n-1]) rotate(360*i/(2*roller_n)) {
-      translate([drive_d/2+roller_d+outer_wall_th+hole_d_odd/2,0]) 
-	  difference() {
-	    circle(r=hole_d_odd/2+outer_wall_th/2);
-	    circle(r=hole_d_odd/2);
-	}
-    }
+    outer_gear_mount_dxf(outer_wall_th=outer_wall_th);
   }
 }
 
@@ -444,3 +461,80 @@ if(render_part==14) {
   outer_hex_cell_dxf();
 }
 
+module roller_gear_w_hub_holes_stl(extension=0.1
+	, roller_d=27
+	, roller_gear_num_teeth=27
+	, h=4.5
+	, twist_num_teeth=1
+	) {
+  $fs=0.1;
+  $fa=1.0;
+  difference() {
+    union() {
+	linear_extrude(height=h/2,twist=360*twist_num_teeth/roller_gear_num_teeth,convexity=10)
+        roller_gear_dxf();
+	translate([0,0,h/2]) linear_extrude(height=h/2,twist=-360*twist_num_teeth/roller_gear_num_teeth,convexity=10)
+        rotate(360*twist_num_teeth/roller_gear_num_teeth) roller_gear_dxf();
+    }
+    translate([0,0,-extension]) linear_extrude(height=h+2*extension,convexity=10)
+      roller_gear_hub_holes_dxf();
+  }
+}
+
+if(render_part==15) {
+  echo("Rendering roller_gear_w_hub_holes_stl()...");
+  roller_gear_w_hub_holes_stl();
+}
+
+module outer_gear_w_mount_holes_stl(extension=0.1
+	, roller_d=27
+	, roller_gear_num_teeth=27
+	, drive_d=33
+	, drive_gear_num_teeth=33
+	, roller_n=6
+	, outer_wall_th=10.0
+	, hole_d_even=25.4*0.1120
+	, hole_d_odd=3.0+0.2
+	, h=4.5
+	, twist_num_teeth=1
+	) {
+  $fs=0.1;
+  $fa=15.0;
+  union() {
+    linear_extrude(height=h/2,twist=-360*twist_num_teeth/(2*roller_gear_num_teeth+drive_gear_num_teeth), convexity=10)
+	outer_gear_dxf(outer_wall_th=outer_wall_th);
+    translate([0,0,h/2]) linear_extrude(height=h/2,twist=360*twist_num_teeth/(2*roller_gear_num_teeth+drive_gear_num_teeth), convexity=10)
+	rotate(-360*twist_num_teeth/(2*roller_gear_num_teeth+drive_gear_num_teeth)) outer_gear_dxf(outer_wall_th=outer_wall_th);
+    linear_extrude(height=h,convexity=10) outer_gear_mount_dxf(outer_wall_th=outer_wall_th);
+  }
+}
+
+if(render_part==16) {
+  echo("Rendering outer_gear_w_mount_holes_stl()...");
+  outer_gear_w_mount_holes_stl();
+}
+
+module drive_gear_w_hub_holes_stl(extension=0.1
+	, drive_d=33
+	, drive_gear_num_teeth=33
+	, h=4.5
+	, twist_num_teeth=1
+	) {
+  $fs=0.1;
+  $fa=1.0;
+  difference() {
+    union() {
+	linear_extrude(height=h/2,twist=-360*twist_num_teeth/drive_gear_num_teeth,convexity=10)
+        drive_gear_dxf();
+	translate([0,0,h/2]) linear_extrude(height=h/2,twist=360*twist_num_teeth/drive_gear_num_teeth,convexity=10)
+        rotate(-360*twist_num_teeth/drive_gear_num_teeth) drive_gear_dxf();
+    }
+    translate([0,0,-extension]) linear_extrude(height=h+2*extension,convexity=10)
+      drive_gear_hub_holes_dxf();
+  }
+}
+
+if(render_part==17) {
+  echo("Rendering drive_gear_w_hub_holes_stl()...");
+  drive_gear_w_hub_holes_stl();
+}

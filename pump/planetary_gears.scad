@@ -242,29 +242,50 @@ module drive_gear_dxf(
 	, drive_gear_pitch_d=33
 	, shrink=1
 	, pressure_angle=26
-	, drive_gear_axle_d=3.0
-	, hole_d_even=5.5
-	, hole_d_odd=3.0
-	, hole_offset=8
-	, hole_n=6
+	, drive_gear_axle_d=5.0+0.2
+	, hole_d_even=25.4*0.1120
+	, hole_d_odd=3.0+0.2
+	, hole_offset_even=25.4*0.25
+	, hole_offset_odd=sqrt(2)*4
+	, hole_n=8
+	, alignment_hole_d=1.6
 	) {
-	difference() {
-	    gear_shape(
-		circular_pitch=pitch_diameter2circular_pitch(drive_gear_num_teeth,drive_gear_pitch_d,shrink)
-		, number_of_teeth=drive_gear_num_teeth
-		, clearance=clearance
-		, pressure_angle=pressure_angle
-		);
+  gear_shape(
+	circular_pitch=pitch_diameter2circular_pitch(drive_gear_num_teeth,drive_gear_pitch_d,shrink)
+	, number_of_teeth=drive_gear_num_teeth
+	, clearance=clearance
+	, pressure_angle=pressure_angle
+  );
+}
+
+module drive_gear_hub_holes_dxf(
+	clearance=0.1
+	, drive_gear_num_teeth=33
+	, drive_gear_pitch_d=33
+	, shrink=1
+	, pressure_angle=26
+	, drive_gear_axle_d=5.0+0.2
+	, hole_d_even=25.4*0.1120
+	, hole_d_odd=3.0+0.2
+	, hole_offset_even=25.4*0.25
+	, hole_offset_odd=sqrt(2)*4
+	, hole_n=8
+	, alignment_hole_d=1.6
+	) {
+	union() {
 	    circle($fs=0.1,r=drive_gear_axle_d/2);
+	    // alignment hole
+	    rotate(360/(2*hole_n)) translate([hole_offset_even+hole_d_even/2+alignment_hole_d,0]) circle($fs=0.1,r=alignment_hole_d/2);
 	    for(i=[0:hole_n-1]) rotate(360*i/hole_n) {
-	      translate([hole_offset,0]) {
-		if(i%2==0) circle($fs=0.1,r=hole_d_even/2);
-		if(i%2==1) circle($fs=0.1,r=hole_d_odd/2);
-	      }
+	     if(i%2==0) translate([hole_offset_even,0]) {
+		circle($fs=0.1,r=hole_d_even/2);
+	     }
+	     if(i%2==1) translate([hole_offset_odd,0]) {
+		circle($fs=0.1,r=hole_d_odd/2);
+	     }
 	    }
 	}
 }
-
 
 module drive_gear_w_hub_holes_dxf(
 	clearance=0.1
@@ -281,23 +302,8 @@ module drive_gear_w_hub_holes_dxf(
 	, alignment_hole_d=1.6
 	) {
 	difference() {
-	    gear_shape(
-		circular_pitch=pitch_diameter2circular_pitch(drive_gear_num_teeth,drive_gear_pitch_d,shrink)
-		, number_of_teeth=drive_gear_num_teeth
-		, clearance=clearance
-		, pressure_angle=pressure_angle
-		);
-	    circle($fs=0.1,r=drive_gear_axle_d/2);
-	    // alignment hole
-	    rotate(360/(2*hole_n)) translate([hole_offset_even+hole_d_even/2+alignment_hole_d,0]) circle($fs=0.1,r=alignment_hole_d/2);
-	    for(i=[0:hole_n-1]) rotate(360*i/hole_n) {
-	     if(i%2==0) translate([hole_offset_even,0]) {
-		circle($fs=0.1,r=hole_d_even/2);
-	     }
-	     if(i%2==1) translate([hole_offset_odd,0]) {
-		circle($fs=0.1,r=hole_d_odd/2);
-	     }
-	    }
+	  drive_gear_dxf();
+	  drive_gear_hub_holes_dxf();
 	}
 }
 
@@ -313,23 +319,48 @@ module roller_gear_dxf(
 	, hole_offset=8
 	, hole_n=6
 	) {
-	difference() {
-	  gear_shape(
-	    circular_pitch=pitch_diameter2circular_pitch(roller_gear_num_teeth,roller_gear_pitch_d,shrink)
-	    , number_of_teeth=roller_gear_num_teeth
-	    , clearance=clearance
-	    , pressure_angle=pressure_angle
-	  );
-	  circle($fs=0.1,r=roller_gear_axle_d/2);
-	  for(i=[0:hole_n-1]) rotate(360*i/hole_n) {
-	    if(i%2==0) translate([hole_offset,0]) {
-		circle($fs=0.1,r=hole_d_even/2);
-	    }
-	    if(i%2==1) translate([hole_offset,0]) {
-		circle($fs=0.1,r=hole_d_odd/2);
-	    }
-	  }
-	}
+  gear_shape(
+    circular_pitch=pitch_diameter2circular_pitch(roller_gear_num_teeth,roller_gear_pitch_d,shrink)
+    , number_of_teeth=roller_gear_num_teeth
+    , clearance=clearance
+    , pressure_angle=pressure_angle
+  );
+//   circle($fs=0.1,r=roller_gear_axle_d/2);
+//   for(i=[0:hole_n-1]) rotate(360*i/hole_n) {
+//     if(i%2==0) translate([hole_offset,0]) {
+// 	circle($fs=0.1,r=hole_d_even/2);
+//     }
+//     if(i%2==1) translate([hole_offset,0]) {
+// 	circle($fs=0.1,r=hole_d_odd/2);
+//     }
+//   }
+}
+
+module roller_gear_hub_holes_dxf(
+	clearance=0.1
+	, roller_gear_num_teeth=27
+	, roller_gear_pitch_d=27
+	, shrink=1
+	, pressure_angle=26
+	, roller_gear_axle_d=5.0+0.2
+	, hole_d_even=25.4*0.1120
+	, hole_d_odd=3.0+0.2
+	, hole_offset_even=25.4*0.25
+	, hole_offset_odd=sqrt(2)*4
+	, hole_n=8
+	, alignment_hole_d=1.6
+	) {
+  circle($fs=0.1,r=roller_gear_axle_d/2);
+  // alignment hole
+  rotate(360/(2*hole_n)) translate([hole_offset_even+hole_d_even/2+alignment_hole_d,0]) circle($fs=0.1,r=alignment_hole_d/2);
+  for(i=[0:hole_n-1]) rotate(360*i/hole_n) {
+    if(i%2==0) translate([hole_offset_even,0]) {
+	circle($fs=0.1,r=hole_d_even/2);
+    }
+    if(i%2==1) translate([hole_offset_odd,0]) {
+	circle($fs=0.1,r=hole_d_odd/2);
+    }
+  }
 }
 
 module roller_gear_w_hub_holes_dxf(
@@ -347,23 +378,8 @@ module roller_gear_w_hub_holes_dxf(
 	, alignment_hole_d=1.6
 	) {
 	difference() {
-	  gear_shape(
-	    circular_pitch=pitch_diameter2circular_pitch(roller_gear_num_teeth,roller_gear_pitch_d,shrink)
-	    , number_of_teeth=roller_gear_num_teeth
-	    , clearance=clearance
-	    , pressure_angle=pressure_angle
-	  );
-	  circle($fs=0.1,r=roller_gear_axle_d/2);
-	  // alignment hole
-	  rotate(360/(2*hole_n)) translate([hole_offset_even+hole_d_even/2+alignment_hole_d,0]) circle($fs=0.1,r=alignment_hole_d/2);
-	  for(i=[0:hole_n-1]) rotate(360*i/hole_n) {
-	    if(i%2==0) translate([hole_offset_even,0]) {
-		circle($fs=0.1,r=hole_d_even/2);
-	    }
-	    if(i%2==1) translate([hole_offset_odd,0]) {
-		circle($fs=0.1,r=hole_d_odd/2);
-	    }
-	  }
+	  roller_gear_dxf();
+	  roller_gear_hub_holes_dxf();
 	}
 }
 
