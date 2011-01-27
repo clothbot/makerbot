@@ -17,9 +17,10 @@ render_part=1; // drive_gear_w_hub_holes_dxf();
 // render_part=12; // outer_stepper_spacer_dxf();
 // render_part=13; // outer_stepper_base_dxf();
 // render_part=14; // outer_hex_cell_dxf();
-//render_part=15; // roller_gear_w_hub_holes_stl();
-//render_part=16; // outer_gear_w_mount_holes_dstl();
-render_part=17; // drive_gear_w_hub_holes_stl();
+render_part=15; // roller_gear_w_hub_holes_stl();
+//render_part=16; // outer_gear_w_mount_holes_stl();
+//render_part=17; // drive_gear_w_hub_holes_stl();
+// render_part=18; // outer_gear_w_mount_holes_quartered_stl();
 
 
 if(render_part==1) {
@@ -461,6 +462,35 @@ if(render_part==14) {
   outer_hex_cell_dxf();
 }
 
+module bevel_mask(extension=0.1
+	, bevel_id=10.0
+	, mask_h=4.0
+	, bevel_middle_extend=0.5
+	) {
+  union() {
+    translate([0,0,-extension]) cylinder(
+	r1=bevel_id/2-extension
+	, r2=bevel_id/2+mask_h/4+extension
+	, h=mask_h/4+2*extension
+	);
+    translate([0,0,mask_h/4-extension]) cylinder(
+	r1=bevel_id/2+mask_h/4+extension+bevel_middle_extend
+	, r2=bevel_id/2-extension+bevel_middle_extend
+	, h=mask_h/4+2*extension
+	);
+    translate([0,0,mask_h/2-extension]) cylinder(
+	r1=bevel_id/2-extension+bevel_middle_extend
+	, r2=bevel_id/2+mask_h/4+extension+bevel_middle_extend
+	, h=mask_h/4+2*extension
+	);
+    translate([0,0,3*mask_h/4-extension]) cylinder(
+	r1=bevel_id/2+mask_h+extension
+	, r2=bevel_id/2-extension
+	, h=mask_h/4+2*extension
+	);
+  }
+}
+
 module roller_gear_w_hub_holes_stl(extension=0.1
 	, roller_d=27
 	, roller_gear_num_teeth=27
@@ -483,7 +513,10 @@ module roller_gear_w_hub_holes_stl(extension=0.1
 
 if(render_part==15) {
   echo("Rendering roller_gear_w_hub_holes_stl()...");
-  roller_gear_w_hub_holes_stl();
+  intersection() {
+    bevel_mask(extension=0.1 , bevel_id=27 , mask_h=4.5);
+    roller_gear_w_hub_holes_stl();
+  }
 }
 
 module outer_gear_w_mount_holes_stl(extension=0.1
@@ -536,5 +569,89 @@ module drive_gear_w_hub_holes_stl(extension=0.1
 
 if(render_part==17) {
   echo("Rendering drive_gear_w_hub_holes_stl()...");
-  drive_gear_w_hub_holes_stl();
+  intersection() {
+    bevel_mask(extension=0.1 , bevel_id=33 , mask_h=4.5);
+    drive_gear_w_hub_holes_stl();
+  }
 }
+
+module outer_ring_wedge_mask(
+	wedge_r=(2*27+33)+(3.0+0.2)+2*10.0+0.1
+        , start_angle=360/24
+        , end_angle=360/4+360/24
+        ) {
+  if((end_angle-start_angle)<=90) {
+    intersection() {
+      rotate(start_angle) square(size=wedge_r,center=false);
+      rotate(end_angle-90) square(size=wedge_r,center=false);
+      circle(r=wedge_r);
+    }
+  }
+  if((end_angle-start_angle)>90) {
+    intersection() {
+      union() {
+	rotate(start_angle) square(size=wedge_r,center=false);
+	rotate(end_angle-90) square(size=wedge_r,center=false);
+      }
+      circle(r=wedge_r);
+    }
+  }
+}
+
+module outer_gear_w_mount_holes_quarter_stl(extension=0.1
+	, roller_d=27
+	, roller_gear_num_teeth=27
+	, drive_d=33
+	, drive_gear_num_teeth=33
+	, roller_n=6
+	, outer_wall_th=10.0
+	, hole_d_even=25.4*0.1120
+	, hole_d_odd=3.0+0.2
+	, h=4.5
+	, twist_num_teeth=1
+	, start_angle=360/24
+	, end_angle=360/4+360/24
+	) {
+  $fs=0.1;
+  $fa=15.0;
+  union() {
+    linear_extrude(height=h/2,twist=-360*twist_num_teeth/(2*roller_gear_num_teeth+drive_gear_num_teeth), convexity=10)
+	intersection() {
+	  outer_ring_wedge_mask(
+		wedge_r=(2*roller_d+drive_d)/2+hole_d_odd+2*outer_wall_th+extension
+		, start_angle=start_angle
+		, end_angle=end_angle
+		);
+	  outer_gear_dxf(outer_wall_th=outer_wall_th);
+	}
+    translate([0,0,h/2]) linear_extrude(height=h/2,twist=360*twist_num_teeth/(2*roller_gear_num_teeth+drive_gear_num_teeth), convexity=10)
+     rotate(360*twist_num_teeth/(2*roller_gear_num_teeth+drive_gear_num_teeth)) 
+	intersection() {
+	  outer_ring_wedge_mask(
+		wedge_r=(2*roller_d+drive_d)/2+hole_d_odd+2*outer_wall_th+extension
+		, start_angle=start_angle
+		, end_angle=end_angle
+		);
+	  outer_gear_dxf(outer_wall_th=outer_wall_th);
+	}
+
+    linear_extrude(height=h,convexity=10)
+      intersection() {
+	  outer_ring_wedge_mask(
+		wedge_r=(2*roller_d+drive_d)/2+hole_d_odd+2*outer_wall_th+extension
+		, start_angle=start_angle
+		, end_angle=end_angle
+		);
+	  outer_gear_mount_dxf(outer_wall_th=outer_wall_th);
+	}
+  }
+}
+
+if(render_part==18) {
+  echo("Rendering outer_gear_w_mount_holes_quartered_stl()...");
+  for(i=[0:3]) {
+    translate([(-27-33)+25*(i-1),0,0]) rotate(-360/24-180/4-360*i/4) 
+	outer_gear_w_mount_holes_quarter_stl(start_angle=360/24+360*i/4, end_angle=360*(i+1)/4+360/24);
+  }
+}
+

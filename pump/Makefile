@@ -30,7 +30,8 @@ LAYER_FILES = layer0.dxf \
 
 STL_FILES = outer_gear_w_mount_holes.stl \
 	roller_gear_w_hub_holes.stl \
-	drive_gear_w_hub_holes.stl
+	drive_gear_w_hub_holes.stl \
+	outer_gear_w_mount_holes_quartered.stl
 
 default : usage
 
@@ -140,6 +141,9 @@ outer_gear_w_mount_holes.stl :
 
 drive_gear_w_hub_holes.stl :
 	$(OPENSCAD) -D render_part=17 -s $(BUILD_DIR)/$@ render_pump_parts.scad
+
+outer_gear_w_mount_holes_quartered.stl :
+	$(OPENSCAD) -D render_part=18 -s $(BUILD_DIR)/$@ render_pump_parts.scad
 
 clean :
 	$(RM) -r $(BUILD_DIR)
