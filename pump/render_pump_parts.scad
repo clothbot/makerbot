@@ -3,7 +3,7 @@ use <parts.scad>
 use <parametric_involute_gear.scad>
 use <planetary_gears.scad>
 
-render_part=1; // drive_gear_w_hub_holes_dxf();
+// render_part=1; // drive_gear_w_hub_holes_dxf();
 //render_part=2; // roller_gear_w_hub_holes_dxf();
 //render_part=3; // outer_gear_dxf();
 //render_part=4; // outer_gear_w_mount_holes_dxf();
@@ -17,11 +17,11 @@ render_part=1; // drive_gear_w_hub_holes_dxf();
 // render_part=12; // outer_stepper_spacer_dxf();
 // render_part=13; // outer_stepper_base_dxf();
 // render_part=14; // outer_hex_cell_dxf();
-render_part=15; // roller_gear_w_hub_holes_stl();
+// render_part=15; // roller_gear_w_hub_holes_stl();
 //render_part=16; // outer_gear_w_mount_holes_stl();
 //render_part=17; // drive_gear_w_hub_holes_stl();
 // render_part=18; // outer_gear_w_mount_holes_quartered_stl();
-
+render_part=19; // drive_gear_w_roller_gear_stl();
 
 if(render_part==1) {
   echo("Rendering drive_gear_w_hub_holes_dxf()...");
@@ -464,7 +464,7 @@ if(render_part==14) {
 
 module bevel_mask(extension=0.1
 	, bevel_id=10.0
-	, mask_h=4.0
+	, mask_h=9.0
 	, bevel_middle_extend=0.5
 	) {
   union() {
@@ -494,7 +494,7 @@ module bevel_mask(extension=0.1
 module roller_gear_w_hub_holes_stl(extension=0.1
 	, roller_d=27
 	, roller_gear_num_teeth=27
-	, h=4.5
+	, h=9.0
 	, twist_num_teeth=1
 	) {
   $fs=0.1;
@@ -514,7 +514,7 @@ module roller_gear_w_hub_holes_stl(extension=0.1
 if(render_part==15) {
   echo("Rendering roller_gear_w_hub_holes_stl()...");
   intersection() {
-    bevel_mask(extension=0.1 , bevel_id=27 , mask_h=4.5);
+    bevel_mask(extension=0.1 , bevel_id=27 , mask_h=9.0);
     roller_gear_w_hub_holes_stl();
   }
 }
@@ -528,7 +528,7 @@ module outer_gear_w_mount_holes_stl(extension=0.1
 	, outer_wall_th=10.0
 	, hole_d_even=25.4*0.1120
 	, hole_d_odd=3.0+0.2
-	, h=4.5
+	, h=9.0
 	, twist_num_teeth=1
 	) {
   $fs=0.1;
@@ -550,7 +550,7 @@ if(render_part==16) {
 module drive_gear_w_hub_holes_stl(extension=0.1
 	, drive_d=33
 	, drive_gear_num_teeth=33
-	, h=4.5
+	, h=9.0
 	, twist_num_teeth=1
 	) {
   $fs=0.1;
@@ -570,7 +570,7 @@ module drive_gear_w_hub_holes_stl(extension=0.1
 if(render_part==17) {
   echo("Rendering drive_gear_w_hub_holes_stl()...");
   intersection() {
-    bevel_mask(extension=0.1 , bevel_id=33 , mask_h=4.5);
+    bevel_mask(extension=0.1 , bevel_id=33 , mask_h=9.0);
     drive_gear_w_hub_holes_stl();
   }
 }
@@ -607,7 +607,7 @@ module outer_gear_w_mount_holes_quarter_stl(extension=0.1
 	, outer_wall_th=10.0
 	, hole_d_even=25.4*0.1120
 	, hole_d_odd=3.0+0.2
-	, h=4.5
+	, h=9.0
 	, twist_num_teeth=1
 	, start_angle=360/24
 	, end_angle=360/4+360/24
@@ -652,6 +652,18 @@ if(render_part==18) {
   for(i=[0:3]) {
     translate([(-27-33)+25*(i-1),0,0]) rotate(-360/24-180/4-360*i/4) 
 	outer_gear_w_mount_holes_quarter_stl(start_angle=360/24+360*i/4, end_angle=360*(i+1)/4+360/24);
+  }
+}
+
+if(render_part==19) {
+  echo("Rendering drive_gear_w_roller_gear()...");
+  translate([-33/2-0.5/2,0,0]) intersection() {
+    bevel_mask(extension=0.1 , bevel_id=33 , mask_h=9.0);
+    drive_gear_w_hub_holes_stl();
+  }
+  translate([27/2+0.5/2,0,0]) intersection() {
+    bevel_mask(extension=0.1 , bevel_id=27 , mask_h=9.0);
+    roller_gear_w_hub_holes_stl();
   }
 }
 
