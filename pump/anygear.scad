@@ -1,8 +1,9 @@
 // anygear.scad
 // - generate a gear and its mate from any tooth pattern
 
-render_part=1; // test_anygear()
-//render_part=2; // test_anygear_inverse()
+//render_part=1; // test_anygear()
+render_part=2; // test_tooth_mate()
+//render_part=3; // test_anygear_inverse()
 function pi()=3.14159265358979323846264338327950288419716939937;
 
 module anygear_body(
@@ -74,6 +75,30 @@ module test_tooth(
   }
 }
 
+module mate_tooth(
+	root_d=25.0
+	, num_teeth=13
+	, addendum=2.0
+	, dedendum=3.0
+	, tooth_angle_res_steps=11
+	) {
+  $fs=0.1;
+  $fa=10.0;
+  tooth_w=pi()*root_d/(2*num_teeth);
+  pitch_d=root_d+2*dedendum;
+  outer_d=root_d+2*dedendum+2*addendum;
+  tooth_l=addendum+dedendum;
+  tooth_angle=360/num_teeth;
+  difference() {
+    child(0);  // tooth blank object
+    // tooth assumed to be centered on root circle, oriented y-axis thru center line
+    for(i=[0:tooth_angle_res_steps-1]) translate([0,-root_d/2,0])
+      rotate([0,0,-tooth_angle+tooth_angle*i/tooth_angle_res_steps]) translate([0,root_d+2*dedendum,0])
+        rotate([0,0,180-tooth_angle+tooth_angle*i/tooth_angle_res_steps]) translate([0,root_d/2+dedendum,0])
+	  child(1);
+  }
+}
+
 module test_anygear() {
     anygear_body(
 	pitch_d=25.0
@@ -101,3 +126,14 @@ if(render_part==1) {
   test_anygear();
 }
 
+module test_tooth_mate() {
+  mate_tooth() {
+    translate([0,-2]) square(size=[5,5],center=true);
+    test_tooth();
+  }
+}
+
+if(render_part==2) {
+  echo("Rendering test_tooth_mate()...");
+  test_tooth_mate();
+}
