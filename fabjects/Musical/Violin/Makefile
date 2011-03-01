@@ -62,3 +62,5 @@ violin_strad_contours_interp_8pt.stl :
 violin_strad_minkowsky.stl :
 	$(OPENSCAD) -D render_part=13 -s $(BUILD_DIR)/$@ violin_basic.scad
 
+clean :
+	$(RM) -r $(BUILD_DIR)

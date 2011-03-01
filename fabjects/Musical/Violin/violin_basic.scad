@@ -189,10 +189,7 @@ module violin_purfling_2d() {
 
 if(render_part==10) {
   echo("Rendering violin_purfling_2d()...");
-  difference() {
-    translate([0,0,-0.5]) linear_extrude(height=1.0) import_dxf("violin_strad_all_2d.dxf");
-    linear_extrude(height=1.0) violin_purfling_2d();
-  }
+  violin_purfling_2d();
 }
 
 if(render_part==11) {
