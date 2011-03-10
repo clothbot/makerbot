@@ -1,5 +1,6 @@
 // Planetary Gears
-use <parametric_involute_gear.scad>
+// use <parametric_involute_gear.scad>
+use <MCAD/gears.scad>
 debug_flag=1;
 // render_part=1; // gear_shape_evolute_mask();
 // render_part=2; // PlanetaryGear_2D();
@@ -7,6 +8,8 @@ debug_flag=1;
 // render_part=4; // PlanetaryGear_3D();
 // render_part=5; // PlanetaryGear_Constructor();
 render_part=6; // Universal Mounting Hub PlanetaryGear_Constructor();
+
+function pitch_diameter2circular_pitch(num_teeth,pitch_d,shrink=0.1) = 180*pitch_d/num_teeth-shrink;
 
 module gear_shape_evolute_mask(
 	clearance=0.2
@@ -29,7 +32,7 @@ module gear_shape_evolute_mask(
     for(j=[0:res_steps-1]) assign(rotAngle=360*j/res_steps) {
       rotate(rotAngle) translate([drive_gear_pitch_d/2+roller_gear_pitch_d/2,0])
 	 rotate(-rotAngle-360*(2/roller_gear_num_teeth)*(outer_num_teeth*rotAngle/360))
-	  gear_shape(
+	  gear(
 	    circular_pitch=pitch_diameter2circular_pitch(roller_gear_num_teeth,roller_gear_pitch_d+clearance,shrink=shrink)
 	    , number_of_teeth=roller_gear_num_teeth
 	    , pressure_angle=pressure_angle
@@ -56,7 +59,7 @@ module PlanetaryGear_2D(
   outer_num_teeth=outer_d*drive_gear_num_teeth/drive_gear_pitch_d;
   difference() {
     circle(r=(outer_d+2*outer_wall_th)/2);
-    //gear_shape(
+    //gear(
 	//circular_pitch=pitch_diameter2circular_pitch(outer_num_teeth,outer_d+clearance)
 	//, number_of_teeth=outer_num_teeth
 	//);
@@ -75,7 +78,7 @@ module PlanetaryGear_2D(
 	);
   }
   difference() {
-    gear_shape(
+    gear(
 	circular_pitch=pitch_diameter2circular_pitch(drive_gear_num_teeth,drive_gear_pitch_d)
 	, number_of_teeth=drive_gear_num_teeth
 	);
@@ -84,7 +87,7 @@ module PlanetaryGear_2D(
   for( i=[0:roller_n-1] ) {
     rotate(360*i/roller_n) translate([drive_gear_pitch_d/2+roller_gear_pitch_d/2,0])
 	rotate(-360*i/roller_n-360*(2/roller_gear_num_teeth)*(outer_num_teeth*i/roller_n)) difference() {
-	  gear_shape(
+	  gear(
 	    circular_pitch=pitch_diameter2circular_pitch(roller_gear_num_teeth,roller_gear_pitch_d)
 	    , number_of_teeth=roller_gear_num_teeth
 	  );
@@ -124,7 +127,7 @@ module PlanetaryGear_2D_Rotated(
   }
   difference() {
     circle(r=(outer_d+2*outer_wall_th)/2);
-    gear_shape(
+    gear(
 	circular_pitch=pitch_diameter2circular_pitch(outer_num_teeth,outer_d+2*clearance,shrink=-shrink)
 	, number_of_teeth=outer_num_teeth
 	, clearance=-2*clearance
@@ -132,7 +135,7 @@ module PlanetaryGear_2D_Rotated(
 	);
   }
   rotate(drive_gear_angle) difference() {
-    gear_shape(
+    gear(
 	circular_pitch=pitch_diameter2circular_pitch(drive_gear_num_teeth,drive_gear_pitch_d,shrink)
 	, number_of_teeth=drive_gear_num_teeth
 	, clearance=clearance
@@ -145,7 +148,7 @@ module PlanetaryGear_2D_Rotated(
 	, delta_angle=360.0*i/roller_n) {
     rotate(-delta_angle+roller_gear_angle) translate([drive_gear_pitch_d/2+roller_gear_pitch_d/2,0])
 	rotate(-(roller_gear_angle-delta_angle)*(outer_d/roller_gear_pitch_d) ) difference() {
-	  gear_shape(
+	  gear(
 	    circular_pitch=pitch_diameter2circular_pitch(roller_gear_num_teeth,roller_gear_pitch_d,shrink)
 	    , number_of_teeth=roller_gear_num_teeth
 	    , clearance=clearance
@@ -250,7 +253,7 @@ module drive_gear_dxf(
 	, hole_n=8
 	, alignment_hole_d=1.6
 	) {
-  gear_shape(
+  gear(
 	circular_pitch=pitch_diameter2circular_pitch(drive_gear_num_teeth,drive_gear_pitch_d,shrink)
 	, number_of_teeth=drive_gear_num_teeth
 	, clearance=clearance
@@ -319,7 +322,7 @@ module roller_gear_dxf(
 	, hole_offset=8
 	, hole_n=6
 	) {
-  gear_shape(
+  gear(
     circular_pitch=pitch_diameter2circular_pitch(roller_gear_num_teeth,roller_gear_pitch_d,shrink)
     , number_of_teeth=roller_gear_num_teeth
     , clearance=clearance
@@ -397,7 +400,7 @@ module outer_gear_dxf( clearance=0.1
   outer_num_teeth=outer_d*drive_num_teeth/drive_d;
 	difference() {
 	    circle(r=(outer_d+2*outer_wall_th)/2);
-	    gear_shape(
+	    gear(
 		circular_pitch=pitch_diameter2circular_pitch(outer_num_teeth,outer_d+2*clearance,shrink=-shrink)
 		, number_of_teeth=outer_num_teeth
 		, clearance=-2*clearance

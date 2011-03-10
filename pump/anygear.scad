@@ -80,7 +80,7 @@ module mate_tooth(
 	, num_teeth=13
 	, addendum=2.0
 	, dedendum=3.0
-	, tooth_angle_res_steps=11
+	, tooth_angle_res_steps=3
 	) {
   $fs=0.1;
   $fa=10.0;
@@ -91,11 +91,17 @@ module mate_tooth(
   tooth_angle=360/num_teeth;
   difference() {
     child(0);  // tooth blank object
+    translate([0,-root_d/2-dedendum,0]) %circle(r=root_d/2);
     // tooth assumed to be centered on root circle, oriented y-axis thru center line
-    for(i=[0:tooth_angle_res_steps-1]) translate([0,-root_d/2,0])
+    for(i=[0:2*tooth_angle_res_steps-1]) translate([0,-root_d/2-dedendum,0]) {
       rotate([0,0,-tooth_angle+tooth_angle*i/tooth_angle_res_steps]) translate([0,root_d+2*dedendum,0])
-        rotate([0,0,180-tooth_angle+tooth_angle*i/tooth_angle_res_steps]) translate([0,root_d/2+dedendum,0])
-	  child(1);
+        rotate([0,0,180-tooth_angle+tooth_angle*i/tooth_angle_res_steps/2]) {
+	    %circle(r=root_d/2);
+	    for(j=[0:num_teeth-1]) rotate([0,0,360*j/num_teeth]) 
+	      translate([0,root_d/2+dedendum,0])
+	        child(1);
+	  }
+    }
   }
 }
 
@@ -128,7 +134,7 @@ if(render_part==1) {
 
 module test_tooth_mate() {
   mate_tooth() {
-    translate([0,-2]) square(size=[5,5],center=true);
+    translate([-2.5,-4]) square(size=[5,6],center=false);
     test_tooth();
   }
 }

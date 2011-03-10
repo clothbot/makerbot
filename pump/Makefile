@@ -1,6 +1,7 @@
 OPENSCAD=/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD
 
 BUILD_DIR = ./build
+MCAD_DIR = ./MCAD
 
 DXF_FILES = drive_gear_w_hub_holes.dxf \
 	roller_gear_w_hub_holes.dxf \
@@ -40,6 +41,7 @@ usage :
 	@echo "  make all"
 	@echo "  make dxf_files"
 	@echo "  make dxf_files layer_files"
+	@echo "  make mcad"
 	@echo "  make stl_files"
 	@echo "  make layer_stack.stl (not recommended)"
 	@echo "DXF Files:"
@@ -47,7 +49,7 @@ usage :
 	@echo "Layer Files:"
 	@echo " $(LAYER_FILES)"
 
-all :  $(BUILD_DIR) $(DXF_FILES) $(LAYER_FILES)
+all :  $(MCAD_DIR) $(BUILD_DIR) $(DXF_FILES) $(LAYER_FILES)
 
 dxf_files : $(BUILD_DIR) $(DXF_FILES)
 
@@ -57,6 +59,12 @@ stl_files : $(STL_FILES)
 
 $(BUILD_DIR) :
 	mkdir -p $(BUILD_DIR)
+
+$(MCAD_DIR) :
+	mkdir -p $(MCAD_DIR)
+
+mcad : $(MCAD_DIR)
+	git clone git@github.com:hacklabto/MCAD.git
 
 drive_gear_w_hub_holes.dxf : 
 	$(OPENSCAD) -D render_part=1 -x $(BUILD_DIR)/$@ render_pump_parts.scad
