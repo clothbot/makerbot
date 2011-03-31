@@ -1,4 +1,5 @@
 // Sight for Maverick Rev-6
+use <sight_mount_cross_section.scad>
 use <sight_mount.scad>
 render_part=1; // MaverickRev6_Sight_Body()
 render_part=2; // MaverickRev6_Sight_Holes()
@@ -6,7 +7,7 @@ render_part=3; // MaverickRev6_Sight()
 
 module MaverickRev6_Sight_Body() {
   union() {
-    translate([-25.4*0.5,0,0]) cube(size=[25.4*1.0,25.4*1.0,25.4*0.5],center=false);
+    translate([-25.4*(NerfTacticalRail_OuterWidth()/2+0.1),0,0]) cube(size=[25.4*(NerfTacticalRail_OuterWidth()+0.2),25.4*1.0,25.4*0.5],center=false);
     translate([0,0,25.4*0.5]) rotate([-90,0,0]) cylinder(r=25.4*1.0/2,h=25.4*1.0,center=false);
   }
 }
