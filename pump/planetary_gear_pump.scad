@@ -3,7 +3,9 @@
 use <parametric_involute_gear_v5.0.scad>
 
 //render_part=1; // half_planetary_hex()
-render_part=2; // half_planetary_hex_w_rollers()
+//render_part=2; // half_planetary_hex_w_rollers()
+render_part=3; // planetary_hex_w_rollers()
+
 
 function gear_circle_pitch(pitch_d=25.0,num_teeth=15) = 180 * pitch_d / num_teeth;
 function gear_pitch_diametrial(pitch_d=25.0, num_teeth=15) = num_teeth / pitch_d;
@@ -24,6 +26,7 @@ module half_planetary_hex(planet_d=60.0,gear_num_teeth=9, shrink=0, rim_thicknes
 	, circular_pitch=gear_circle_pitch(pitch_d=planet_d/3-shrink,num_teeth=gear_num_teeth)
 	, rim_thickness=rim_thickness
 	, twist=twist
+	, bore_diameter=0
     ) ;
     cylinder(r1=0.5*planet_d/3,r2=0.5*planet_d/3+rim_thickness,h=rim_thickness,center=false);
     cylinder(r2=0.5*planet_d/3,r1=0.5*planet_d/3+rim_thickness,h=rim_thickness,center=false);
@@ -35,6 +38,7 @@ module half_planetary_hex(planet_d=60.0,gear_num_teeth=9, shrink=0, rim_thicknes
 	, circular_pitch=gear_circle_pitch(pitch_d=planet_d/3-shrink,num_teeth=gear_num_teeth)
 	, rim_thickness=rim_thickness
 	, twist=-twist
+	, bore_diameter=0
       ) ;
       cylinder(r1=0.5*planet_d/3,r2=0.5*planet_d/3+rim_thickness,h=rim_thickness,center=false);
       cylinder(r2=0.5*planet_d/3,r1=0.5*planet_d/3+rim_thickness,h=rim_thickness,center=false);
@@ -50,6 +54,7 @@ module half_planetary_hex(planet_d=60.0,gear_num_teeth=9, shrink=0, rim_thicknes
 	, circular_pitch=gear_circle_pitch(pitch_d=planet_d+2*shrink, num_teeth=3*gear_num_teeth)
 	, rim_thickness=rim_thickness
 	, twist=-twist/3
+	, bore_diameter=0
 	);
   }
 }
@@ -66,12 +71,23 @@ if(render_part==1) {
   half_planetary_hex(shrink=0.2);
 }
 
-module half_planetary_hex_w_rollers(planet_d=60.0, gear_num_teeth=9, shrink=0, rim_thickness=10, twist=0) {
+module half_planetary_hex_w_rollers(planet_d=60.0, gear_num_teeth=9, shrink=0, rim_thickness=10, twist=0, extension=0.1) {
   half_planetary_hex(planet_d=planet_d,gear_num_teeth=gear_num_teeth,shrink=shrink,rim_thickness=rim_thickness, twist=twist);
   animate_angle=360*$t;
   for(i=[0:2]) assign(rotAngle=360*i/3+60) {
-    rotate([0,0,rotAngle+animate_angle/3]) translate([planet_d/3,0,0]) rotate([0,0,rotAngle-2*animate_angle/3])
-      cylinder(r=0.5*planet_d/3-shrink-gear_dedendum(pitch_d=planet_d/3-shrink,num_teeth=gear_num_teeth,clearance=0),h=rim_thickness,center=false);
+    rotate([0,0,rotAngle+animate_angle/3]) translate([planet_d/3,0,0]) rotate([0,0,rotAngle-2*animate_angle/3]) union() {
+      translate([0,0,-extension])
+	  cylinder(r=0.5*planet_d/3-shrink-gear_dedendum(pitch_d=planet_d/3-shrink,num_teeth=gear_num_teeth,clearance=0),h=rim_thickness+2*extension,center=false);
+	cylinder(r1=0.5*planet_d/3-shrink
+	  , r2=0.5*planet_d/3-shrink-gear_dedendum(pitch_d=planet_d/3-shrink,num_teeth=gear_num_teeth,clearance=0)
+	  , h=gear_dedendum(pitch_d=planet_d/3-shrink,num_teeth=gear_num_teeth,clearance=0)
+	  , center=false);
+	translate([0,0,rim_thickness-gear_dedendum(pitch_d=planet_d/3-shrink,num_teeth=gear_num_teeth,clearance=0)])
+	  cylinder(r2=0.5*planet_d/3-shrink
+	    , r1=0.5*planet_d/3-shrink-gear_dedendum(pitch_d=planet_d/3-shrink,num_teeth=gear_num_teeth,clearance=0)
+	    , h=gear_dedendum(pitch_d=planet_d/3-shrink,num_teeth=gear_num_teeth,clearance=0)
+	    , center=false);
+    }
   }
 }
 
@@ -86,4 +102,31 @@ if(render_part==2) {
 //      ) ;
 //  }
   half_planetary_hex_w_rollers(twist=180/9,shrink=0.2);
+}
+
+module planetary_hex_w_rollers(planet_d=60.0, gear_num_teeth=9, shrink=0, rim_thickness=10, twist=0, extension=0.1) {
+  union() {
+    half_planetary_hex_w_rollers(
+	planet_d=planet_d
+	, gear_num_teeth=gear_num_teeth
+	, shrink=shrink
+	, rim_thickness=rim_thickness
+	, twist=twist
+	, extension=0
+	);
+    translate([0,0,rim_thickness]) rotate([0,0,60])
+     half_planetary_hex_w_rollers(
+	planet_d=planet_d
+	, gear_num_teeth=gear_num_teeth
+	, shrink=shrink
+	, rim_thickness=rim_thickness
+	, twist=twist
+	, extension=0
+	);
+  }
+}
+
+if(render_part==3) {
+  echo("Rendering planetary_hex_w_rollers()...");
+  planetary_hex_w_rollers(twist=180/21,shrink=0.2,rim_thickness=4,gear_num_teeth=21);
 }
