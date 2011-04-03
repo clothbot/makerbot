@@ -2,11 +2,12 @@
 
 use <parametric_involute_gear_v5.0.scad>
 
-render_part=1; // half_planetary_hex()
+//render_part=1; // half_planetary_hex()
 //render_part=2; // half_planetary_hex_w_rollers()
 //render_part=3; // planetary_hex_w_rollers()
 //render_part=4; // symmetric planetary_hex_w_rollers()
-render_part=5; // low tooth-count planetar_hex_w_rollers()
+//render_part=5; // low tooth-count planetar_hex_w_rollers()
+render_part=6; // planetary gear with holes
 
 function gear_circle_pitch(pitch_d=25.0,num_teeth=15) = 180 * pitch_d / num_teeth;
 function gear_pitch_diametrial(pitch_d=25.0, num_teeth=15) = num_teeth / pitch_d;
@@ -167,3 +168,30 @@ if(render_part==5) {
     mirror([0,0,1]) planetary_hex_w_rollers(twist=90/9,shrink=0.25,rim_thickness=5/2,gear_num_teeth=9,planet_d=3*8);
   }
 }
+
+module planetary_hex_holes(axle_d=5.0,rim_thickness=10,planet_d=50, wall_th=2.0, extension=0.1) {
+  translate([0,0,-extension]) union() {
+    cylinder($fn=16,r1=axle_d/2+extension+planet_d/36,r2=axle_d/2,h=extension+planet_d/36,center=false);
+    cylinder($fn=16,r=axle_d/2,h=2*extension+rim_thickness,center=false);
+    translate([0,0,extension+rim_thickness-planet_d/36])
+	cylinder($fn=16,r1=axle_d/2,r2=axle_d/2+extension+planet_d/36,h=extension+planet_d/36,center=false);
+  }
+  for(i=[0:5]) assign(rotAngle=360*i/6) rotate([0,0,rotAngle]) translate([planet_d/3,0,-extension]) union() {
+    cylinder($fn=16,r1=axle_d/2+extension+planet_d/36,r2=axle_d/2,h=extension+planet_d/36,center=false);
+    cylinder($fn=16,r=axle_d/2,h=2*extension+rim_thickness,center=false);
+    translate([0,0,extension+rim_thickness-planet_d/36])
+	cylinder($fn=16,r1=axle_d/2,r2=axle_d/2+extension+planet_d/36,h=extension+planet_d/36,center=false);
+  }
+}
+
+if(render_part==6) {
+  echo("Rendering symmetric planetary_hex_w_rollers() with planetary_hex_holes...");
+  difference() {
+    translate([0,0,5]) union() {
+      planetary_hex_w_rollers(twist=90/9,shrink=0.2,rim_thickness=5/2,gear_num_teeth=9,planet_d=3*8);
+      mirror([0,0,1]) planetary_hex_w_rollers(twist=90/9,shrink=0.2,rim_thickness=5/2,gear_num_teeth=9,planet_d=3*8);
+    }
+    planetary_hex_holes(axle_d=5.0,rim_thickness=10,planet_d=3*8);
+  }
+}
+
