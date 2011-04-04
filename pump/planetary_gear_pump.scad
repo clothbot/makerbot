@@ -2,6 +2,9 @@
 
 use <parametric_involute_gear_v5.0.scad>
 
+global_planet_d=3*16;
+global_axle_d=5.3;
+
 //render_part=1; // half_planetary_hex()
 //render_part=2; // half_planetary_hex_w_rollers()
 //render_part=3; // planetary_hex_w_rollers()
@@ -186,8 +189,7 @@ module planetary_hex_holes(axle_d=5.0,rim_thickness=10,planet_d=50, wall_th=2.0,
   }
 }
 
-global_planet_d=3*16;
-global_axle_d=7.2;
+
 if(render_part==6) {
   echo("Rendering symmetric planetary_hex_w_rollers() with planetary_hex_holes...");
   difference() {
@@ -212,19 +214,19 @@ module planetary_hex_base(axle_d=5.0,planet_d=60.0, gear_num_teeth=9, shrink=0.1
   difference() {
     cylinder(r=planet_d/2-shrink,h=rim_thickness-shrink,center=false);
     translate([0,0,-extension]) {
-	cylinder(r1=extension+planet_d/6+shrink,r2=planet_d/6+shrink-rim_thickness-extension,h=rim_thickness+2*extension,center=false);
+	cylinder(r1=extension+planet_d/6+shrink-0.25*rim_thickness,r2=planet_d/6+shrink-rim_thickness-extension,h=rim_thickness+2*extension,center=false);
 	cylinder(r2=extension+planet_d/6+shrink,r1=planet_d/6+shrink-rim_thickness-extension,h=rim_thickness+2*extension,center=false);
 	for(i=[0:5]) assign(rotAngle=360*i/6) rotate([0,0,rotAngle]) translate([planet_d/3,0,0]) {
-	  cylinder(r1=extension+planet_d/6+shrink,r2=planet_d/6+shrink-rim_thickness-extension,h=rim_thickness+2*extension,center=false);
+	  cylinder(r1=extension+planet_d/6+shrink-0.25*rim_thickness,r2=planet_d/6+shrink-rim_thickness-extension,h=rim_thickness+2*extension,center=false);
 	  cylinder(r2=extension+planet_d/6+shrink,r1=planet_d/6+shrink-rim_thickness-extension,h=rim_thickness+2*extension,center=false);
 	}
     }
   }
   union() {
-    cylinder(r1=planet_d/6-shrink,r2=planet_d/6-shrink-rim_thickness,h=rim_thickness,center=false);
+    cylinder(r1=planet_d/6-shrink-0.25*rim_thickness,r2=planet_d/6-shrink-rim_thickness,h=rim_thickness,center=false);
     cylinder(r2=planet_d/6-shrink,r1=planet_d/6-shrink-rim_thickness,h=rim_thickness,center=false);
     for(i=[0:5]) assign(rotAngle=360*i/6) rotate([0,0,rotAngle]) translate([planet_d/3,0,0]) {
-      cylinder(r1=planet_d/6-shrink,r2=planet_d/6-shrink-rim_thickness,h=rim_thickness,center=false);
+      cylinder(r1=planet_d/6-shrink-0.25*rim_thickness,r2=planet_d/6-shrink-rim_thickness,h=rim_thickness,center=false);
       cylinder(r2=planet_d/6-shrink,r1=planet_d/6-shrink-rim_thickness,h=rim_thickness,center=false);
     }
   }
@@ -232,7 +234,7 @@ module planetary_hex_base(axle_d=5.0,planet_d=60.0, gear_num_teeth=9, shrink=0.1
 
 if(render_part==7) {
   echo("Rendering planetary_hex_base()...");
-  planetary_hex_base(axle_d=global_axle_d,planet_d=global_planet_d, gear_num_teeth=9, shrink=0.4, rim_thickness=2, wall_th=2.0, extension=0.1);
+  planetary_hex_base(axle_d=global_axle_d,planet_d=global_planet_d, gear_num_teeth=9, shrink=0.4, rim_thickness=4, wall_th=2.0, extension=0.1);
 }
 
 if(render_part==8) {
