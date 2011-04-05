@@ -12,7 +12,8 @@ global_axle_d=5.3;
 //render_part=5; // low tooth-count planetar_hex_w_rollers()
 // render_part=6; // planetary gear with holes
 //render_part=7; // planetary_hex_base
-render_part=8; // planetary gear with base and holes
+// render_part=8; // planetary gear with base and holes
+render_part=9; // planetary gear with base and holes and nema17 bracket.
 
 function gear_circle_pitch(pitch_d=25.0,num_teeth=15) = 180 * pitch_d / num_teeth;
 function gear_pitch_diametrial(pitch_d=25.0, num_teeth=15) = num_teeth / pitch_d;
@@ -250,3 +251,61 @@ if(render_part==8) {
   }
 }
 
+module planetary_hex_nema17(axle_d=5.0,planet_d=40,gear_num_teeth=9,shrink=0.2, bracket_h=10,wall_th=2.0,extension=0.1
+	, bolt_d=3.2
+	, bolt_head_d=5.7
+	, bolt_head_h=4.0
+	) {
+  $fs=0.1;
+  $fa=15;
+  difference() {
+    union() {
+      translate([-42.3/2,-42.3/2,0]) {
+	cube(size=[42.3,42.3,bracket_h],center=false);
+      }
+    }
+    translate([0,0,-0.1]) {
+      cylinder(r=planet_d/2+gear_addendum(pitch_d=planet_d,num_teeth=3*gear_num_teeth)+wall_th/2,h=bracket_h+2*extension,center=false);
+      translate([31/2,31/2,0]) {
+	cylinder(r=bolt_d/2,h=bracket_h+2*extension,center=false);
+	translate([0,0,bracket_h+extension-bolt_head_h])
+	  cylinder(r=bolt_head_d/2,h=bolt_head_h+extension,center=false);
+      }
+      translate([-31/2,31/2,0]) {
+	cylinder(r=bolt_d/2,h=bracket_h+2*extension,center=false);
+	translate([0,0,bracket_h+extension-bolt_head_h])
+	  cylinder(r=bolt_head_d/2,h=bolt_head_h+extension,center=false);
+      }
+      translate([-31/2,-31/2,0]) {
+	cylinder(r=bolt_d/2,h=bracket_h+2*extension,center=false);
+	translate([0,0,bracket_h+extension-bolt_head_h])
+	  cylinder(r=bolt_head_d/2,h=bolt_head_h+extension,center=false);
+      }
+      translate([31/2,-31/2,0]) {
+	cylinder(r=bolt_d/2,h=bracket_h+2*extension,center=false);
+	translate([0,0,bracket_h+extension-bolt_head_h])
+	  cylinder(r=bolt_head_d/2,h=bolt_head_h+extension,center=false);
+      }
+
+    }
+  }
+}
+
+if(render_part==9) {
+  echo("Rendering planetary_hex_w_rollers() with base planetary_hex_holes and nema17 bracket...");
+  difference() {
+    translate([0,0,12]) union() {
+      planetary_hex_w_rollers(twist=90/9,shrink=0.3,rim_thickness=5,gear_num_teeth=9,planet_d=32);
+      mirror([0,0,1]) planetary_hex_w_rollers(twist=90/9,shrink=0.3,rim_thickness=5,gear_num_teeth=9,planet_d=32);
+      translate([0,0,-12]) {
+	  planetary_hex_base(axle_d=5.2,planet_d=32, gear_num_teeth=9, shrink=0.3, rim_thickness=2, wall_th=2.0, extension=0.1);
+        planetary_hex_nema17(axle_d=5.2,planet_d=32,gear_num_teeth=9,shrink=0.3, bracket_h=10,wall_th=2.0,extension=0.1
+	    , bolt_d=3.2
+	    , bolt_head_d=5.7
+	    , bolt_head_h=4.0
+	    );
+	}
+    }
+    planetary_hex_holes(axle_d=3.2,rim_thickness=22,planet_d=32);
+  }
+}
