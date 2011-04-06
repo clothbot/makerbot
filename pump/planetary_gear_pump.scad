@@ -304,6 +304,15 @@ module planetary_hex_base(drive_axle_d=5.0,roller_axle_d=3.0,planet_d=60.0, roll
   drive_d=planet_d*drive_num_teeth/planet_num_teeth;
   roller_d=planet_d*roller_num_teeth/planet_num_teeth;
   echo(str("planetary_hex_base: planet_num_teeth=",planet_num_teeth,", drive_d=",drive_d,", roller_d=",roller_d));
+  translate([0,0,rim_thickness+gear_addendum(pitch_d=planet_d,num_teeth=planet_num_teeth)]) difference() {
+    cylinder(r=planet_d/2+gear_addendum(pitch_d=planet_d,num_teeth=planet_num_teeth)+wall_th,h=rim_thickness+gear_addendum(pitch_d=planet_d,num_teeth=planet_num_teeth),center=false);
+    translate([0,0,-extension])
+      cylinder(r=planet_d/2+shrink,h=rim_thickness+gear_addendum(pitch_d=planet_d,num_teeth=planet_num_teeth)+2*extension,center=false);
+    translate([0,0,-extension])
+      cylinder(r2=planet_d/2+shrink-extension
+	  , r1=planet_d/2+gear_addendum(pitch_d=planet_d,num_teeth=planet_num_teeth)+shrink+extension
+	  , h=gear_addendum(pitch_d=planet_d,num_teeth=planet_num_teeth)+2*extension);
+  }
   difference() {
     cylinder(r=planet_d/2+gear_addendum(pitch_d=planet_d,num_teeth=planet_num_teeth)+wall_th,h=rim_thickness+gear_addendum(pitch_d=planet_d,num_teeth=planet_num_teeth),center=false);
     translate([0,0,-extension])
@@ -312,17 +321,6 @@ module planetary_hex_base(drive_axle_d=5.0,roller_axle_d=3.0,planet_d=60.0, roll
       cylinder(r1=planet_d/2+shrink-extension
 	  , r2=planet_d/2+gear_addendum(pitch_d=planet_d,num_teeth=planet_num_teeth)+shrink+extension
 	  , h=gear_addendum(pitch_d=planet_d,num_teeth=planet_num_teeth)+2*extension);
-  }
-  difference() {
-    cylinder(r=planet_d/2-shrink,h=rim_thickness-shrink,center=false);
-    translate([0,0,-extension]) {
-	cylinder(r1=extension+drive_d/2-shrink,r2=drive_d/2+shrink-extension,h=rim_thickness+2*extension,center=false);
-	cylinder(r2=extension+drive_d/2-shrink,r1=drive_d/2+shrink-extension,h=rim_thickness+2*extension,center=false);
-	for(i=[0:5]) assign(rotAngle=360*i/6) rotate([0,0,rotAngle]) translate([drive_d/2+roller_d/2,0,0]) {
-	  cylinder(r1=extension+roller_d/2+shrink,r2=roller_d/2+shrink-extension,h=rim_thickness+2*extension,center=false);
-	  cylinder(r2=extension+roller_d/2+2*shrink,r1=roller_d/2+shrink-extension,h=rim_thickness+2*extension,center=false);
-	}
-    }
   }
   union() {
     cylinder(r1=drive_d/2-shrink-0.25*rim_thickness,r2=drive_d/2-shrink-rim_thickness,h=rim_thickness,center=false);
