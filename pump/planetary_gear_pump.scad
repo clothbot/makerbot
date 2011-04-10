@@ -19,7 +19,9 @@ global_drive_num_teeth=15;
 //render_part=9; // planetary gear with base and holes and nema17 bracket.
 //render_part=10; // planetary_hex_key_top()
 //render_part=11; // full_planetary_hex with base and top
-render_part=12; // planetary_hex_rollers()
+//render_part=12; // planetary_hex_interlock_base()
+render_part=13; // planetary_hex_rollers()
+
 
 function gear_circle_pitch(pitch_d=25.0,num_teeth=15) = 180 * pitch_d / num_teeth;
 function gear_pitch_diametrial(pitch_d=25.0, num_teeth=15) = num_teeth / pitch_d;
@@ -537,6 +539,78 @@ if(render_part==11) {
   );
 }
 
+module planetary_hex_interlock_base(drive_axle_d=5.0,roller_axle_d=3.0,planet_d=60.0, roller_num_teeth=9, drive_num_teeth=15, shrink=0.1, rim_thickness=2, wall_th=2.0, extension=0.1, interlock_h=2.0) {
+  planet_num_teeth=drive_num_teeth+2*roller_num_teeth;
+  drive_d=planet_d*drive_num_teeth/planet_num_teeth;
+  roller_d=planet_d*roller_num_teeth/planet_num_teeth;
+  echo(str("planetary_hex_base: planet_num_teeth=",planet_num_teeth,", drive_d=",drive_d,", roller_d=",roller_d));
+
+  difference() {
+    cylinder(r=planet_d/2+gear_addendum(pitch_d=planet_d,num_teeth=planet_num_teeth)+wall_th,h=rim_thickness+gear_addendum(pitch_d=planet_d,num_teeth=planet_num_teeth),center=false);
+    translate([0,0,-extension])
+	cylinder(r1=planet_d/2+gear_addendum(pitch_d=planet_d,num_teeth=planet_num_teeth)+extension+shrink,r2=planet_d/2+shrink,h=gear_addendum(pitch_d=planet_d,num_teeth=planet_num_teeth)+extension,center=false);
+    translate([0,0,rim_thickness])
+	cylinder(r2=planet_d/2+gear_addendum(pitch_d=planet_d,num_teeth=planet_num_teeth)+extension+shrink,r1=planet_d/2+shrink,h=gear_addendum(pitch_d=planet_d,num_teeth=planet_num_teeth)+extension,center=false);
+    translate([0,0,-extension])
+	cylinder(r=planet_d/2+shrink,h=rim_thickness+gear_addendum(pitch_d=planet_d,num_teeth=planet_num_teeth)+2*extension,center=false);
+  }
+
+  union() {
+    difference() {
+	union() {
+	  cylinder(r1=drive_d/2-shrink-gear_dedendum(pitch_d=drive_d,num_teeth=drive_num_teeth)/2,r2=drive_d/2-shrink,h=gear_dedendum(pitch_d=drive_d,num_teeth=drive_num_teeth),center=false);
+        translate([0,0,gear_dedendum(pitch_d=drive_d,num_teeth=drive_num_teeth)]) cylinder(r=drive_d/2-shrink,h=rim_thickness-gear_dedendum(pitch_d=drive_d,num_teeth=drive_num_teeth),center=false);
+	  translate([0,0,rim_thickness])
+	    cylinder(r1=drive_d/2-shrink,r2=drive_d/2-shrink-gear_dedendum(pitch_d=drive_d,num_teeth=drive_num_teeth),h=gear_dedendum(pitch_d=drive_d,num_teeth=drive_num_teeth),center=false);
+	}
+	rotate([0,45,0]) cube(size=[2*shrink,drive_d-2*shrink,2*shrink],center=true);
+	rotate([0,45,90]) cube(size=[2*shrink,drive_d-2*shrink,2*shrink],center=true);
+	translate([0,0,-extension]) rotate([0,0,90]) {
+	  cube(size=[drive_d,drive_d,interlock_h+extension],center=false);
+	  rotate([0,0,180]) cube(size=[drive_d,drive_d,interlock_h+extension],center=false);
+	  cylinder(r1=drive_axle_d/2+2*shrink,r2=drive_axle_d/2+shrink,h=interlock_h+extension,center=false);
+	}
+	translate([0,0,interlock_h]) {
+	  rotate([0,0,-45]) translate([(drive_d/2-shrink)/sqrt(2),-drive_d/2,0])
+	    rotate([0,45,0]) cube(size=[drive_d/2,drive_d,drive_d],center=false);
+	  rotate([0,0,180-45]) translate([(drive_d/2-shrink)/sqrt(2),-drive_d/2,0])
+	    rotate([0,45,0]) cube(size=[drive_d/2,drive_d,drive_d],center=false);
+	}
+    }
+
+    for(i=[0:5]) assign(rotAngle=360*i/6) rotate([0,0,rotAngle]) translate([drive_d/2+roller_d/2,0,0]) {
+	difference() {
+	  union() {
+	    cylinder(r1=roller_d/2-shrink-gear_dedendum(pitch_d=roller_d,num_teeth=roller_num_teeth)/2,r2=roller_d/2-shrink,h=gear_dedendum(pitch_d=roller_d,num_teeth=roller_num_teeth),center=false);
+          translate([0,0,gear_dedendum(pitch_d=roller_d,num_teeth=roller_num_teeth)]) cylinder(r=roller_d/2-shrink,h=rim_thickness-gear_dedendum(pitch_d=roller_d,num_teeth=roller_num_teeth),center=false);
+	    translate([0,0,rim_thickness])
+		cylinder(r1=roller_d/2-shrink,r2=roller_d/2-shrink-gear_dedendum(pitch_d=roller_d,num_teeth=roller_num_teeth),h=gear_dedendum(pitch_d=roller_d,num_teeth=roller_num_teeth),center=false);
+	    cylinder(r=roller_d/2-shrink-gear_dedendum(pitch_d=roller_d,num_teeth=roller_num_teeth),h=rim_thickness+gear_dedendum(pitch_d=roller_d,num_teeth=roller_num_teeth),center=false);
+	  }
+	  rotate([0,45,0]) cube(size=[2*shrink,roller_d-2*shrink,2*shrink],center=true);
+	  rotate([0,45,90]) cube(size=[2*shrink,roller_d-2*shrink,2*shrink],center=true);
+	  translate([0,0,-extension]) rotate([0,0,90]) {
+	    cube(size=[roller_d,roller_d,interlock_h+extension],center=false);
+	    rotate([0,0,180]) cube(size=[roller_d,roller_d,interlock_h+extension],center=false);
+	    cylinder(r1=roller_axle_d/2+2*shrink,r2=roller_axle_d/2+shrink,h=interlock_h+extension,center=false);
+	  }
+	  translate([0,0,interlock_h]) {
+	    rotate([0,0,-45]) translate([(roller_d/2-shrink)/sqrt(2),-roller_d/2,0])
+		rotate([0,45,0]) cube(size=[roller_d/2,roller_d,roller_d],center=false);
+	    rotate([0,0,180-45]) translate([(roller_d/2-shrink)/sqrt(2),-roller_d/2,0])
+		rotate([0,45,0]) cube(size=[roller_d/2,roller_d,roller_d],center=false);
+	  }
+	}
+    }
+  }
+}
+
+if(render_part==12) {
+  echo("Rendering planetary_hex_interlock_base()...");
+  planetary_hex_interlock_base(drive_axle_d=5.0,roller_axle_d=3.0,planet_d=global_planet_d, roller_num_teeth=9, drive_num_teeth=15, shrink=0.4, rim_thickness=5, wall_th=2.0, extension=0.1);
+}
+
+
 module planetary_hex_rollers(outer_d=70, planet_d=60.0, roller_num_teeth=9, roller_axle_d=3.0, drive_num_teeth=15, drive_axle_d=5.0
 	, shrink=0.1, rim_thickness=10, extension=0.1, interlock_h=2.0
 	, tube_od=Tygon_B_44_3_OD(), tube_id=Tygon_B_44_3_ID(), compress_delta=Tygon_B_44_3_ID()/4
@@ -591,6 +665,12 @@ module planetary_hex_rollers(outer_d=70, planet_d=60.0, roller_num_teeth=9, roll
 	  rotate([0,0,180]) cube(size=[drive_d,drive_d,interlock_h+extension],center=false);
 	  cylinder(r1=drive_axle_d/2+shrink,r2=drive_axle_d/2+2*shrink,h=interlock_h+extension,center=false);
 	}
+	translate([0,0,interlock_h]) {
+	  rotate([0,0,-45]) translate([(drive_d/2-shrink)/sqrt(2),-drive_d/2,0])
+	    rotate([0,45,0]) cube(size=[drive_d/2,drive_d,drive_d],center=false);
+	  rotate([0,0,180-45]) translate([(drive_d/2-shrink)/sqrt(2),-drive_d/2,0])
+	    rotate([0,45,0]) cube(size=[drive_d/2,drive_d,drive_d],center=false);
+	}
       translate([0,0,rim_thickness]) {
 	  cube(size=[drive_d,drive_d,interlock_h+extension],center=false);
 	  rotate([0,0,180]) cube(size=[drive_d,drive_d,interlock_h+extension],center=false);
@@ -635,6 +715,12 @@ module planetary_hex_rollers(outer_d=70, planet_d=60.0, roller_num_teeth=9, roll
 	  }
 	  rotate([0,45,0]) cube(size=[2*shrink,roller_d-2*shrink,2*shrink],center=true);
 	  rotate([0,45,90]) cube(size=[2*shrink,roller_d-2*shrink,2*shrink],center=true);
+	  translate([0,0,interlock_h]) {
+	    rotate([0,0,-45]) translate([(roller_d/2-shrink)/sqrt(2),-roller_d/2,0])
+		rotate([0,45,0]) cube(size=[roller_d/2,roller_d,roller_d],center=false);
+	    rotate([0,0,180-45]) translate([(roller_d/2-shrink)/sqrt(2),-roller_d/2,0])
+		rotate([0,45,0]) cube(size=[roller_d/2,roller_d,roller_d],center=false);
+	  }
         translate([0,0,rim_thickness]) {
 	    cube(size=[roller_d,roller_d,interlock_h+extension],center=false);
 	    rotate([0,0,180]) cube(size=[roller_d,roller_d,interlock_h+extension],center=false);
@@ -649,7 +735,7 @@ module planetary_hex_rollers(outer_d=70, planet_d=60.0, roller_num_teeth=9, roll
   }
 }
 
-if(render_part==12) {
+if(render_part==13) {
   echo("Rendering planetary_hex_rollers()...");
   difference() {
     planetary_hex_rollers(
@@ -673,3 +759,4 @@ if(render_part==12) {
 	, rim_thickness=16, extension=0.1);
   }
 }
+
