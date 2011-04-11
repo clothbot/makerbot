@@ -563,8 +563,8 @@ module planetary_hex_interlock_base(drive_axle_d=5.0,roller_axle_d=3.0,planet_d=
 	  translate([0,0,rim_thickness])
 	    cylinder(r1=drive_d/2-shrink,r2=drive_d/2-shrink-gear_dedendum(pitch_d=drive_d,num_teeth=drive_num_teeth),h=gear_dedendum(pitch_d=drive_d,num_teeth=drive_num_teeth),center=false);
 	}
-	rotate([0,45,0]) cube(size=[2*shrink,drive_d-2*shrink,2*shrink],center=true);
-	rotate([0,45,90]) cube(size=[2*shrink,drive_d-2*shrink,2*shrink],center=true);
+	rotate([0,45,0]) cube(size=[interlock_h/4,drive_d-2*shrink,interlock_h/4],center=true);
+	rotate([0,45,90]) cube(size=[interlock_h/4,drive_d-2*shrink,interlock_h/4],center=true);
 	translate([0,0,-extension]) rotate([0,0,90]) {
 	  cube(size=[drive_d,drive_d,interlock_h+extension],center=false);
 	  rotate([0,0,180]) cube(size=[drive_d,drive_d,interlock_h+extension],center=false);
@@ -587,8 +587,8 @@ module planetary_hex_interlock_base(drive_axle_d=5.0,roller_axle_d=3.0,planet_d=
 		cylinder(r1=roller_d/2-shrink,r2=roller_d/2-shrink-gear_dedendum(pitch_d=roller_d,num_teeth=roller_num_teeth),h=gear_dedendum(pitch_d=roller_d,num_teeth=roller_num_teeth),center=false);
 	    cylinder(r=roller_d/2-shrink-gear_dedendum(pitch_d=roller_d,num_teeth=roller_num_teeth),h=rim_thickness+gear_dedendum(pitch_d=roller_d,num_teeth=roller_num_teeth),center=false);
 	  }
-	  rotate([0,45,0]) cube(size=[2*shrink,roller_d-2*shrink,2*shrink],center=true);
-	  rotate([0,45,90]) cube(size=[2*shrink,roller_d-2*shrink,2*shrink],center=true);
+	  rotate([0,45,0]) cube(size=[interlock_h/4,roller_d-2*shrink,interlock_h/4],center=true);
+	  rotate([0,45,90]) cube(size=[interlock_h/4,roller_d-2*shrink,interlock_h/4],center=true);
 	  translate([0,0,-extension]) rotate([0,0,90]) {
 	    cube(size=[roller_d,roller_d,interlock_h+extension],center=false);
 	    rotate([0,0,180]) cube(size=[roller_d,roller_d,interlock_h+extension],center=false);
@@ -658,8 +658,8 @@ module planetary_hex_rollers(outer_d=70, planet_d=60.0, roller_num_teeth=9, roll
 	  translate([0,0,rim_thickness/2+tube_od])
 	    cylinder(r1=drive_d/2-2*shrink,r2=drive_d/2-shrink,h=rim_thickness/2-tube_od+interlock_h,center=false);
 	}
-	rotate([0,45,0]) cube(size=[2*shrink,drive_d-2*shrink,2*shrink],center=true);
-	rotate([0,45,90]) cube(size=[2*shrink,drive_d-2*shrink,2*shrink],center=true);
+	rotate([0,45,0]) cube(size=[interlock_h/2,drive_d-2*shrink,interlock_h/2],center=true);
+	rotate([0,45,90]) cube(size=[interlock_h/2,drive_d-2*shrink,interlock_h/2],center=true);
 	translate([0,0,-extension]) rotate([0,0,90]) {
 	  cube(size=[drive_d,drive_d,interlock_h+extension],center=false);
 	  rotate([0,0,180]) cube(size=[drive_d,drive_d,interlock_h+extension],center=false);
@@ -713,8 +713,8 @@ module planetary_hex_rollers(outer_d=70, planet_d=60.0, roller_num_teeth=9, roll
 	    rotate([0,0,180]) cube(size=[roller_d,roller_d,interlock_h+extension],center=false);
 	    cylinder(r1=roller_axle_d/2+shrink,r2=roller_axle_d/2+2*shrink,h=interlock_h+extension,center=false);
 	  }
-	  rotate([0,45,0]) cube(size=[2*shrink,roller_d-2*shrink,2*shrink],center=true);
-	  rotate([0,45,90]) cube(size=[2*shrink,roller_d-2*shrink,2*shrink],center=true);
+	  rotate([0,45,0]) cube(size=[interlock_h/2,roller_d-2*shrink,interlock_h/2],center=true);
+	  rotate([0,45,90]) cube(size=[interlock_h/2,roller_d-2*shrink,interlock_h/2],center=true);
 	  translate([0,0,interlock_h]) {
 	    rotate([0,0,-45]) translate([(roller_d/2-shrink)/sqrt(2),-roller_d/2,0])
 		rotate([0,45,0]) cube(size=[roller_d/2,roller_d,roller_d],center=false);
