@@ -7,7 +7,8 @@ scale_1in=25.4;
 // render_part=3; // CB_Sewable_Socket_2x2()
 // render_part=4; //   CB_Sewable_Plug_2x2();
 // render_part=5; //   minkowski sum CB_Sewable_Plug_2x2();
-render_part=6; // CB_Sewable_Socket_2x2_0p1_SIP()
+// render_part=6; // CB_Sewable_Socket_2x2_0p1_SIP()
+render_part=7; // CB_Sewable_Channel()
 
 module CB_Sewable_Socket_Holes(extension=0.1
 	, hole_d=4.9
@@ -252,5 +253,57 @@ module CB_Sewable_Socket_2x2_0p1_SIP(extension=0.1
 if(render_part==6) {
   echo("Rendering CB_Sewable_Socket_2x2_0p1_SIP()...");
   CB_Sewable_Socket_2x2_0p1_SIP();
+}
+
+module CB_Sewable_Channel( extension=0.1
+	, body_h=5.0
+	, x_channel_h=1.5
+	, x_channel_w=1.0
+	, x_channel_l=2*0.1*scale_1in
+	, y_channel_h=3.0
+	, y_channel_w=1.0
+	, y_channel_l=2*0.1*scale_1in
+	, diag_channel_h=4.5
+	, diag_channel_w=1.0
+	, thread_d=1.0
+	) {
+  union() {
+    translate([0,0,body_h/2]) {
+      cube(size=[thread_d,thread_d,2*extension+body_h],center=true);
+      translate([-x_channel_l/2,0,0]) cube(size=[thread_d,thread_d,2*extension+body_h],center=true);
+      translate([x_channel_l/2,0,0]) cube(size=[thread_d,thread_d,2*extension+body_h],center=true);
+      translate([0,y_channel_l/2,0]) cube(size=[thread_d,thread_d,2*extension+body_h],center=true);
+      translate([0,-y_channel_l/2,0]) cube(size=[thread_d,thread_d,2*extension+body_h],center=true);
+      translate([x_channel_l/2,y_channel_l/2,0]) cube(size=[thread_d,thread_d,2*extension+body_h],center=true);
+      translate([-x_channel_l/2,y_channel_l/2,0]) cube(size=[thread_d,thread_d,2*extension+body_h],center=true);
+      translate([-x_channel_l/2,-y_channel_l/2,0]) cube(size=[thread_d,thread_d,2*extension+body_h],center=true);
+      translate([x_channel_l/2,-y_channel_l/2,0]) cube(size=[thread_d,thread_d,2*extension+body_h],center=true);
+    }
+    translate([0,0,x_channel_h]) {
+      translate([0,0,(body_h-x_channel_h+extension)/2])
+	cube(size=[x_channel_l+2*extension,x_channel_w,body_h-x_channel_h+extension],center=true);
+      rotate([45,0,0])
+	cube(size=[x_channel_l+2*extension,x_channel_w,x_channel_w],center=true);
+    }
+    translate([0,0,y_channel_h]) {
+      translate([0,0,(body_h-y_channel_h+extension)/2])
+	cube(size=[y_channel_w,y_channel_l+2*extension,body_h-y_channel_h+extension],center=true);
+      rotate([0,45,0])
+	cube(size=[y_channel_w,x_channel_l+2*extension,y_channel_w],center=true);
+    }
+    translate([0,0,diag_channel_h]) {
+      translate([0,0,(body_h-diag_channel_h+extension)/2]) {
+	rotate([0,0,45])
+	  cube(size=[sqrt(x_channel_l*x_channel_l+y_channel_l*y_channel_l+4*extension*extension),diag_channel_w,body_h-diag_channel_h+extension], center=true);
+	rotate([0,0,-45])
+	  cube(size=[sqrt(x_channel_l*x_channel_l+y_channel_l*y_channel_l+4*extension*extension),diag_channel_w,body_h-diag_channel_h+extension], center=true);
+      }
+    }
+  }
+}
+
+if(render_part==7) {
+  echo("Rendering CB_Sewable_Channel()...");
+  CB_Sewable_Channel();
 }
 
