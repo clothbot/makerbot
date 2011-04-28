@@ -1,9 +1,10 @@
 // Using Minkowski sums for beveled bottom edges.
 
-render_part=1; //bevel_mask()
-render_part=2; // test_bevel_minkowski() on cube
-render_part=3; // test_bevel_minkowski() on cylinder
-render_part=4; // test_bevel_minkowski() on holes
+//render_part=1; //bevel_mask()
+//render_part=2; // test_bevel_minkowski() on cube
+//render_part=3; // test_bevel_minkowski() on cylinder
+//render_part=4; // test_bevel_minkowski() on holes
+render_part=5; // test_bevel_minkowski() on multiple parts
 
 module bevel_mask(extension=0.1,bevel_w=1.0) {
   render() translate([0,bevel_w,0]) difference() {
@@ -55,4 +56,19 @@ if(render_part==4) {
 	translate([5,5,-0.1]) cylinder(r=2.5,h=10+2*0.1,center=false);
     }
   }
+}
+
+if(render_part==5) {
+  echo("Rendering test_bevel_minkowski() on multiple parts");
+  test_bevel_minkowski(bevel_w=0.5) {
+    cylinder(r=5,h=10,center=false);
+    translate([5,5,0]) cube(size=[10,10,10],center=false);
+    translate([-15,-15,0]) render() difference() {
+	cube(size=[10,10,10], center=false);
+	translate([5,5,-0.1]) cylinder(r=2.5,h=10+2*0.1,center=false);
+    }
+  }
+  // reference cubes
+  translate([5-0.5,0,0]) cube(size=[0.5,0.5,0.5],center=false);
+  translate([5,5,0]) cube(size=[0.5,0.5,0.5],center=false);
 }
