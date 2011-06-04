@@ -1,5 +1,5 @@
-h=5;
-r=10;
+h=3.2;
+r=5.5/2;
 fn=4;
 module test_cylinder_fn(h=5,r=10,fn=6) {
   union() {
@@ -13,8 +13,8 @@ module test_cylinder_fn(h=5,r=10,fn=6) {
 
 step_start=4;
 step_size=1;
-step_n=20;
-row_n=6;
+step_n=16;
+row_n=4;
 for(i=[step_start:step_size:(step_n+step_start-1)*step_size]) translate([2.5*r*((i-step_start)%row_n),2.5*r*(i-(i-step_start)%row_n-step_start)/row_n,0])
   test_cylinder_fn(h=h,r=r,fn=i);
 translate([-r,-r,-3*h]) cube(size=[2*r,2*r,h],center=false);
