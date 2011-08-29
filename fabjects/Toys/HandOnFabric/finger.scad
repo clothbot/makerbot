@@ -64,6 +64,7 @@ module hand(finger_l=32,finger_d=6.0) {
   translate([1.5*(finger_d+2.0),5.0,0]) finger(l=finger_l,d=finger_d);
 }
 
-finger(l=32,d=6.0);
+rotate([0,0,90]) finger(l=64,d=12.0);
 
 // hand();
+
