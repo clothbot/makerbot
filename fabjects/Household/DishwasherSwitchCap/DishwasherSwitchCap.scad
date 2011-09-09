@@ -1,4 +1,7 @@
 // Dish Washer Switch Cap
+//
+// - Inserts into the handle of Maytag Model MDB7100AWS Dish Washer.
+// - Addresses mechanical wear issue with latching numbs that press down the handle to engage the power switches.
 
 module DishwasherSwitchCap() {
   difference() {
@@ -14,7 +17,6 @@ module DishwasherSwitchCap() {
 	cube(size=[10.5,24.0,7.8-1.5],center=false);
    }
    translate([-(10.5-4)/2,-20.0+2.0,-0.1])
-//	cube(size=[10.5-4.0,20+14.5+0.1,7.8+0.2],center=false);
 	cube(size=[10.5-4.0,20,7.8+0.2],center=false);
   }
 }
