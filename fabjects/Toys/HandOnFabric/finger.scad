@@ -13,10 +13,10 @@ module joint1(l=8.0,d=3.0) {
    translate([0,l/2,d/3]) rotate([90,0,0])
      cylinder($fn=6,r=d/3,h=l/2,center=true);
   }
-  translate([0,l/2,d/3]) rotate([90,0,0]) 
-    cylinder($fn=6,r=d/6,h=l+0.2,center=true);
-  translate([0,l/2,0]) rotate([90,0,0])
-    cylinder($fn=6,r=d/12,h=l+0.2,center=true);
+  translate([0,-0.1,d/3]) rotate([-90,0,0]) 
+    cylinder($fn=6,r=d/6,h=l+0.2,center=false);
+  translate([0,-0.1,0]) rotate([-90,0,0])
+    cylinder($fn=6,r=d/12,h=l+0.2,center=false);
  }
 }
 
@@ -33,10 +33,10 @@ module joint2(l=5.0,d=3.0) {
    translate([0,l/2,d/3]) rotate([90,0,0])
      cylinder($fn=6,r=d/3,h=l/2,center=true);
   }
-  translate([0,l/2,d/3]) rotate([90,0,0]) 
-    cylinder($fn=6,r=d/6,h=l+0.2,center=true);
-  translate([0,l/2,0]) rotate([90,0,0])
-    cylinder($fn=6,r=d/12,h=l+0.2,center=true);
+  translate([0,-0.1,d/3]) rotate([-90,0,0]) 
+    cylinder($fn=6,r=d/6,h=l+0.2,center=false);
+  translate([0,-0.1,0]) rotate([-90,0,0])
+    cylinder($fn=6,r=d/12,h=l+0.2,center=false);
  }
 }
 
@@ -53,10 +53,10 @@ module joint3(l=3.0,d=3.0) {
    translate([0,l/2,d/3]) rotate([90,0,0])
      cylinder($fn=6,r=d/3,h=l/2,center=true);
   }
-  translate([0,l/2,d/3]) rotate([90,0,0])
-    cylinder($fn=6,r=d/6,h=l+0.2,center=true);
-  translate([0,l/2,0]) rotate([90,0,0])
-    cylinder($fn=6,r=d/12,h=l+0.2,center=true);
+  translate([0,-0.1,d/3]) rotate([-90,0,0])
+    cylinder($fn=6,r=d/6,h=l+0.2,center=false);
+  translate([0,-0.1,0]) rotate([-90,0,0])
+    cylinder($fn=6,r=d/12,h=l+0.2,center=false);
  }
 }
 
