@@ -41,6 +41,8 @@ module joint2(l=5.0,d=3.0) {
     cylinder($fn=6,r=d/6,h=l+0.2,center=false);
   translate([0,-0.1,0]) rotate([-90,0,0])
     cylinder($fn=6,r=d/12,h=l+0.2,center=false);
+  translate([0,l/2,0]) rotate([-90,0,90])
+    cylinder($fn=6,r=d/12,h=l+0.2,center=true);
  }
 }
 
@@ -85,7 +87,11 @@ module wrist_joint(l=8.0,d=3.0,bolt_d=1.6) {
     cylinder($fn=6,r=d/12,h=l+0.2,center=false);
   translate([0,3*bolt_d/2,-0.1])
     cylinder($fn=12,r=bolt_d/2,h=d+0.2,center=false);
+  translate([0,3*l/4,0]) rotate([-90,0,90])
+    cylinder($fn=6,r=d/12,h=l+0.2,center=true);
   translate([0,l/2,0]) rotate([-90,0,90])
+    cylinder($fn=6,r=d/12,h=l+0.2,center=true);
+  translate([0,l/4,0]) rotate([-90,0,90])
     cylinder($fn=6,r=d/12,h=l+0.2,center=true);
  }
 }
