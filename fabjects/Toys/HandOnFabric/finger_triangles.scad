@@ -6,6 +6,8 @@ render_part=3; // joint_end()
 render_part=4; // joint1()
 //render_part=5; // joint1() animated
 render_part=6; // finger()
+render_part=7; // three finger()
+render_part=8; // ten fingers()
 
 module tri_equ(l=3.0) {
   scale([l,l])
@@ -132,25 +134,51 @@ if(render_part==5) {
 }
 
 module finger(l=8+5+3,d=3.0,s=0.2,bolt_d=1.6) {
+ translate([0,(9+s)*l/16,0]) {
   translate([0,-(8+s)*l/16,0])
     //wrist_joint(l=8*l/16,d=d,bolt_d=bolt_d);
-    joint1(l=8*l/16,d=d,close_angle=0
+    render() joint1(l=8*l/16,d=d,close_angle=0
 	,bolt_d=bolt_d,bolt_base=true,bolt_tip=false
 	,bevel_base=false,bevel_tip=true);
-  joint1(l=8*l/16,d=d,close_angle=0,bevel_base=true,bevel_tip=true);
+  render() joint1(l=8*l/16,d=d,close_angle=0,bevel_base=true,bevel_tip=true);
   translate([0,(8+s)*l/16,0]) {
     // joint2(l=5*l/16,d=d);
-    joint1(l=5*l/16,d=d,close_angle=0,bevel_base=true,bevel_tip=true);
+    render() joint1(l=5*l/16,d=d,close_angle=0,bevel_base=true,bevel_tip=true);
     translate([0,(5+s)*l/16,0])
       // joint3(l=3*l/16,d=d,bolt_d=bolt_d);
-      joint1(l=5*l/16,d=d,close_angle=0
+      render() joint1(l=5*l/16,d=d,close_angle=0
 		,bolt_d=bolt_d,bolt_base=false,bolt_tip=true
 		,bevel_base=true,bevel_tip=false);
   }
+ }
 }
 
 if(render_part==6) {
   echo("Rendering finger()...");
-  finger(l=64,d=12.0,bolt_d=3.0);
+  finger(l=32,d=6.0,bolt_d=1.5);
 }
 
+if(render_part==7) {
+  echo("Rendering three finger()...");
+  finger(l=32,d=6.0,bolt_d=1.5);
+  translate([-6.0*3.5,0,0]) 
+    finger(l=32,d=6.0,bolt_d=1.5);
+  translate([6.0*3.5,0,0]) 
+    finger(l=32,d=6.0,bolt_d=1.5);
+}
+
+if(render_part==8) {
+  echo("Rendering ten fingers()...");
+  translate([-6.0*7.0,0,0]) finger(l=32,d=6.0,bolt_d=1.5);
+  translate([-6.0*3.5,0,0]) finger(l=32,d=6.0,bolt_d=1.5);
+  finger(l=32,d=6.0,bolt_d=1.5);
+  translate([6.0*3.5,0,0]) finger(l=32,d=6.0,bolt_d=1.5);
+  translate([6.0*7.0,0,0]) finger(l=32,d=6.0,bolt_d=1.5);
+  mirror([0,1,0]) {
+   translate([-6.0*7.0,0,0]) finger(l=32,d=6.0,bolt_d=1.5);
+   translate([-6.0*3.5,0,0]) finger(l=32,d=6.0,bolt_d=1.5);
+   finger(l=32,d=6.0,bolt_d=1.5);
+   translate([6.0*3.5,0,0]) finger(l=32,d=6.0,bolt_d=1.5);
+   translate([6.0*7.0,0,0]) finger(l=32,d=6.0,bolt_d=1.5);
+  }
+}
