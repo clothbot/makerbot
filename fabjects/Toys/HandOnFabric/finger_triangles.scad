@@ -39,7 +39,9 @@ if(render_part==1) {
 
 module joint_side(l=8.0,d=0.3,s=0.1) {
   difference() {
-    rotate([90,0,180]) linear_extrude(height=l) tri_equ(l=d/2);
+    // rotate([90,0,180]) linear_extrude(height=l) tri_equ(l=d/2);
+    rotate([-90,0,0]) cylinder($fn=6,r=d/4,h=l,center=false);
+    mirror([0,0,1]) translate([-d/4-s,-s,0]) cube(size=[d/2+2*s,l+2*s,d/2],center=false);
     translate([0,-0.1,0]) rotate([-90,0,0])
       cylinder($fn=6,r=d/8,h=l+0.2,center=false);
     translate([0,l/2,0]) rotate([-90,0,90])
@@ -50,9 +52,11 @@ module joint_side(l=8.0,d=0.3,s=0.1) {
 module joint_end(l=8.0,d=0.3,s=0.1) {
   difference() {
     union() {
-      rotate([90,0,180]) linear_extrude(height=l) tri_equ(l=d/2);
+      // rotate([90,0,180]) linear_extrude(height=l) tri_equ(l=d/2);
+      rotate([-90,0,0]) cylinder($fn=6,r=d/4,h=l,center=false);
       translate([d/4,0,0]) rotate([90,60,180]) translate([-d/4,0,0]) linear_extrude(height=l) tri_equ(l=d/2);
     }
+    mirror([0,0,1]) translate([-d/4-s,-s,0]) cube(size=[d/2+2*s,l+2*s,d/2],center=false);
     translate([0,-0.1,0]) rotate([-90,0,0])
       cylinder($fn=6,r=d/8,h=l+0.2,center=false);
     translate([0,l/2,0]) rotate([-90,0,90])
