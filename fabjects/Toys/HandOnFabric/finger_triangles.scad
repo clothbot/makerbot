@@ -1,9 +1,9 @@
 // Finger variant constructed with triangle cross-sections.
 //render_part=0; // tri_equ, equilateral triangle
-// render_part=1; // joint_core()
+ render_part=1; // joint_core()
 //render_part=2; // joint_side()
 //render_part=3; // joint_end()
-render_part=4; // joint1()
+//render_part=4; // joint1()
 
 module tri_equ(l=3.0) {
   scale([l,l])
@@ -48,12 +48,10 @@ module joint_side(l=8.0,d=0.3,s=0.1) {
       translate([0,0,(sqrt(3)/2)*d/2]) rotate([-90,0,0]) cylinder($fn=6,r=d/4,h=l,center=false);
     }
     mirror([0,0,1]) translate([-d/4-s,-s,0]) cube(size=[d/2+2*s,l+2*s,d/2],center=false);
-    translate([0,-0.1,0]) rotate([-90,0,0])
-      cylinder($fn=6,r=d/8,h=l+0.2,center=false);
-    translate([0,-0.1,(sqrt(3)/2)*d/2]) rotate([-90,0,0])
-      cylinder($fn=6,r=d/8,h=l+0.2,center=false); 
-   translate([0,l/2,0]) rotate([-90,0,90])
-      cylinder($fn=6,r=d/8,h=l+0.2,center=true);
+    translate([0,-s,0]) rotate([-90,0,0]) cylinder($fn=6,r=d/8,h=l+2*s,center=false);
+    translate([0,-s,(sqrt(3)/2)*d/2]) rotate([-90,0,0]) cylinder($fn=6,r=d/8,h=l+2*s,center=false); 
+    translate([0,-s,(sqrt(3)/2)*d/2]) rotate([0,60,0]) translate([-d/2,0,0]) cube(size=[d,l+2*s,d],center=false);
+    translate([0,l/2,0]) rotate([-90,0,90]) cylinder($fn=6,r=d/8,h=l+2*s,center=true);
   }
 }
 
@@ -67,17 +65,17 @@ module joint_end(l=8.0,d=0.3,s=0.1) {
     union() {
       // rotate([90,0,180]) linear_extrude(height=l) tri_equ(l=d/2);
       rotate([-90,0,0]) cylinder($fn=6,r=d/4,h=l,center=false);
-      translate([d/3,0,(sqrt(3)/2)*d/4]) rotate([-90,0,0]) cylinder($fn=6,r=d/4,h=l,center=false);
-
-      //translate([d/4,0,0]) rotate([90,60,180]) translate([-d/4,0,0]) linear_extrude(height=l) tri_equ(l=d/2);
+      //translate([d/3,0,(sqrt(3)/2)*d/4]) rotate([-90,0,0]) cylinder($fn=6,r=d/4,h=l,center=false);
+      translate([0,0,(sqrt(3)/2)*d/2]) rotate([-90,0,0]) cylinder($fn=6,r=d/4,h=l,center=false);
     }
     mirror([0,0,1]) translate([-d/4-s,-s,0]) cube(size=[d/2+2*s,l+2*s,d/2],center=false);
     translate([0,-s,0]) rotate([-90,0,0])
       cylinder($fn=6,r=d/8,h=l+2*s,center=false);
-    translate([d/3,-s,(sqrt(3)/2)*d/4]) rotate([-90,0,0]) cylinder($fn=6,r=d/8,h=l+2*s,center=false);
-
+    //translate([d/3,-s,(sqrt(3)/2)*d/4]) rotate([-90,0,0]) cylinder($fn=6,r=d/8,h=l+2*s,center=false);
     translate([0,l/2,0]) rotate([-90,0,90])
       cylinder($fn=6,r=d/8,h=l+2*s,center=true);
+    translate([0,-s,(sqrt(3)/2)*d/2]) rotate([-90,0,0]) cylinder($fn=6,r=d/8,h=l+2*s,center=false); 
+    translate([0,-s,(sqrt(3)/2)*d/2]) rotate([0,-60,0]) translate([-d/2,0,0]) cube(size=[d,l+2*s,d],center=false);
   }
 }
 
