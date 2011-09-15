@@ -15,6 +15,8 @@ card_cut_angle=45;
 //render_part=2; // Uncomment to generate a hinge();
 render_part=3; // Uncomment to generate a stand and hinge();
 //render_part=4; // Uncomment to generate card_hinge();
+render_part=5; // Uncomment to generate a SlowChildren
+// render_part=6; // Uncomment to generate a LittleOldLady; doesn't work with this dxf.
 
 module stand(w=50,l=75,slot_w=3*50/4,slot_inset=75/4,slot_l=75,h=5.0,plate_angle=10,plate_l=15.0,peg_d=3.0,space=1.0) {
   difference() {
@@ -64,5 +66,32 @@ module card_hinge(w=3*50/4,l=75/4,h=5.0,peg_d=3.0, card_th=0.2, cut_angle=60) {
 
 if(render_part==4) {
   card_hinge(w=hinge_w,l=hinge_inset/2,h=stand_th,peg_d=stand_peg_d,card_th=card_th,cut_angle=card_cut_angle);
+}
+
+module hinge_with_profile(w=3*50/4,l=75/4,h=5.0,peg_d=3.0,image_x=-15,image_y=10,dxf_scale=10.0,profile_h=6.0){
+  union() {
+    hinge(w=w,l=l,h=h,peg_d=peg_d);
+    translate([image_x,image_y,0]) linear_extrude(height=profile_h) scale(dxf_scale) child(0);
+  }
+}
+
+if(render_part==5) {
+  hinge_with_profile(w=hinge_w,l=6.5,h=stand_th,peg_d=stand_peg_d,image_x=-20,image_y=5,dxf_scale=14,profile_h=5.0) {
+    import(file="dxf/SlowChildren.dxf");
+  }
+}
+
+// These don't work yet.
+if(render_part==6) {
+  difference() {
+    import_dxf(file="dxf/LittleOldLady_Outer.dxf");
+    import_dxf(file="dxf/LittleOldLady_Inner.dxf");
+  }
+}
+
+if(render_part==7) {
+  hinge_with_profile(w=hinge_w,l=6.5,h=stand_th,peg_d=stand_peg_d,image_x=-20,image_y=5,dxf_scale=14,profile_h=5.0) {
+    import_dxf(file="dxf/LittleOldLady.dxf");
+  }
 }
 
