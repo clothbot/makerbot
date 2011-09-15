@@ -1,4 +1,6 @@
-// Target Stand
+// Raceway Targets
+//
+
 stand_w=50;
 stand_l=75;
 stand_th=3.0;
@@ -9,10 +11,10 @@ slot_l=75;
 card_th=0.6;
 card_cut_angle=45;
 
-render_part=1; // stand();
-//render_part=2; // hinge();
-//render_part=3; // stand and hinge();
-render_part=4; // card_hinge();
+//render_part=1; // Uncomment to generate a stand();
+//render_part=2; // Uncomment to generate a hinge();
+render_part=3; // Uncomment to generate a stand and hinge();
+//render_part=4; // Uncomment to generate card_hinge();
 
 module stand(w=50,l=75,slot_w=3*50/4,slot_inset=75/4,slot_l=75,h=5.0,plate_angle=10,plate_l=15.0,peg_d=3.0,space=1.0) {
   difference() {
@@ -31,7 +33,7 @@ module stand(w=50,l=75,slot_w=3*50/4,slot_inset=75/4,slot_l=75,h=5.0,plate_angle
 }
 
 if(render_part==1) {
-  stand(w=stand_w,l=stand_l,h=stand_th,,slot_inset=hinge_inset,peg_d=stand_peg_d);
+  stand(w=stand_w,l=stand_l,h=stand_th,slot_inset=hinge_inset,peg_d=stand_peg_d);
 }
 
 module hinge(w=3*50/4,l=75-75/4,h=5.0,peg_d=3.0) {
@@ -49,7 +51,7 @@ if(render_part==2) {
 
 if(render_part==3) {
   stand(w=stand_w,l=stand_l,h=stand_th,,slot_inset=hinge_inset,peg_d=stand_peg_d);
-  translate([0,hinge_inset+stand_th+stand_peg_d+stand_th,0]) hinge(w=hinge_w,l=stand_l-hinge_inset,h=stand_th,peg_d=stand_peg_d);
+  translate([0,hinge_inset+stand_th+stand_peg_d+stand_th/2,0]) hinge(w=hinge_w,l=stand_l-hinge_inset,h=stand_th,peg_d=stand_peg_d);
 }
 
 module card_hinge(w=3*50/4,l=75/4,h=5.0,peg_d=3.0, card_th=0.2, cut_angle=60) {
