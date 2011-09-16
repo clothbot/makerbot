@@ -3,6 +3,8 @@
 // Changes:
 //   2011/09/16
 //    - Added Froggie (Cleaned).
+//    - Added SpookyCat.
+//
 
 stand_w=50;
 stand_l=75;
@@ -20,7 +22,9 @@ card_cut_angle=45;
 //render_part=4; // Uncomment to generate card_hinge();
 //render_part=5; // Uncomment to generate a SlowChildren
 //render_part=6; // Uncomment to generate a LittleOldLady; doesn't work with this dxf.
-render_part=8; // Uncomment to generate Froggie
+//render_part=8; // Uncomment to generate Froggie
+render_part=9; // Uncomment to generate SpookyCat
+render_part=10; // Uncomment to generate ChickenCrossesTheRoad
 
 module stand(w=50,l=75,slot_w=3*50/4,slot_inset=75/4,slot_l=75,h=5.0,plate_angle=10,plate_l=15.0,peg_d=3.0,space=1.0) {
   difference() {
@@ -115,5 +119,19 @@ if(render_part==7) {
 if(render_part==8) {
   hinge_with_profile(w=hinge_w,l=32,h=stand_th,peg_d=stand_peg_d,image_x=-21.5,image_y=6,dxf_scale=14,profile_h=5.0,rounded=true) {
     import(file="dxf/Froggie_Cleaned.dxf");
+  }
+}
+
+// SpookyCat
+if(render_part==9) {
+  hinge_with_profile(w=hinge_w,l=23,h=stand_th,peg_d=stand_peg_d,image_x=-17,image_y=6,dxf_scale=18,profile_h=5.0,rounded=true) {
+    import(file="dxf/SpookyCat.dxf");
+  }
+}
+
+// ChickenCrossesTheRoad
+if(render_part==10) {
+  hinge_with_profile(w=hinge_w,l=23,h=stand_th,peg_d=stand_peg_d,image_x=-25,image_y=6,dxf_scale=14,profile_h=5.0,rounded=true) {
+    import(file="dxf/ChickenCrossesTheRoad.dxf");
   }
 }
