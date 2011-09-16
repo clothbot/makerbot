@@ -1,5 +1,8 @@
 // Raceway Targets
 //
+// Changes:
+//   2011/09/16
+//    - Added Froggie (Cleaned).
 
 stand_w=50;
 stand_l=75;
