@@ -4,7 +4,7 @@
 //   2011/09/16
 //    - Added Froggie (Cleaned).
 //    - Added SpookyCat.
-//
+//    - Added ChickenCrossesTheRoad.
 
 stand_w=50;
 stand_l=75;
