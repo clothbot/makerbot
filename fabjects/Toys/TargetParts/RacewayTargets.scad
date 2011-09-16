@@ -13,10 +13,11 @@ card_cut_angle=45;
 
 //render_part=1; // Uncomment to generate a stand();
 //render_part=2; // Uncomment to generate a hinge();
-render_part=3; // Uncomment to generate a stand and hinge();
+//render_part=3; // Uncomment to generate a stand and hinge();
 //render_part=4; // Uncomment to generate card_hinge();
-render_part=5; // Uncomment to generate a SlowChildren
-// render_part=6; // Uncomment to generate a LittleOldLady; doesn't work with this dxf.
+//render_part=5; // Uncomment to generate a SlowChildren
+//render_part=6; // Uncomment to generate a LittleOldLady; doesn't work with this dxf.
+render_part=8; // Uncomment to generate Froggie
 
 module stand(w=50,l=75,slot_w=3*50/4,slot_inset=75/4,slot_l=75,h=5.0,plate_angle=10,plate_l=15.0,peg_d=3.0,space=1.0) {
   difference() {
@@ -68,30 +69,48 @@ if(render_part==4) {
   card_hinge(w=hinge_w,l=hinge_inset/2,h=stand_th,peg_d=stand_peg_d,card_th=card_th,cut_angle=card_cut_angle);
 }
 
-module hinge_with_profile(w=3*50/4,l=75/4,h=5.0,peg_d=3.0,image_x=-15,image_y=10,dxf_scale=10.0,profile_h=6.0){
+module hinge_with_profile(w=3*50/4,l=75/4,h=5.0,peg_d=3.0
+	,image_x=-15,image_y=10,dxf_scale=10.0,profile_h=6.0,rounded=false
+	,profile_colour=[1,0,0]
+	){
   union() {
-    hinge(w=w,l=l,h=h,peg_d=peg_d);
-    translate([image_x,image_y,0]) linear_extrude(height=profile_h) scale(dxf_scale) child(0);
+    if(!rounded) hinge(w=w,l=l,h=h,peg_d=peg_d);
+    if(rounded) union() {
+      hinge(w=w,l=l-w/2,h=h,peg_d=peg_d);
+      translate([0,l-w/2,0]) difference() {
+        cylinder(r=w/2,h=h,center=false);
+        translate([0,-w/2,0]) cube(size=[w,w,3*h],center=true);
+      }
+    }
+    color(profile_colour) translate([image_x,image_y,0]) linear_extrude(height=profile_h) scale(dxf_scale) child(0);
   }
 }
 
+// Slow Children
 if(render_part==5) {
   hinge_with_profile(w=hinge_w,l=6.5,h=stand_th,peg_d=stand_peg_d,image_x=-20,image_y=5,dxf_scale=14,profile_h=5.0) {
     import(file="dxf/SlowChildren.dxf");
   }
 }
 
-// These don't work yet.
+// These LittleOldLady attemptsdon't work yet.
 if(render_part==6) {
-  difference() {
-    import_dxf(file="dxf/LittleOldLady_Outer.dxf");
-    import_dxf(file="dxf/LittleOldLady_Inner.dxf");
-  }
+//  difference() {
+//    import_dxf(file="dxf/LittleOldLady_Outer.dxf");
+//    import_dxf(file="dxf/LittleOldLady_Inner.dxf");
+//  }
+    import_dxf(file="dxf/LittleOldLadyV2.dxf");
 }
 
 if(render_part==7) {
   hinge_with_profile(w=hinge_w,l=6.5,h=stand_th,peg_d=stand_peg_d,image_x=-20,image_y=5,dxf_scale=14,profile_h=5.0) {
-    import_dxf(file="dxf/LittleOldLady.dxf");
+    import_dxf(file="dxf/LittleOldLadyV2.dxf");
   }
 }
 
+// Froggie
+if(render_part==8) {
+  hinge_with_profile(w=hinge_w,l=32,h=stand_th,peg_d=stand_peg_d,image_x=-21.5,image_y=6,dxf_scale=14,profile_h=5.0,rounded=true) {
+    import(file="dxf/Froggie_Cleaned.dxf");
+  }
+}
