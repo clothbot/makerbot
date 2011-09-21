@@ -17,7 +17,7 @@ module pendant_no(no_r=15,single_sided=true) {
       }
     }
     //cylinder(r=80,h=21,center=true);
-    rotate([-90,0,0]) cylinder(r=no_r/2,h=150,center=false);
+    rotate([-90,0,0]) cylinder(r=5*no_r/8,h=150,center=false);
     translate([0,0,-2*no_r]) cylinder(r=100+3*no_r,h=no_r,center=false);
   }
 }
@@ -33,8 +33,13 @@ module no_bullets(no_r=15, single_sided=true) {
       }
     rotate([0,45,0]) cylinder(r=no_r,h=2*(100-no_r/2),center=true);
     if(single_sided) rotate([90,0,0]) translate([0,0,-no_r]) difference() {
-      cylinder(r=100-no_r/2,h=no_r,center=false);
-      translate([0,100,-no_r]) cylinder(r=2.5*no_r,h=3*no_r,center=false);
+      //cylinder(r=100-no_r/2,h=no_r,center=false);
+      union() {
+        translate([0,0,3*no_r/4]) scale([100-no_r/2,100-no_r/2,no_r/2]) sphere($fs=0.1,r=1.0,center=true);
+        translate([0,0,-no_r/2]) cylinder(r=100-no_r/2,h=no_r,center=false);
+      }
+      translate([0,100,0]) sphere($fs=0.01,r=2.84*no_r,center=false);
+      translate([0,0,-no_r]) cylinder(r=100,h=no_r,center=false);
     }
 
     rotate([90,0,0]) translate([0,0,-no_r/2]) {
@@ -50,4 +55,4 @@ module no_bullets(no_r=15, single_sided=true) {
   }
 }
 
-scale(0.1) no_bullets(single_sided=true);
+translate([0,0,4.5]) rotate([-90,0,0]) scale(0.3) no_bullets(no_r=15,single_sided=true);
