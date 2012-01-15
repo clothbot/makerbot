@@ -2,7 +2,8 @@
 // Encoding from http://en.wikipedia.org/wiki/ASCII
 
 function 8bit_polyfont() = [
-  [8,8],[
+  [8,8],["Decimal Byte","Caret Notation","Character Escape Code","Abbreviation","Name","[points,paths]"]
+  ,[
    [  0,"^@","\0","NUL","Null character",[]]
   ,[  1,"^A","",  "SOH","Start of Header",[]]
   ,[  2,"^B","",  "STX","Start of Text",[]]
