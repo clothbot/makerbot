@@ -1,6 +1,8 @@
 // polytext module
 // Encoding from http://en.wikipedia.org/wiki/ASCII
 
+render_part=0; // polytext()
+
 function 8bit_polyfont() = [
   [8,8],["Decimal Byte","Caret Notation","Character Escape Code","Abbreviation","Name","[points,paths]"]
   ,[
@@ -138,7 +140,24 @@ function 8bit_polyfont() = [
   ,[127,"^?","",  "DEL","Delete",[]]
   ] ];
 
-module polytext(charstring,size,font) {
-  
+module polytext(charstring,size,font,line=0) {
+  char_width=font[0][0];
+  char_height=font[0][0];
+  for(i=[0:len(charstring)-1]) {
+    // echo(charstring[i]);
+    translate([i*char_width*size/char_width,line*char_height*size/char_height]) {
+      for(j=[0:len(font[2])-1]) {
+		// echo("Checking %s against %s...",charstring[i],font[2][j][2]);
+        if(charstring[i]==font[2][j][2]) {
+	      polygon(points=font[2][j][5][0],paths=font[2][j][5][1]);
+	    }
+      }
+    }
+  }
+}
+
+if(render_part==0) {
+  echo("Testing polytext()...");
+  polytext("!!!",8,8bit_polyfont());
 }
 
