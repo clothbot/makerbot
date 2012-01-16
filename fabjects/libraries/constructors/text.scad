@@ -218,19 +218,20 @@ function 8bit_polyfont() = [
   ,[127,"^?","",  "DEL","Delete",[]]
   ] ];
 
-module outline_2d(outline,width=0.1,resolution=8) {
-  for(j=[0:$children-1]) {
-    if(outline && resolution > 4) {
-      render() union() {
-        for(i=[0:resolution-1]) assign(dx=width*cos(360*i/resolution),dy=width*sin(360*i/resolution))
-	      difference() {
-	        child(j);
-	        translate([dx,dy]) child(j);
-	      }
+module outline_2d(outline,points,paths,width=0.1,resolution=8) {
+  if(outline && resolution > 4) {
+    for(j=[0:len(paths)-1]) union() {
+      for(i=[1:len(paths[j])-1]) hull() {
+	    translate(points[paths[j][i-1]]) circle($fn=resolution,r=width/2);
+	    translate(points[paths[j][i]]) circle($fn=resolution,r=width/2);
       }
-    } else {
-      child(j);
+      hull() {
+	    translate(points[paths[j][len(paths[j])-1]]) circle($fn=resolution,r=width/2);
+	    translate(points[paths[j][0]]) circle($fn=resolution,r=width/2);
+      }
     }
+  } else {
+      polygon(points=points,paths=paths);
   }
 }
 
@@ -268,8 +269,8 @@ module polytext(charstring,size,font,line=0,justify=1
         if(charstring[i]==font[2][j][2]) {
 	  if(char_thickness==0)
 	    bold_2d(bold,width=bold_width,resolution=bold_resolution)
-		  outline_2d(outline,width=outline_width,resolution=outline_resolution)
-		    render() polygon(points=font[2][j][5][0],paths=font[2][j][5][1]);
+		  render() outline_2d(outline,points=font[2][j][5][0],paths=font[2][j][5][1]
+			,width=outline_width,resolution=outline_resolution); 
 	    if(underline && charstring[i] != " ") {
 	      translate(underline_start) square(size=[char_width-2*underline_start[0],underline_width],center=false);
 		}
