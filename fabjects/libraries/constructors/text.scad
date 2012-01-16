@@ -125,13 +125,35 @@ function 8bit_polyfont() = [
   ,[ 67,"C","C",  "", "",[
 	[[2,1],[2,2],[1,2],[1,6],[2,6],[2,7],[6,7],[6,6],[7,6],[7,5],[5,5],[5,6],[3,6],[3,2],[5,2],[5,3],[7,3],[7,2],[6,2],[6,1]]	    ,[[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]]
 	]]
-  ,[ 68,"D","D",  "", "",[]]
-  ,[ 69,"E","E",  "", "",[]]
-  ,[ 70,"F","F",  "", "",[]]
-  ,[ 71,"G","G",  "", "",[]]
-  ,[ 72,"H","H",  "", "",[]]
-  ,[ 73,"I","I",  "", "",[]]
-  ,[ 74,"J","J",  "", "",[]]
+  ,[ 68,"D","D",  "", "",[
+	[[1,1],[1,7],[5,7],[5,6],[6,6],[6,5],[7,5],[7,3],[6,3],[6,2],[5,2],[5,1]
+	,[3,2],[3,6],[4,6],[4,5],[5,5],[5,3],[4,3],[4,2]]
+	,[[0,1,2,3,4,5,6,7,8,9,10,11],[12,13,14,15,16,17,18,19]]
+	]]
+  ,[ 69,"E","E",  "", "",[
+	[[1,1],[1,7],[7,7],[7,6],[3,6],[3,5],[6,5],[6,4],[3,4],[3,2],[7,2],[7,1]]
+	,[[0,1,2,3,4,5,6,7,8,9,10,11]]
+	]]
+  ,[ 70,"F","F",  "", "",[
+	[[1,1],[1,7],[7,7],[7,6],[3,6],[3,5],[6,5],[6,4],[3,4],[3,1]]
+	,[[0,1,2,3,4,5,6,7,8,9]]
+	]]
+  ,[ 71,"G","G",  "", "",[
+	[[2,1],[2,2],[1,2],[1,6],[2,6],[2,7],[7,7],[7,6],[3,6],[3,2],[5,2],[5,3],[4,3],[4,4],[7,4],[7,1]]
+	,[[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]]
+	]]
+  ,[ 72,"H","H",  "", "",[
+	[[1,1],[1,7],[3,7],[3,5],[5,5],[5,7],[7,7],[7,1],[5,1],[5,4],[3,4],[3,1]]
+	,[[0,1,2,3,4,5,6,7,8,9,10,11]]
+	]]
+  ,[ 73,"I","I",  "", "",[
+	[[1,1],[1,2],[3,2],[3,6],[1,6],[1,7],[7,7],[7,6],[5,6],[5,2],[7,2],[7,1]]
+	,[[0,1,2,3,4,5,6,7,8,9,10,11]]
+	]]
+  ,[ 74,"J","J",  "", "",[
+	[[2,1],[2,2],[1,2],[1,3],[3,3],[3,2],[5,2],[5,6],[4,6],[4,7],[7,7],[7,2],[6,2],[6,1]]
+	,[[0,1,2,3,4,5,6,7,8,9,10,11,12,13]]
+	]]
   ,[ 75,"K","K",  "", "",[]]
   ,[ 76,"L","L",  "", "",[]]
   ,[ 77,"M","M",  "", "",[]]
@@ -220,8 +242,9 @@ module bold_2d(bold,width=0.2,resolution=8) {
 module polytext(charstring,size,font,line=0,justify=1
 	,bold=false,bold_width=0.2,bold_resolution=8
 	,italic=false
-	,underline=false,underline_start=[0,0]
+	,underline=false,underline_start=[0,0],underline_width=1.0
 	,outline=false,outline_width=0.2,outline_resolution=8
+	,strike=false,strike_start=[-0.5,0],strike_width=1.0
 	) {
   line_length=len(charstring)*font[0][0];
   line_shift=-line_length/2+justify*line_length/2;
@@ -237,9 +260,13 @@ module polytext(charstring,size,font,line=0,justify=1
 	  if(char_thickness==0)
 	    bold_2d(bold,width=bold_width,resolution=bold_resolution)
 		  outline_2d(outline,width=outline_width,resolution=outline_resolution)
-		    polygon(points=font[2][j][5][0],paths=font[2][j][5][1]);
+		    render() polygon(points=font[2][j][5][0],paths=font[2][j][5][1]);
 	    if(underline && charstring[i] != " ") {
-	      translate(underline_start) square(size=[char_width-2*underline_start[0],1.0],center=false);
+	      translate(underline_start) square(size=[char_width-2*underline_start[0],underline_width],center=false);
+		}
+	    if(strike && charstring[i] != " ") {
+	      translate([strike_start[0],char_height/2+strike_start[1]])
+			square(size=[char_width-2*strike_start[0],strike_width],center=false);
 	    }
 	  if(char_thickness>0)
 	    polyhedron(points=font[2][j][5][0],triangles=font[2][j][5][1]);
@@ -250,23 +277,26 @@ module polytext(charstring,size,font,line=0,justify=1
 }
 
 render_string=["\"!#$%&'()*"
-	,"ABC"];
-render_modifiers="ABC";
+	,"ABCDEFG"
+	,"HIJ"];
+render_modifiers="AB C";
 
 if(render_part==0) {
   echo("Testing polytext()...");
   for(i=[0:len(render_string)-1])
     translate([0,-i*8bit_polyfont()[0][1]])
-      polytext(render_string[i],8,8bit_polyfont(),justify=i%2-1);
+      polytext(render_string[i],8,8bit_polyfont(),justify=i%3-1);
 
 
   translate([0,8bit_polyfont()[0][1]])
     polytext(render_modifiers,8,8bit_polyfont());
   translate([0,2*8bit_polyfont()[0][1]])
-    polytext(render_modifiers,8,8bit_polyfont(),bold=true,bold_width=0.25,bold_resolution=4);
+    polytext(render_modifiers,8,8bit_polyfont(),justify=-1,bold=true,bold_width=0.25,bold_resolution=4);
   translate([0,3*8bit_polyfont()[0][1]])
-    polytext(render_modifiers,8,8bit_polyfont(),outline=true,outline_width=0.25,outline_resolution=8);
+    polytext(render_modifiers,8,8bit_polyfont(),justify=0,outline=true,outline_width=0.25,outline_resolution=8);
   translate([0,4*8bit_polyfont()[0][1]])
-    polytext(render_modifiers,8,8bit_polyfont(),underline=true,underline_start=[-0.25,-0.25]);
+    polytext(render_modifiers,8,8bit_polyfont(),justify=1,underline=true,underline_start=[-0.25,-0.25],underline_width=0.75);
+  translate([0,5*8bit_polyfont()[0][1]])
+    polytext(render_modifiers,8,8bit_polyfont(),justify=0,strike=true,strike_start=[-0.25,0],strike_width=0.5);
 }
 
