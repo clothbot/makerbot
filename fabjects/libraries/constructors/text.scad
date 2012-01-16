@@ -111,7 +111,11 @@ function 8bit_polyfont() = [
   ,[ 62,">",">",  "", "",[]]
   ,[ 63,"?","?",  "", "",[]]
   ,[ 64,"@","@",  "", "",[]]
-  ,[ 65,"A","A",  "", "",[]]
+  ,[ 65,"A","A",  "", "",[
+	[[1,1],[1,5],[2,5],[2,6],[3,6],[3,7],[5,7],[5,6],[6,6],[6,5],[7,5],[7,1],[5,1],[5,2],[3,2],[3,1]
+	,[3,3],[3,5],[5,5],[5,3]]
+	,[[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],[16,17,18,19]]
+	]]
   ,[ 66,"B","B",  "", "",[]]
   ,[ 67,"C","C",  "", "",[]]
   ,[ 68,"D","D",  "", "",[]]
@@ -178,7 +182,7 @@ function 8bit_polyfont() = [
 
 module outline_2d(outline,width=0.1,resolution=8) {
   for(j=[0:$children-1]) {
-    if(outline) {
+    if(outline && resolution > 4) {
       render() union() {
         for(i=[0:resolution-1]) assign(dx=width*cos(360*i/resolution),dy=width*sin(360*i/resolution))
 	      difference() {
@@ -192,7 +196,7 @@ module outline_2d(outline,width=0.1,resolution=8) {
   }
 }
 
-module bold_2d(bold,width=0.1,resolution=8) {
+module bold_2d(bold,width=0.2,resolution=8) {
   for(j=[0:$children-1]) {
     if(bold) {
       render() union() {
@@ -206,7 +210,12 @@ module bold_2d(bold,width=0.1,resolution=8) {
   }
 }
 
-module polytext(charstring,size,font,line=0,bold=false,italic=false,underline=false,outline=false) {
+module polytext(charstring,size,font,line=0
+	,bold=false,bold_width=0.2,bold_resolution=8
+	,italic=false
+	,underline=false,underline_start=[0,0]
+	,outline=false,outline_width=0.2,outline_resolution=8
+	) {
   char_width=font[0][0];
   char_height=font[0][1];
   char_thickness=font[0][2];
@@ -217,9 +226,11 @@ module polytext(charstring,size,font,line=0,bold=false,italic=false,underline=fa
 		// echo("Checking %s against %s...",charstring[i],font[2][j][2]);
         if(charstring[i]==font[2][j][2]) {
 	  if(char_thickness==0)
-	    bold_2d(bold) outline_2d(outline) polygon(points=font[2][j][5][0],paths=font[2][j][5][1]);
+	    bold_2d(bold,width=bold_width,resolution=bold_resolution)
+		  outline_2d(outline,width=outline_width,resolution=outline_resolution)
+		    polygon(points=font[2][j][5][0],paths=font[2][j][5][1]);
 	    if(underline && charstring[i] != " ") {
-	      translate([-0.5,-0.5]) square(size=[1.0+char_width,1.0],center=false);
+	      translate(underline_start) square(size=[char_width-2*underline_start[0],1.0],center=false);
 	    }
 	  if(char_thickness>0)
 	    polyhedron(points=font[2][j][5][0],triangles=font[2][j][5][1]);
@@ -229,16 +240,16 @@ module polytext(charstring,size,font,line=0,bold=false,italic=false,underline=fa
   }
 }
 
-render_string="\"!#$%&'()*";
+render_string="\"!#$%&'()* A";
 
 if(render_part==0) {
   echo("Testing polytext()...");
   polytext(render_string,8,8bit_polyfont());
   translate([0,-8bit_polyfont()[0][1]])
-    polytext(render_string,8,8bit_polyfont(),bold=true);
+    polytext(render_string,8,8bit_polyfont(),bold=true,bold_width=0.25,bold_resolution=4);
   translate([0,-2*8bit_polyfont()[0][1]])
-    polytext(render_string,8,8bit_polyfont(),outline=true);
+    polytext(render_string,8,8bit_polyfont(),outline=true,outline_width=0.25,outline_resolution=8);
   translate([0,-3*8bit_polyfont()[0][1]])
-    polytext(render_string,8,8bit_polyfont(),underline=true);
+    polytext(render_string,8,8bit_polyfont(),underline=true,underline_start=[-0.25,-0.25]);
 }
 
