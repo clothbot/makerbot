@@ -176,7 +176,37 @@ function 8bit_polyfont() = [
   ,[127,"^?","",  "DEL","Delete",[]]
   ] ];
 
-module polytext(charstring,size,font,line=0) {
+module outline_2d(outline,width=0.1,resolution=8) {
+  for(j=[0:$children-1]) {
+    if(outline) {
+      render() union() {
+        for(i=[0:resolution-1]) assign(dx=width*cos(360*i/resolution),dy=width*sin(360*i/resolution))
+	      difference() {
+	        child(j);
+	        translate([dx,dy]) child(j);
+	      }
+      }
+    } else {
+      child(j);
+    }
+  }
+}
+
+module bold_2d(bold,width=0.1,resolution=8) {
+  for(j=[0:$children-1]) {
+    if(bold) {
+      render() union() {
+	    child(j);
+        for(i=[0:resolution-1]) assign(dx=width*cos(360*i/resolution),dy=width*sin(360*i/resolution))
+	      translate([dx,dy]) child(j);
+      }
+    } else {
+      child(j);
+    }
+  }
+}
+
+module polytext(charstring,size,font,line=0,bold=false,italic=false,underline=false,outline=false) {
   char_width=font[0][0];
   char_height=font[0][1];
   char_thickness=font[0][2];
@@ -186,18 +216,29 @@ module polytext(charstring,size,font,line=0) {
       for(j=[0:len(font[2])-1]) {
 		// echo("Checking %s against %s...",charstring[i],font[2][j][2]);
         if(charstring[i]==font[2][j][2]) {
-	      if(char_thickness==0) polygon(points=font[2][j][5][0],paths=font[2][j][5][1]);
-	      if(char_thickness>0) polyhedron(points=font[2][j][5][0],triangles=font[2][j][5][1]);
+	  if(char_thickness==0)
+	    bold_2d(bold) outline_2d(outline) polygon(points=font[2][j][5][0],paths=font[2][j][5][1]);
+	    if(underline && charstring[i] != " ") {
+	      translate([-0.5,-0.5]) square(size=[1.0+char_width,1.0],center=false);
 	    }
+	  if(char_thickness>0)
+	    polyhedron(points=font[2][j][5][0],triangles=font[2][j][5][1]);
+	}
       }
     }
   }
 }
 
+render_string="\"!#$%&'()*";
+
 if(render_part==0) {
   echo("Testing polytext()...");
-  polytext("!!!",8,8bit_polyfont());
+  polytext(render_string,8,8bit_polyfont());
   translate([0,-8bit_polyfont()[0][1]])
-    polytext("\"!#$%&'()*",8,8bit_polyfont());
+    polytext(render_string,8,8bit_polyfont(),bold=true);
+  translate([0,-2*8bit_polyfont()[0][1]])
+    polytext(render_string,8,8bit_polyfont(),outline=true);
+  translate([0,-3*8bit_polyfont()[0][1]])
+    polytext(render_string,8,8bit_polyfont(),underline=true);
 }
 
