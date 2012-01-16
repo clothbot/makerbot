@@ -116,8 +116,15 @@ function 8bit_polyfont() = [
 	,[3,3],[3,5],[5,5],[5,3]]
 	,[[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],[16,17,18,19]]
 	]]
-  ,[ 66,"B","B",  "", "",[]]
-  ,[ 67,"C","C",  "", "",[]]
+  ,[ 66,"B","B",  "", "",[
+	[[1,1],[1,7],[6,7],[6,6],[7,6],[7,5],[6,5],[6,4],[7,4],[7,2],[6,2],[6,1]
+	,[3,5],[3,6],[5,6],[5,5]
+	,[3,2],[3,4],[5,4],[5,2]]
+	,[[0,1,2,3,4,5,6,7,8,9,10,11],[12,13,14,15],[16,17,18,19]]
+	]]
+  ,[ 67,"C","C",  "", "",[
+	[[2,1],[2,2],[1,2],[1,6],[2,6],[2,7],[6,7],[6,6],[7,6],[7,5],[5,5],[5,6],[3,6],[3,2],[5,2],[5,3],[7,3],[7,2],[6,2],[6,1]]	    ,[[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]]
+	]]
   ,[ 68,"D","D",  "", "",[]]
   ,[ 69,"E","E",  "", "",[]]
   ,[ 70,"F","F",  "", "",[]]
@@ -210,18 +217,20 @@ module bold_2d(bold,width=0.2,resolution=8) {
   }
 }
 
-module polytext(charstring,size,font,line=0
+module polytext(charstring,size,font,line=0,justify=1
 	,bold=false,bold_width=0.2,bold_resolution=8
 	,italic=false
 	,underline=false,underline_start=[0,0]
 	,outline=false,outline_width=0.2,outline_resolution=8
 	) {
+  line_length=len(charstring)*font[0][0];
+  line_shift=-line_length/2+justify*line_length/2;
   char_width=font[0][0];
   char_height=font[0][1];
   char_thickness=font[0][2];
   for(i=[0:len(charstring)-1]) {
     // echo(charstring[i]);
-    translate([i*char_width*size/char_width,line*char_height*size/char_height]) {
+    translate([i*char_width*size/char_width+line_shift,line*char_height*size/char_height]) {
       for(j=[0:len(font[2])-1]) {
 		// echo("Checking %s against %s...",charstring[i],font[2][j][2]);
         if(charstring[i]==font[2][j][2]) {
@@ -240,16 +249,24 @@ module polytext(charstring,size,font,line=0
   }
 }
 
-render_string="\"!#$%&'()* A";
+render_string=["\"!#$%&'()*"
+	,"ABC"];
+render_modifiers="ABC";
 
 if(render_part==0) {
   echo("Testing polytext()...");
-  polytext(render_string,8,8bit_polyfont());
-  translate([0,-8bit_polyfont()[0][1]])
-    polytext(render_string,8,8bit_polyfont(),bold=true,bold_width=0.25,bold_resolution=4);
-  translate([0,-2*8bit_polyfont()[0][1]])
-    polytext(render_string,8,8bit_polyfont(),outline=true,outline_width=0.25,outline_resolution=8);
-  translate([0,-3*8bit_polyfont()[0][1]])
-    polytext(render_string,8,8bit_polyfont(),underline=true,underline_start=[-0.25,-0.25]);
+  for(i=[0:len(render_string)-1])
+    translate([0,-i*8bit_polyfont()[0][1]])
+      polytext(render_string[i],8,8bit_polyfont(),justify=i%2-1);
+
+
+  translate([0,8bit_polyfont()[0][1]])
+    polytext(render_modifiers,8,8bit_polyfont());
+  translate([0,2*8bit_polyfont()[0][1]])
+    polytext(render_modifiers,8,8bit_polyfont(),bold=true,bold_width=0.25,bold_resolution=4);
+  translate([0,3*8bit_polyfont()[0][1]])
+    polytext(render_modifiers,8,8bit_polyfont(),outline=true,outline_width=0.25,outline_resolution=8);
+  translate([0,4*8bit_polyfont()[0][1]])
+    polytext(render_modifiers,8,8bit_polyfont(),underline=true,underline_start=[-0.25,-0.25]);
 }
 
