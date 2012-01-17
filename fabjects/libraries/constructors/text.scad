@@ -78,6 +78,7 @@ render_string=["\"!#$%&'()*"
 	,"HIJKLMN"
 	,"OPQRST"
 	,"UVWXYZ"
+	,"abcdef"
 	];
 render_modifiers="AB C";
 
