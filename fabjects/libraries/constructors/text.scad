@@ -5,6 +5,17 @@ render_part=0; // polytext()
 
 use <fonts.scad>
 
+function sum(num_list,index) = index > 0 ? (num_list[index]+sum(num_list,index-1)) : num_list[index];
+
+function font_char_position(font,charstring,index) =
+  index > 0 ? ( font_char_position(font,charstring,index-1)) :
+    ( 0
+//      for(thischar=font[2]) 
+//	{ charstring[index]==thischar[2] ?
+//		  thischar[5][1][1]-thischar[5][0][0] : 0;
+//	}
+    );
+
 module outline_2d(outline,points,paths,width=0.1,resolution=8) {
   if(outline && resolution > 4) {
     for(j=[0:len(paths)-1]) union() {
@@ -56,7 +67,7 @@ module polytext(charstring,size,font,line=0,justify=1
         if(charstring[i]==font[2][j][2]) {
 	  if(char_thickness==0)
 	    bold_2d(bold,width=bold_width,resolution=bold_resolution)
-		  render() outline_2d(outline,points=font[2][j][5][0],paths=font[2][j][5][1]
+		  render() outline_2d(outline,points=font[2][j][6][0],paths=font[2][j][6][1]
 			,width=outline_width,resolution=outline_resolution); 
 	    if(underline && charstring[i] != " ") {
 	      translate(underline_start) square(size=[char_width-2*underline_start[0],underline_width],center=false);
@@ -66,7 +77,7 @@ module polytext(charstring,size,font,line=0,justify=1
 			square(size=[char_width-2*strike_start[0],strike_width],center=false);
 	    }
 	  if(char_thickness>0)
-	    polyhedron(points=font[2][j][5][0],triangles=font[2][j][5][1]);
+	    polyhedron(points=font[2][j][6][0],triangles=font[2][j][6][1]);
 	}
       }
     }
