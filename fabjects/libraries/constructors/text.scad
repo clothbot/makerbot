@@ -7,14 +7,9 @@ use <fonts.scad>
 
 function sum(num_list,index) = index > 0 ? (num_list[index]+sum(num_list,index-1)) : num_list[index];
 
-function font_char_position(font,charstring,index) =
-  index > 0 ? ( font_char_position(font,charstring,index-1)) :
-    ( 0
-//      for(thischar=font[2]) 
-//	{ charstring[index]==thischar[2] ?
-//		  thischar[5][1][1]-thischar[5][0][0] : 0;
-//	}
-    );
+function font_char_index(font,ch,i) = i<len(font[2]) ?
+  font_char_index(ch,font,i+1)+(font[2][i][1]==ch ? i : 0)
+    : font[2][0][0];
 
 module outline_2d(outline,points,paths,width=0.1,resolution=8) {
   if(outline && resolution > 4) {
