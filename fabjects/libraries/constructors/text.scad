@@ -101,6 +101,8 @@ module polytext(charstring,size,font,line=0,justify=1
 }
 
 render_string=["\"!#$%&'()*"
+	,"01234"
+	,"56789"
 	,"ABCDEFG"
 	,"HIJKLMN"
 	,"OPQRST"
