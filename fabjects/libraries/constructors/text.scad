@@ -1,15 +1,20 @@
 // polytext module
 // Encoding from http://en.wikipedia.org/wiki/ASCII
 
-render_part=0; // polytext()
+//render_part=0; // polytext()
+render_part=1; // test variable widths.
 
 use <fonts.scad>
 
 function sum(num_list,index) = index > 0 ? (num_list[index]+sum(num_list,index-1)) : num_list[index];
 
-function font_char_index(font,ch,i) = i<len(font[2]) ?
+function font_char_index(ch,font,i) = i<len(font[2])-1 ?
   font_char_index(ch,font,i+1)+(font[2][i][1]==ch ? i : 0)
     : font[2][0][0];
+
+function sum_font_string_x(font,char_string,index) = index > 0 ? 
+	(font[2][font_char_index(char_string[index],font,0)][5][1][0]-font[2][font_char_index(char_string[index],font,0)][5][0][0])+sum_font_string_x(font,char_string,index-1) 
+	: font[2][font_char_index(char_string[0],font,0)][5][1][0];
 
 module outline_2d(outline,points,paths,width=0.1,resolution=8) {
   if(outline && resolution > 4) {
@@ -48,15 +53,19 @@ module polytext(charstring,size,font,line=0,justify=1
 	,underline=false,underline_start=[0,0],underline_width=1.0
 	,outline=false,outline_width=0.2,outline_resolution=8
 	,strike=false,strike_start=[-0.5,0],strike_width=1.0
+	,fixed_width=true
 	) {
   line_length=len(charstring)*font[0][0];
   line_shift=-line_length/2+justify*line_length/2;
   char_width=font[0][0];
   char_height=font[0][1];
   char_thickness=font[0][2];
-  for(i=[0:len(charstring)-1]) {
+  for(i=[0:len(charstring)-1]) assign(
+	 x_pos=fixed_width ? i*char_width*size/char_width+line_shift
+		: (i>0 ? sum_font_string_x(font,charstring,i-1)+line_shift : line_shift)
+	) {
     // echo(charstring[i]);
-    translate([i*char_width*size/char_width+line_shift,line*char_height*size/char_height]) {
+    translate([x_pos,line*char_height*size/char_height]) {
       for(j=[0:len(font[2])-1]) {
 		// echo("Checking %s against %s...",charstring[i],font[2][j][2]);
         if(charstring[i]==font[2][j][2]) {
@@ -87,23 +96,42 @@ render_string=["\"!#$%&'()*"
 	,"abcdef"
 	];
 render_modifiers="AB C";
+thisFont=8bit_polyfont();
 
+total_x=0;
 if(render_part==0) {
   echo("Testing polytext()...");
   for(i=[0:len(render_string)-1])
     translate([0,-i*8bit_polyfont()[0][1]])
-      polytext(render_string[i],8,8bit_polyfont(),justify=i%3-1);
+      polytext(render_string[i],8,thisFont,justify=i%3-1);
 
 
   translate([0,8bit_polyfont()[0][1]])
-    polytext(render_modifiers,8,8bit_polyfont());
+    polytext(render_modifiers,8,thisFont);
   translate([0,2*8bit_polyfont()[0][1]])
-    polytext(render_modifiers,8,8bit_polyfont(),justify=-1,bold=true,bold_width=0.25,bold_resolution=4);
+    polytext(render_modifiers,8,thisFont,justify=-1,bold=true,bold_width=0.25,bold_resolution=4);
   translate([0,3*8bit_polyfont()[0][1]])
-    polytext(render_modifiers,8,8bit_polyfont(),justify=0,outline=true,outline_width=0.25,outline_resolution=8);
+    polytext(render_modifiers,8,thisFont,justify=0,outline=true,outline_width=0.25,outline_resolution=8);
   translate([0,4*8bit_polyfont()[0][1]])
-    polytext(render_modifiers,8,8bit_polyfont(),justify=1,underline=true,underline_start=[-0.25,-0.25],underline_width=0.75);
+    polytext(render_modifiers,8,thisFont,justify=1,underline=true,underline_start=[-0.25,-0.25],underline_width=0.75);
   translate([0,5*8bit_polyfont()[0][1]])
-    polytext(render_modifiers,8,8bit_polyfont(),justify=0,strike=true,strike_start=[-0.25,0],strike_width=0.5);
+    polytext(render_modifiers,8,thisFont,justify=0,strike=true,strike_start=[-0.25,0],strike_width=0.5);
+
 }
 
+//thisCharIndex=0;
+//thisChar=render_modifiers[0];
+if(render_part==1) {
+  for( i=[0:(len(render_modifiers)-1)] ) assign(thisChar=render_modifiers[i]
+		,thisCharIndex=font_char_index(render_modifiers[i],thisFont,0)) {
+//    thisChar=render_modifiers[i];
+ //   thisCharIndex=font_char_index(thisChar,thisFont,0);
+    echo(str("ch: ",thisChar," = ",thisCharIndex));
+  }
+  echo(str("Sum of X: ",sum_font_string_x(thisFont,render_modifiers,3)));
+  echo("Testing variable widths");
+  polytext(render_modifiers,8,thisFont);
+  translate([0,-thisFont[0][1]])
+    polytext(render_modifiers,8,thisFont,fixed_width=false);
+
+}
