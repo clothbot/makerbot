@@ -1,6 +1,7 @@
 use <fonts.scad>;
 
-num_list=[9,8,7,6,5,4,3,2,1,0];
+num_list=[-1,-2,9,8,7,6,5,4,3,2,1,0];
+points_list=[[-7,-6],[5,-4],[3,2],[-1,0]];
 
 function sum(num_list,index) = index > 0 ? (num_list[index]+sum(num_list,index-1)) : num_list[index];
 
@@ -20,6 +21,18 @@ function find_font_char(ch,font,i) = i<len(font[2])-1 ?
 	find_font_char(ch,font,i+1)+(font[2][i][1]==ch ? i : 0)
     : font[2][0][0];
 
+function min_x(points,i) = i <len(points)-1 ?
+  ( points[i][0]<min_x(points,i+1) ? points[i][0] : min_x(points,i+1) ) : points[i][0];
+
+function max_x(points,i) = i <len(points)-1 ?
+  (points[i][0]>max_x(points,i+1) ? points[i][0] : max_x(points,i+1)) : points[i][0];
+
+function min_y(points,i) = i <len(points)-1 ?
+  ( points[i][1]<min_y(points,i+1) ? points[i][1] : min_y(points,i+1) ) : points[i][1];
+
+function max_y(points,i) = i <len(points)-1 ?
+  (points[i][1]>max_y(points,i+1) ? points[i][1] : max_y(points,i+1)) : points[i][1];
+
 module test_vars() {
   current_val=0;
   for(i=[0:9]) assign(current_val=sum(num_list,i)) {
@@ -36,6 +49,10 @@ module test_vars() {
   char_index_B=find_font_char("B",this_font,0);
   echo(str("Find 'B' : ",char_index_B));
   echo(this_font[2][char_index_B]);
+  echo(str("Minimum X: ",min_x(points_list,0) ));
+  echo(str("Maximum X: ",max_x(points_list,0) ));
+  echo(str("Minimum Y: ",min_y(points_list,0) ));
+  echo(str("Maximum Y: ",max_y(points_list,0) ));
 }
 
 cube();

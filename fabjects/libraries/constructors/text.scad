@@ -12,6 +12,18 @@ function font_char_index(ch,font,i) = i<len(font[2])-1 ?
   font_char_index(ch,font,i+1)+(font[2][i][1]==ch ? i : 0)
     : font[2][0][0];
 
+function min_x(points,i) = i <len(points)-1 ?
+  ( points[i][0]<min_x(points,i+1) ? points[i][0] : min_x(points,i+1) ) : points[i][0];
+
+function max_x(points,i) = i <len(points)-1 ?
+  (points[i][0]>max_x(points,i+1) ? points[i][0] : max_x(points,i+1)) : points[i][0];
+
+function min_y(points,i) = i <len(points)-1 ?
+  ( points[i][1]<min_y(points,i+1) ? points[i][1] : min_y(points,i+1) ) : points[i][1];
+
+function max_y(points,i) = i <len(points)-1 ?
+  (points[i][1]>max_y(points,i+1) ? points[i][1] : max_y(points,i+1)) : points[i][1];
+
 function sum_font_string_x(font,char_string,index) = index > 0 ? 
 	(font[2][font_char_index(char_string[index],font,0)][5][1][0]-font[2][font_char_index(char_string[index],font,0)][5][0][0])+sum_font_string_x(font,char_string,index-1) 
 	: font[2][font_char_index(char_string[0],font,0)][5][1][0];
@@ -128,6 +140,7 @@ if(render_part==1) {
  //   thisCharIndex=font_char_index(thisChar,thisFont,0);
     echo(str("ch: ",thisChar," = ",thisCharIndex));
   }
+  echo(str("Min X of A: ",min_x(thisFont[2][ font_char_index("A",thisFont,0) ][6][0],0)));
   echo(str("Sum of X: ",sum_font_string_x(thisFont,render_modifiers,3)));
   echo("Testing variable widths");
   polytext(render_modifiers,8,thisFont);
