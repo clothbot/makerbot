@@ -1,8 +1,8 @@
 // polytext module
 // Encoding from http://en.wikipedia.org/wiki/ASCII
 
-//render_part=0; // polytext()
-render_part=1; // test variable widths.
+render_part=0; // polytext()
+//render_part=1; // test variable widths.
 
 use <fonts.scad>
 
@@ -105,7 +105,10 @@ render_string=["\"!#$%&'()*"
 	,"HIJKLMN"
 	,"OPQRST"
 	,"UVWXYZ"
-	,"abcdef"
+	,"abcdefg"
+	,"hijklmn"
+	,"opqrst"
+	,"uvwxyz"
 	];
 render_modifiers="AB C";
 thisFont=8bit_polyfont();
