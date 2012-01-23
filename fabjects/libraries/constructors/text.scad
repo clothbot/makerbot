@@ -109,10 +109,12 @@ render_string=["!\"#$%&'"
 	,"HIJKLMN"
 	,"OPQRST"
 	,"UVWXYZ"
+	,"[\\]^_`"
 	,"abcdefg"
 	,"hijklmn"
 	,"opqrst"
 	,"uvwxyz"
+	,"{|}~"
 	];
 render_modifiers="AB C";
 thisFont=8bit_polyfont();
