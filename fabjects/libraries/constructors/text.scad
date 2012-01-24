@@ -2,7 +2,8 @@
 // Encoding from http://en.wikipedia.org/wiki/ASCII
 
 render_part=0; // polytext()
-//render_part=1; // test variable widths.
+render_part=1; // test variable widths.
+// render_part=2; // test styles
 
 use <fonts.scad>
 
@@ -119,25 +120,12 @@ render_string=["!\"#$%&'"
 render_modifiers="AB C";
 thisFont=8bit_polyfont();
 
-total_x=0;
+// total_x=0;
 if(render_part==0) {
   echo("Testing polytext()...");
   for(i=[0:len(render_string)-1])
-    translate([0,-i*8bit_polyfont()[0][1]])
+    translate([0,-i*(8bit_polyfont()[0][1]+1.0)])
       polytext(render_string[i],8,thisFont,justify=i%3-1);
-
-
-  translate([0,8bit_polyfont()[0][1]])
-    polytext(render_modifiers,8,thisFont);
-  translate([0,2*8bit_polyfont()[0][1]])
-    polytext(render_modifiers,8,thisFont,justify=-1,bold=true,bold_width=0.25,bold_resolution=4);
-  translate([0,3*8bit_polyfont()[0][1]])
-    polytext(render_modifiers,8,thisFont,justify=0,outline=true,outline_width=0.25,outline_resolution=8);
-  translate([0,4*8bit_polyfont()[0][1]])
-    polytext(render_modifiers,8,thisFont,justify=1,underline=true,underline_start=[-0.25,-0.25],underline_width=0.75);
-  translate([0,5*8bit_polyfont()[0][1]])
-    polytext(render_modifiers,8,thisFont,justify=0,strike=true,strike_start=[-0.25,0],strike_width=0.5);
-
 }
 
 //thisCharIndex=0;
@@ -150,10 +138,28 @@ if(render_part==1) {
     echo(str("ch: ",thisChar," = ",thisCharIndex));
   }
   echo(str("Min X of A: ",min_x(thisFont[2][ font_char_index("A",thisFont,0) ][6][0],0)));
-  echo(str("Sum of X: ",sum_font_string_x(thisFont,render_modifiers,3)));
-  echo("Testing variable widths");
+  echo(str("Max X of A: ",max_x(thisFont[2][ font_char_index("A",thisFont,0) ][6][0],0)));
+  echo(str("Min Y of A: ",min_y(thisFont[2][ font_char_index("A",thisFont,0) ][6][0],0)));
+  echo(str("Max Y of A: ",max_y(thisFont[2][ font_char_index("A",thisFont,0) ][6][0],0)));
+
+  echo(str("Sum of Variable-Width X: ",sum_font_string_x(thisFont,render_modifiers,3)));
+  echo("Rendering variable widths");
   polytext(render_modifiers,8,thisFont);
   translate([0,-thisFont[0][1]])
     polytext(render_modifiers,8,thisFont,fixed_width=false);
 
+}
+
+if(render_part==2) {
+  echo("Testing Styles");
+  translate([0,8bit_polyfont()[0][1]])
+    polytext(render_modifiers,8,thisFont);
+  translate([0,2*8bit_polyfont()[0][1]])
+    polytext(render_modifiers,8,thisFont,justify=-1,bold=true,bold_width=0.25,bold_resolution=4);
+  translate([0,3*8bit_polyfont()[0][1]])
+    polytext(render_modifiers,8,thisFont,justify=0,outline=true,outline_width=0.25,outline_resolution=8);
+  translate([0,4*8bit_polyfont()[0][1]])
+    polytext(render_modifiers,8,thisFont,justify=1,underline=true,underline_start=[-0.25,-0.25],underline_width=0.75);
+  translate([0,5*8bit_polyfont()[0][1]])
+    polytext(render_modifiers,8,thisFont,justify=0,strike=true,strike_start=[-0.25,0],strike_width=0.5);
 }
