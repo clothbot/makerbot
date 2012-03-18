@@ -2,9 +2,10 @@
 
 include <MCAD/involute_gears.scad>
 
+render_part=0; // full_assembly
 // render_part=1; // drive_gears
-render_part=2; // alignment_gears
-render_part=3; // pressure_rollers
+// render_part=2; // alignment_gears
+// render_part=3; // pressure_rollers
 
 module spider_coupler(
 	thickness=5.0
@@ -36,6 +37,36 @@ module spider_coupler(
   }
 }
 
+module roller_drive_gear(
+	gear_d=20.0, gear_num_teeth=17, gear_spacing=1.0
+	, roller_gear_thickness=10.0, motor_gear_thickness=12.0
+	, roller_gear_hub_thickness=15.0, motor_gear_hub_thickness=17.0
+	, roller_gear_hub_d=12.0, motor_gear_hub_d=15.0
+	, roller_axle_d=3.0, motor_axle_d=5.0
+	, roller_gear_count=3
+	, gear_clearance=0.4
+	, twist_ratio=0.5, bevel_dr=0.5
+	) {
+  $fs=0.1;
+  gear_circular_pitch=gear_d * 180 / gear_num_teeth;
+  difference() {
+	gear(number_of_teeth=gear_num_teeth
+		, circular_pitch=gear_circular_pitch
+		, gear_thickness=roller_gear_thickness, rim_thickness=roller_gear_thickness
+		, bore_diameter=roller_axle_d
+		, clearance=gear_clearance/2
+		, hub_thickness=0
+		, hub_diameter=roller_gear_hub_d
+		);
+    translate([0,0,gear_thickness+bevel_dr]) rotate([180,0,0])
+	    translate([0,0,-bevel_dr]) spider_coupler( thickness=(roller_gear_hub_thickness-roller_gear_thickness)/2+2*bevel_dr
+		, outer_d=gear_hub_d+2*bevel_dr, axle_d=roller_axle_d-2*bevel_dr, bevel_dr=bevel_dr/2,shrink=-0.2 );
+  }
+  translate([0,0,gear_thickness]) 
+	  spider_coupler( thickness=(roller_gear_hub_thickness-roller_gear_thickness)/2
+		, outer_d=gear_hub_d, axle_d=roller_axle_d, bevel_dr=bevel_dr,shrink=0.2 );
+}
+
 module drive_gears(
 	gear_d=20.0, gear_num_teeth=17, gear_spacing=1.0
 	, roller_gear_thickness=10.0, motor_gear_thickness=12.0
@@ -44,6 +75,7 @@ module drive_gears(
 	, roller_axle_d=3.0, motor_axle_d=5.0
 	, roller_gear_count=3
 	, gear_clearance=0.4
+	, twist_ratio=0.5, bevel_dr=0.5
 	) {
   $fs=0.1;
   // Motor gear at center
@@ -58,14 +90,12 @@ module drive_gears(
 	);
   for(i=[0:roller_gear_count-1]) assign( rotAngle=360*i/roller_gear_count ) {
     rotate([0,0,rotAngle]) translate([gear_d+gear_clearance+gear_spacing,0,0]) rotate([0,0,-2*rotAngle])
-	gear(number_of_teeth=gear_num_teeth
-		, circular_pitch=gear_circular_pitch
-		, gear_thickness=roller_gear_thickness, rim_thickness=roller_gear_thickness
-		, bore_diameter=roller_axle_d
-		, clearance=gear_clearance/2
-		, hub_thickness=roller_gear_hub_thickness
-		, hub_diameter=roller_gear_hub_d
-		);
+	  roller_drive_gear(
+		gear_d=gear_d, gear_num_teeth=gear_num_teeth, gear_thickness=roller_gear_thickness, gear_spacing=gear_spacing
+		, gear_hub_thickness=roller_gear_hub_thickness, gear_hub_d=roller_gear_hub_d, roller_axle_d=roller_axle_d
+		, gear_clearance=gear_clearance, twist_ratio=twist_ratio, bevel_dr=bevel_dr
+	  );
+
   }
 }
 
@@ -238,4 +268,11 @@ module pump_pressure_rollers(
 if(render_part==3) {
   echo("Rendering pump_pressure_rollers()...");
   pump_pressure_rollers(gear_spacing=2.0);
+}
+
+if(render_part==0) {
+  echo("Rendering full assembly...");
+  drive_gears(gear_spacing=2.0);
+  translate([0,0,15]) pump_pressure_rollers(gear_spacing=2.0);
+  translate([0,0,55]) rotate([180,0,0]) alignment_gears(gear_spacing=2.0);
 }
