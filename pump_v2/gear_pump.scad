@@ -3,9 +3,10 @@
 include <MCAD/involute_gears.scad>
 
 render_part=0; // full_assembly
-// render_part=1; // drive_gears
+ render_part=1; // drive_gears
 // render_part=2; // alignment_gears
 // render_part=3; // pressure_rollers
+// render_part=4; // outer_pressure_ring
 
 module spider_coupler(
 	thickness=5.0
@@ -50,6 +51,7 @@ module roller_drive_gear(
   $fs=0.1;
   gear_circular_pitch=gear_d * 180 / gear_num_teeth;
   difference() {
+    intersection() {
 	gear(number_of_teeth=gear_num_teeth
 		, circular_pitch=gear_circular_pitch
 		, gear_thickness=roller_gear_thickness, rim_thickness=roller_gear_thickness
@@ -58,6 +60,9 @@ module roller_drive_gear(
 		, hub_thickness=0
 		, hub_diameter=roller_gear_hub_d
 		);
+	cylinder(r1=gear_d/2,r2=gear_d/2+roller_gear_thickness,h=roller_gear_thickness,center=false);
+	cylinder(r2=gear_d/2,r1=gear_d/2+roller_gear_thickness,h=roller_gear_thickness,center=false);
+    }
     translate([0,0,gear_thickness+bevel_dr]) rotate([180,0,0])
 	    translate([0,0,-bevel_dr]) spider_coupler( thickness=(roller_gear_hub_thickness-roller_gear_thickness)/2+2*bevel_dr
 		, outer_d=gear_hub_d+2*bevel_dr, axle_d=roller_axle_d-2*bevel_dr, bevel_dr=bevel_dr/2,shrink=-0.2 );
@@ -80,7 +85,8 @@ module drive_gears(
   $fs=0.1;
   // Motor gear at center
   gear_circular_pitch=gear_d * 180 / gear_num_teeth;
-  gear(number_of_teeth=gear_num_teeth
+  intersection() {
+    gear(number_of_teeth=gear_num_teeth
 	, circular_pitch=gear_circular_pitch
 	, gear_thickness=motor_gear_thickness, rim_thickness=motor_gear_thickness
 	, bore_diameter=motor_axle_d
@@ -88,6 +94,9 @@ module drive_gears(
 	, hub_thickness=motor_gear_hub_thickness
 	, hub_diameter=motor_gear_hub_d
 	);
+    cylinder(r1=gear_d/2,r2=gear_d/2+motor_gear_hub_thickness,h=motor_gear_hub_thickness,center=false);
+//    cylinder(r2=gear_d/2,r1=gear_d/2+motor_gear_thickness,h=motor_gear_thickness,center=false);
+  }
   for(i=[0:roller_gear_count-1]) assign( rotAngle=360*i/roller_gear_count ) {
     rotate([0,0,rotAngle]) translate([gear_d+gear_clearance+gear_spacing,0,0]) rotate([0,0,-2*rotAngle])
 	  roller_drive_gear(
@@ -112,17 +121,22 @@ module alignment_gear_middle(
   $fs=0.1;
   gear_circular_pitch=gear_d * 180 / gear_num_teeth;
   union() {
-    gear(number_of_teeth=gear_num_teeth
-	, circular_pitch=gear_circular_pitch
-	, gear_thickness=gear_thickness/2, rim_thickness=gear_thickness/2
-	, bore_diameter=middle_axle_d
-	, clearance=gear_clearance/2
-	, hub_thickness=0
-	, hub_diameter=gear_hub_d
-	, twist=twist_ratio*180/gear_num_teeth
-	);
+    intersection() {
+	gear(number_of_teeth=gear_num_teeth
+	  , circular_pitch=gear_circular_pitch
+	  , gear_thickness=gear_thickness/2, rim_thickness=gear_thickness/2
+	  , bore_diameter=middle_axle_d
+	  , clearance=gear_clearance/2
+	  , hub_thickness=0
+	  , hub_diameter=gear_hub_d
+	  , twist=twist_ratio*180/gear_num_teeth
+	  );
+	cylinder(r1=gear_d/2,r2=gear_d/2+gear_thickness/2,h=gear_thickness/2,center=false);
+	cylinder(r2=gear_d/2,r1=gear_d/2+gear_thickness/2,h=gear_thickness/2,center=false);
+    }
     translate([0,0,gear_thickness/2]) rotate([0,0,-twist_ratio*180/gear_num_teeth]) difference() {
-      gear(number_of_teeth=gear_num_teeth
+	intersection() {
+	  gear(number_of_teeth=gear_num_teeth
 		, circular_pitch=gear_circular_pitch
 		, gear_thickness=gear_thickness/2, rim_thickness=gear_thickness/2
 		, bore_diameter=middle_axle_d
@@ -131,6 +145,9 @@ module alignment_gear_middle(
 		, hub_diameter=gear_hub_d
 		, twist=-twist_ratio*180/gear_num_teeth
 		);
+	  cylinder(r1=gear_d/2,r2=gear_d/2+gear_thickness/2,h=gear_thickness/2,center=false);
+	  cylinder(r2=gear_d/2,r1=gear_d/2+gear_thickness/2,h=gear_thickness/2,center=false);
+	}
 	  translate([0,0,gear_thickness/2]) rotate([180,0,twist_ratio*180/gear_num_teeth])
 	    translate([0,0,-bevel_dr]) spider_coupler( thickness=(gear_hub_thickness-gear_thickness)/2+2*bevel_dr
 		, outer_d=gear_hub_d+2*bevel_dr, axle_d=middle_axle_d-2*bevel_dr, bevel_dr=bevel_dr/2,shrink=-0.2 );
@@ -152,6 +169,7 @@ module alignment_gear_roller(
 	) {
   $fs=0.1;
   gear_circular_pitch=gear_d * 180 / gear_num_teeth;
+  intersection() {
 	gear(number_of_teeth=gear_num_teeth
 		, circular_pitch=gear_circular_pitch
 		, gear_thickness=gear_thickness/2, rim_thickness=gear_thickness/2
@@ -161,7 +179,11 @@ module alignment_gear_roller(
 		, hub_diameter=gear_hub_d
 		, twist=-twist_ratio*180/gear_num_teeth
 		);
-	translate([0,0,gear_thickness/2]) rotate([0,0,twist_ratio*180/gear_num_teeth]) difference() {
+	cylinder(r1=gear_d/2,r2=gear_d/2+gear_thickness/2,h=gear_thickness/2,center=false);
+	cylinder(r2=gear_d/2,r1=gear_d/2+gear_thickness/2,h=gear_thickness/2,center=false);
+  }
+  translate([0,0,gear_thickness/2]) rotate([0,0,twist_ratio*180/gear_num_teeth]) difference() {
+    intersection() {
 	  gear(number_of_teeth=gear_num_teeth
 		, circular_pitch=gear_circular_pitch
 		, gear_thickness=gear_thickness/2, rim_thickness=gear_thickness/2
@@ -171,10 +193,13 @@ module alignment_gear_roller(
 		, hub_diameter=gear_hub_d
 		, twist=twist_ratio*180/gear_num_teeth
 	  );
-	  translate([0,0,gear_thickness/2]) rotate([180,0,-twist_ratio*180/gear_num_teeth])
-	    translate([0,0,-bevel_dr]) spider_coupler( thickness=(gear_hub_thickness-gear_thickness)/2+2*bevel_dr
+	cylinder(r1=gear_d/2,r2=gear_d/2+gear_thickness/2,h=gear_thickness/2,center=false);
+	cylinder(r2=gear_d/2,r1=gear_d/2+gear_thickness/2,h=gear_thickness/2,center=false);
+    }
+    translate([0,0,gear_thickness/2]) rotate([180,0,-twist_ratio*180/gear_num_teeth])
+      translate([0,0,-bevel_dr]) spider_coupler( thickness=(gear_hub_thickness-gear_thickness)/2+2*bevel_dr
 		, outer_d=gear_hub_d+2*bevel_dr, axle_d=roller_axle_d-2*bevel_dr, bevel_dr=bevel_dr/2,shrink=-0.2 );
-	}
+  }
 	translate([0,0,gear_thickness]) 
 	  spider_coupler( thickness=(gear_hub_thickness-gear_thickness)/2
 		, outer_d=gear_hub_d, axle_d=roller_axle_d, bevel_dr=bevel_dr );
@@ -230,15 +255,15 @@ module pressure_roller(
 	translate([0,0,roller_shield_thickness+roller_thickness+(roller_shield_d/2-roller_min_d/2)])
 	  cylinder(r=roller_shield_d/2,h=roller_shield_thickness-(roller_shield_d/2-roller_min_d/2),center=false);
 	translate([0,0,2*roller_shield_thickness+roller_thickness])
-	  spider_coupler( thickness=roller_coupler_thickness
+	  spider_coupler( thickness=roller_coupler_thickness/2
 		, outer_d=roller_coupler_d, axle_d=roller_axle_d, bevel_dr=bevel_dr,shrink=0.2 );
     }
     translate([0,0,-bevel_dr]) cylinder(r=roller_axle_d/2
 	,h=2*bevel_dr+2*roller_shield_thickness+roller_thickness,center=false);
-    translate([0,0,-bevel_dr]) spider_coupler( thickness=roller_coupler_thickness+2*bevel_dr
+    translate([0,0,-bevel_dr]) spider_coupler( thickness=roller_coupler_thickness/2+2*bevel_dr
 		, outer_d=roller_coupler_d+2*bevel_dr, axle_d=roller_axle_d-2*bevel_dr, bevel_dr=bevel_dr/2,shrink=-0.2 );
     translate([0,0,2*roller_shield_thickness+roller_thickness+bevel_dr]) rotate([180,0,0])
-	  spider_coupler( thickness=roller_coupler_thickness+2*bevel_dr
+	  spider_coupler( thickness=roller_coupler_thickness/2+2*bevel_dr
 		, outer_d=roller_coupler_d+2*bevel_dr, axle_d=roller_axle_d-2*bevel_dr, bevel_dr=bevel_dr/2,shrink=-0.2 );
   }
 }
@@ -270,9 +295,48 @@ if(render_part==3) {
   pump_pressure_rollers(gear_spacing=2.0);
 }
 
+function Tygon_B_44_3_OD()=25.4*3/16; // Outer Diameter
+function Tygon_B_44_3_ID()=25.4*1/16; // Inner Diameter
+function Tygon_B_44_3_WT()=25.4*1/16; // Wall Thickness
+function Tygon_B_44_3_minBR()=25.4*1/8; // minimum Bend Radius
+
+module outer_pressure_ring(
+	roller_axle_d=3.0, roller_thickness=15.0
+	, roller_coupler_thickness=3.0, roller_coupler_d=12.0
+	, roller_shield_d=20.0, roller_shield_thickness=3.0
+	, roller_min_d=15.0, roller_max_d=18.0
+	, pressure_roller_count=3
+	, bevel_dr=0.5
+	, gear_d=20.0, gear_clearance=0.4, gear_spacing=1.0
+	, tube_outer_d=Tygon_B_44_3_OD()
+	, tube_inner_d=Tygon_B_44_3_ID()
+	) {
+  $fs=0.1;
+  difference() {
+    cylinder(r=gear_d+roller_shield_d,h=roller_thickness/4,center=false);
+    translate([0,0,-bevel_dr]) cylinder(r=gear_d+roller_shield_d/2,h=roller_thickness/4+2*bevel_dr,center=false);
+  }
+  translate([0,0,roller_thickness/4]) difference() {
+    cylinder(r=gear_d+roller_shield_d,h=roller_thickness/2,center=false);
+    translate([0,0,-roller_thickness/4])
+	cylinder(r2=gear_d+roller_max_d/2+tube_inner_d,r1=gear_d+roller_min_d/2+tube_inner_d,h=roller_thickness,center=false);
+  }
+  translate([0,0,3*roller_thickness/4]) difference() {
+    cylinder(r=gear_d+roller_shield_d,h=roller_thickness/4,center=false);
+    translate([0,0,-bevel_dr]) cylinder(r=gear_d+roller_shield_d/2,h=roller_thickness/4+2*bevel_dr,center=false);
+  }
+}
+
+if(render_part==4) {
+  echo("Rendering outer_pressure_ring()...");
+  outer_pressure_ring(gear_spacing=2.0);
+}
+
+
 if(render_part==0) {
   echo("Rendering full assembly...");
-  drive_gears(gear_spacing=2.0);
-  translate([0,0,15]) pump_pressure_rollers(gear_spacing=2.0);
-  translate([0,0,55]) rotate([180,0,0]) alignment_gears(gear_spacing=2.0);
+  drive_gears(gear_spacing=0.0);
+  translate([0,0,13]) pump_pressure_rollers(gear_spacing=0.0);
+  translate([0,0,30]) rotate([180,0,0]) outer_pressure_ring(gear_spacing=0.0);
+  translate([0,0,50]) rotate([180,0,0]) alignment_gears(gear_spacing=0.0);
 }
