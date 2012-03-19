@@ -3,10 +3,10 @@
 include <MCAD/involute_gears.scad>
 
 render_part=0; // full_assembly
- render_part=1; // drive_gears
+// render_part=1; // drive_gears
 // render_part=2; // alignment_gears
 // render_part=3; // pressure_rollers
-// render_part=4; // outer_pressure_ring
+ render_part=4; // outer_pressure_ring
 
 module spider_coupler(
 	thickness=5.0
@@ -247,13 +247,13 @@ module pressure_roller(
   $fs=0.1;
   difference() {
     union() {
-	cylinder(r=roller_shield_d/2,h=roller_shield_thickness,center=false);
+	cylinder(r=roller_max_d/2,h=roller_shield_thickness,center=false);
 	translate([0,0,roller_shield_thickness])
 	  cylinder(r1=roller_max_d/2,r2=roller_min_d/2,h=roller_thickness,center=false);
 	translate([0,0,roller_shield_thickness+roller_thickness])
-	  cylinder(r1=roller_min_d/2,r2=roller_shield_d/2,h=(roller_shield_d/2-roller_min_d/2),center=false);
-	translate([0,0,roller_shield_thickness+roller_thickness+(roller_shield_d/2-roller_min_d/2)])
-	  cylinder(r=roller_shield_d/2,h=roller_shield_thickness-(roller_shield_d/2-roller_min_d/2),center=false);
+	  cylinder(r=roller_min_d/2,h=roller_shield_thickness,center=false);
+//	translate([0,0,roller_shield_thickness+roller_thickness+(roller_shield_d/2-roller_min_d/2)])
+//	  cylinder(r=roller_shield_d/2,h=roller_shield_thickness-(roller_shield_d/2-roller_min_d/2),center=false);
 	translate([0,0,2*roller_shield_thickness+roller_thickness])
 	  spider_coupler( thickness=roller_coupler_thickness/2
 		, outer_d=roller_coupler_d, axle_d=roller_axle_d, bevel_dr=bevel_dr,shrink=0.2 );
@@ -313,23 +313,25 @@ module outer_pressure_ring(
 	) {
   $fs=0.1;
   difference() {
-    cylinder(r=gear_d+roller_shield_d,h=roller_thickness/4,center=false);
-    translate([0,0,-bevel_dr]) cylinder(r=gear_d+roller_shield_d/2,h=roller_thickness/4+2*bevel_dr,center=false);
+    cylinder(r=gear_d+roller_shield_d,h=roller_thickness/8,center=false);
+    translate([0,0,-bevel_dr]) cylinder(r=gear_d+roller_min_d/2+bevel_dr,h=roller_thickness/8+2*bevel_dr,center=false);
   }
-  translate([0,0,roller_thickness/4]) difference() {
-    cylinder(r=gear_d+roller_shield_d,h=roller_thickness/2,center=false);
-    translate([0,0,-roller_thickness/4])
-	cylinder(r2=gear_d+roller_max_d/2+tube_inner_d,r1=gear_d+roller_min_d/2+tube_inner_d,h=roller_thickness,center=false);
+  translate([0,0,roller_thickness/8]) difference() {
+    cylinder(r=gear_d+3*roller_shield_d/4,h=roller_thickness,center=false);
+    translate([0,0,-bevel_dr]) cylinder(r=gear_d+roller_min_d/2+bevel_dr,h=roller_thickness+2*bevel_dr,center=false);
+    cylinder(r1=gear_d+roller_min_d/2+tube_outer_d-tube_inner_d,r2=gear_d+roller_max_d/2+tube_outer_d-tube_inner_d,h=roller_thickness,center=false);
+    translate([0,0,roller_thickness-bevel_dr]) cylinder(r=gear_d+roller_max_d/2+2*bevel_dr,h=2*bevel_dr,center=false);
   }
-  translate([0,0,3*roller_thickness/4]) difference() {
-    cylinder(r=gear_d+roller_shield_d,h=roller_thickness/4,center=false);
-    translate([0,0,-bevel_dr]) cylinder(r=gear_d+roller_shield_d/2,h=roller_thickness/4+2*bevel_dr,center=false);
+  translate([0,0,9*roller_thickness/8]) difference() {
+    cylinder(r=gear_d+3*roller_shield_d/4,h=roller_thickness/4,center=false);
+    translate([0,0,-bevel_dr]) cylinder(r=gear_d+roller_max_d/2+2*bevel_dr,h=roller_thickness/4+2*bevel_dr,center=false);
   }
 }
 
 if(render_part==4) {
   echo("Rendering outer_pressure_ring()...");
-  outer_pressure_ring(gear_spacing=2.0);
+  translate([0,0,23]) rotate([180,0,0]) pump_pressure_rollers(gear_spacing=0.0);
+  outer_pressure_ring(gear_spacing=0.0);
 }
 
 
