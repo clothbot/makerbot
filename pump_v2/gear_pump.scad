@@ -320,19 +320,20 @@ module outer_pressure_ring(
     translate([0,0,-bevel_dr]) cylinder(r=gear_d+roller_min_d/2+bevel_dr,h=roller_thickness/8+2*bevel_dr,center=false);
   }
   translate([0,0,roller_thickness/8]) difference() {
-    cylinder(r=gear_d+3*roller_shield_d/4,h=roller_thickness,center=false);
-    translate([0,0,-bevel_dr]) cylinder(r=gear_d+roller_min_d/2+bevel_dr,h=roller_thickness+2*bevel_dr,center=false);
-	cylinder(r1=gear_d+roller_min_d/2+bevel_dr,r2=dr1+(dr2-dr1)*(roller_thickness/2-tube_outer_d)/roller_thickness
+    cylinder(r=gear_d+3*roller_shield_d/4,h=roller_thickness/2-tube_outer_d+bevel_dr,center=false);
+    cylinder(r1=gear_d+roller_min_d/2+bevel_dr,r2=dr1+(dr2-dr1)*(roller_thickness/2-tube_outer_d)/roller_thickness
 	  ,h=roller_thickness/2-tube_outer_d+bevel_dr,center=false);
-	translate([0,0,roller_thickness/2-tube_outer_d])
-	  cylinder(r1=dr1+(dr2-dr1)*(roller_thickness/2-tube_outer_d)/roller_thickness
+  }
+  translate([0,0,roller_thickness/8+roller_thickness/2-tube_outer_d]) difference() {
+    cylinder(r=gear_d+3*roller_shield_d/4,h=2*tube_outer_d,center=false);
+    cylinder(r1=dr1+(dr2-dr1)*(roller_thickness/2-tube_outer_d)/roller_thickness
 	    ,r2=dr1+(dr2-dr1)*(roller_thickness/2+tube_outer_d)/roller_thickness,h=2*tube_outer_d,center=false);
-	translate([0,0,roller_thickness/2+tube_outer_d-bevel_dr])
-	  cylinder(r1=dr1+(dr2-dr1)*(roller_thickness/2+tube_outer_d)/roller_thickness
+    cube(size=[gear_d+roller_shield_d+2*bevel_dr,gear_d+roller_shield_d+2*bevel_dr,2*tube_outer_d],center=false);
+  }
+  translate([0,0,roller_thickness/8+roller_thickness/2+tube_outer_d]) difference() {
+    cylinder(r=gear_d+3*roller_shield_d/4,h=roller_thickness/2-tube_outer_d, center=false);
+    cylinder(r1=dr1+(dr2-dr1)*(roller_thickness/2+tube_outer_d)/roller_thickness
 	    ,r2=gear_d+roller_max_d/2+bevel_dr,h=roller_thickness/2-tube_outer_d+bevel_dr,center=false);
-	translate([0,0,roller_thickness-bevel_dr]) cylinder(r=gear_d+roller_max_d/2+2*bevel_dr,h=2*bevel_dr,center=false);
-     translate([0,0,roller_thickness/2-tube_outer_d]) cube(size=[gear_d+roller_shield_d+2*bevel_dr,gear_d+roller_shield_d+2*bevel_dr,2*tube_outer_d],center=false);
-
   }
   translate([0,0,9*roller_thickness/8]) difference() {
     cylinder(r=gear_d+3*roller_shield_d/4,h=roller_thickness/4,center=false);
