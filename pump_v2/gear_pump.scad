@@ -7,6 +7,7 @@ render_part=0; // full_assembly
 // render_part=2; // alignment_gears
 // render_part=3; // pressure_rollers
  render_part=4; // outer_pressure_ring
+render_part=5; // roller_retainer_ring
 
 module spider_coupler(
 	thickness=5.0
@@ -310,41 +311,92 @@ module outer_pressure_ring(
 	, gear_d=20.0, gear_clearance=0.4, gear_spacing=1.0
 	, tube_outer_d=Tygon_B_44_3_OD()
 	, tube_inner_d=Tygon_B_44_3_ID()
+	, hole_ext=0.01
 	) {
   $fs=0.1;
   dr1=gear_d+roller_min_d/2+tube_outer_d-tube_inner_d;
   dr2=gear_d+roller_max_d/2+tube_outer_d-tube_inner_d;
+  difference() {
+    cylinder(r=gear_d+3*roller_shield_d/4,h=3*roller_thickness/2,center=false);
+    translate([0,0,-hole_ext]) cylinder(r=dr2,h=3*roller_thickness/2+2*hole_ext,center=false);
+    translate([0,0,roller_thickness/8+roller_thickness/2-tube_outer_d])
+	cube(size=[gear_d+roller_shield_d+2*bevel_dr,gear_d+roller_shield_d+2*bevel_dr,2*tube_outer_d],center=false);
+  }
   // bottom section
   difference() {
     cylinder(r=gear_d+roller_shield_d,h=roller_thickness/8,center=false);
-    translate([0,0,-bevel_dr]) cylinder(r=gear_d+roller_min_d/2+bevel_dr,h=roller_thickness/8+2*bevel_dr,center=false);
+    translate([0,0,-hole_ext]) cylinder(r=gear_d+roller_min_d/2+bevel_dr,h=roller_thickness/8+2*hole_ext,center=false);
   }
   translate([0,0,roller_thickness/8]) difference() {
-    cylinder(r=gear_d+3*roller_shield_d/4,h=roller_thickness/2-tube_outer_d+bevel_dr,center=false);
+    cylinder(r=gear_d+3*roller_shield_d/4,h=roller_thickness/2-tube_outer_d,center=false);
     cylinder(r1=gear_d+roller_min_d/2+bevel_dr,r2=dr1+(dr2-dr1)*(roller_thickness/2-tube_outer_d)/roller_thickness
-	  ,h=roller_thickness/2-tube_outer_d+bevel_dr,center=false);
+	  ,h=roller_thickness/2-tube_outer_d,center=false);
+    cylinder(r=gear_d+roller_min_d/2+bevel_dr,h=hole_ext,center=true);
+    translate([0,0,roller_thickness/2-tube_outer_d]) cylinder(r=dr1+(dr2-dr1)*(roller_thickness/2-tube_outer_d)/roller_thickness,h=hole_ext,center=true);
   }
   translate([0,0,roller_thickness/8+roller_thickness/2-tube_outer_d]) difference() {
     cylinder(r=gear_d+3*roller_shield_d/4,h=2*tube_outer_d,center=false);
-    cylinder(r1=dr1+(dr2-dr1)*(roller_thickness/2-tube_outer_d)/roller_thickness
-	    ,r2=dr1+(dr2-dr1)*(roller_thickness/2+tube_outer_d)/roller_thickness,h=2*tube_outer_d,center=false);
+    translate([0,0,tube_outer_d]) cylinder(r1=dr1,r2=dr2,h=roller_thickness,center=true);
     cube(size=[gear_d+roller_shield_d+2*bevel_dr,gear_d+roller_shield_d+2*bevel_dr,2*tube_outer_d],center=false);
   }
-  translate([0,0,roller_thickness/8+roller_thickness/2+tube_outer_d]) difference() {
-    cylinder(r=gear_d+3*roller_shield_d/4,h=roller_thickness/2-tube_outer_d, center=false);
-    cylinder(r1=dr1+(dr2-dr1)*(roller_thickness/2+tube_outer_d)/roller_thickness
-	    ,r2=gear_d+roller_max_d/2+bevel_dr,h=roller_thickness/2-tube_outer_d+bevel_dr,center=false);
-  }
-  translate([0,0,9*roller_thickness/8]) difference() {
-    cylinder(r=gear_d+3*roller_shield_d/4,h=roller_thickness/4,center=false);
-    translate([0,0,-bevel_dr]) cylinder(r=gear_d+roller_max_d/2+2*bevel_dr,h=roller_thickness/4+2*bevel_dr,center=false);
-  }
+//  translate([0,0,roller_thickness/8+roller_thickness/2+tube_outer_d]) difference() {
+//    cylinder(r=gear_d+3*roller_shield_d/4,h=roller_thickness/2-tube_outer_d, center=false);
+//    cylinder(r1=dr1+(dr2-dr1)*(roller_thickness/2+tube_outer_d)/roller_thickness
+//	    ,r2=gear_d+roller_max_d/2+bevel_dr,h=roller_thickness/2-tube_outer_d+bevel_dr,center=false);
+//  }
+//  translate([0,0,9*roller_thickness/8]) difference() {
+//    cylinder(r=gear_d+3*roller_shield_d/4,h=roller_thickness/4,center=false);
+//    translate([0,0,-bevel_dr]) cylinder(r=gear_d+roller_max_d/2+2*bevel_dr,h=roller_thickness/4+2*bevel_dr,center=false);
+//  }
 }
 
 if(render_part==4) {
   echo("Rendering outer_pressure_ring()...");
-  translate([0,0,23]) rotate([180,0,0]) pump_pressure_rollers(gear_spacing=0.0);
+  % translate([0,0,23]) rotate([180,0,0]) pump_pressure_rollers(gear_spacing=0.0);
   outer_pressure_ring(gear_spacing=0.0);
+}
+
+function Bearing_623_OD()=10.0; // outer diameter
+function Bearing_623_ID()=3.0; // inner diameter
+function Bearing_623_TH()=4.0; // thickness
+
+
+module roller_retainer_ring(
+	roller_axle_d=3.0, roller_thickness=15.0
+	, roller_coupler_thickness=3.0, roller_coupler_d=12.0
+	, roller_shield_d=20.0, roller_shield_thickness=3.0
+	, roller_min_d=15.0, roller_max_d=18.0
+	, pressure_roller_count=3
+	, bevel_dr=0.5
+	, gear_d=20.0, gear_clearance=0.4, gear_spacing=1.0
+	, tube_outer_d=Tygon_B_44_3_OD()
+	, tube_inner_d=Tygon_B_44_3_ID()
+	, hole_ext=0.01
+	, roller_bearing_od=Bearing_623_OD(), roller_bearing_th=Bearing_623_TH()
+	) {
+  $fs=0.1;
+  difference() {
+    cylinder(r=gear_d+roller_min_d/2,h=roller_bearing_th,center=false);
+    cylinder(r=gear_d-roller_shield_d/2,h=roller_bearing_th,center=false);
+    cylinder(r1=gear_d-roller_shield_d/2+3*bevel_dr,r2=gear_d-roller_shield_d/2,h=3*bevel_dr,center=true);
+    translate([0,0,roller_bearing_th])
+      cylinder(r2=gear_d-roller_shield_d/2+3*bevel_dr,r1=gear_d-roller_shield_d/2,h=3*bevel_dr,center=true);
+
+    for(i=[0:pressure_roller_count-1]) assign( rotAngle=360*i/pressure_roller_count ) {
+      rotate([0,0,rotAngle]) translate([gear_d,0,0]) {
+	  cylinder(r=roller_bearing_od/2,h=roller_bearing_th,center=false);
+	  cylinder(r1=roller_bearing_od/2+2*bevel_dr,r2=roller_bearing_od/2,h=2*bevel_dr,center=true);
+	  translate([0,0,roller_bearing_th])
+	    cylinder(r2=roller_shield_d/2+3*bevel_dr,r1=roller_shield_d/2+bevel_dr,h=2*bevel_dr,center=true);
+      }
+    }
+  }
+}
+
+if(render_part==5) {
+  echo("Rendering roller_retainer_ring()...");
+  % translate([0,0,30]) rotate([180,0,0]) pump_pressure_rollers(gear_spacing=0.0);
+  roller_retainer_ring(gear_spacing=0.0);
 }
 
 
