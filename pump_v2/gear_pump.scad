@@ -6,8 +6,9 @@ render_part=0; // full_assembly
 // render_part=1; // drive_gears
 // render_part=2; // alignment_gears
 // render_part=3; // pressure_rollers
- render_part=4; // outer_pressure_ring
-render_part=5; // roller_retainer_ring
+// render_part=4; // outer_pressure_ring
+// render_part=5; // roller_retainer_ring
+// render_part=6; // roller_gear_coupler2bearing_group
 
 module spider_coupler(
 	thickness=5.0
@@ -399,11 +400,80 @@ if(render_part==5) {
   roller_retainer_ring(gear_spacing=0.0);
 }
 
+module roller_gear_coupler2bearing(
+	roller_axle_d=3.0, roller_thickness=15.0
+	, roller_coupler_thickness=3.0, roller_coupler_d=12.0
+	, roller_shield_d=20.0, roller_shield_thickness=3.0
+	, roller_min_d=15.0, roller_max_d=18.0
+	, pressure_roller_count=3
+	, bevel_dr=0.5
+	, gear_d=20.0, gear_clearance=0.4, gear_spacing=1.0
+	, tube_outer_d=Tygon_B_44_3_OD()
+	, tube_inner_d=Tygon_B_44_3_ID()
+	, hole_ext=0.01
+	, roller_bearing_od=Bearing_623_OD(), roller_bearing_th=Bearing_623_TH()
+	) {
+  $fs=0.1;
+  difference() {
+    union() {
+      cylinder(r=roller_max_d/2,h=roller_shield_thickness/2,center=false);
+      translate([0,0,roller_shield_thickness/2])
+		cylinder(r1=roller_max_d/2,r2=(roller_axle_d+(roller_bearing_od-roller_axle_d)/2)/2,h=roller_shield_thickness/2,center=false);
+	 // translate([0,0,roller_shield_thickness]) 
+	 //   spider_coupler( thickness=roller_coupler_thickness/2
+	 //     , outer_d=roller_coupler_d, axle_d=roller_axle_d, bevel_dr=bevel_dr,shrink=0.2 );
+    }
+    translate([0,0,-hole_ext]) cylinder(r=roller_axle_d/2,h=roller_shield_thickness+2*hole_ext,center=false);
+    translate([0,0,-bevel_dr]) spider_coupler( thickness=roller_coupler_thickness/2+2*bevel_dr
+		, outer_d=roller_coupler_d+2*bevel_dr, axle_d=roller_axle_d-2*bevel_dr, bevel_dr=bevel_dr/2,shrink=-0.2 );
+  }
+}
+
+module roller_gear_coupler2bearing_group(
+	roller_axle_d=3.0, roller_thickness=15.0
+	, roller_coupler_thickness=3.0, roller_coupler_d=12.0
+	, roller_shield_d=20.0, roller_shield_thickness=3.0
+	, roller_min_d=15.0, roller_max_d=18.0
+	, pressure_roller_count=3
+	, bevel_dr=0.5
+	, gear_d=20.0, gear_clearance=0.4, gear_spacing=1.0
+	, tube_outer_d=Tygon_B_44_3_OD()
+	, tube_inner_d=Tygon_B_44_3_ID()
+	, hole_ext=0.01
+	, roller_bearing_od=Bearing_623_OD(), roller_bearing_th=Bearing_623_TH()
+	) {
+  $fs=0.1;
+  for(i=[0:pressure_roller_count-1]) assign( rotAngle=360*i/pressure_roller_count ) {
+    rotate([0,0,rotAngle]) translate([gear_d+gear_clearance+gear_spacing,0,0]) rotate([0,0,-2*rotAngle])
+	  roller_gear_coupler2bearing(
+		roller_axle_d=roller_axle_d, roller_thickness=roller_thickness
+		, roller_coupler_thickness=roller_coupler_thickness, roller_coupler_d=roller_coupler_d
+		, roller_shield_d=roller_shield_d, roller_shield_thickness=roller_shield_thickness
+		, roller_min_d=roller_min_d, roller_max_d=roller_max_d
+		, bevel_dr=bevel_dr
+		, gear_d=gear_d, gear_clearance=gear_clearance, gear_spacing=gear_spacing
+		, tube_outer_d=tube_outer_d
+		, tube_inner_d=tube_inner_d
+		, hole_ext=hole_ext
+		, roller_bearing_od=roller_bearing_od, roller_bearing_th=roller_bearing_th
+	  );
+  }
+}
+
+if(render_part==6) {
+  echo("Rendering roller_gear_coupler2bearing_group()...");
+  roller_gear_coupler2bearing_group(gear_spacing=2.0);
+}
 
 if(render_part==0) {
   echo("Rendering full assembly...");
   drive_gears(gear_spacing=0.0);
-  translate([0,0,13]) pump_pressure_rollers(gear_spacing=0.0);
-  translate([0,0,30]) rotate([180,0,0]) outer_pressure_ring(gear_spacing=0.0);
-  translate([0,0,50]) rotate([180,0,0]) alignment_gears(gear_spacing=0.0);
+  translate([0,0,13]) roller_gear_coupler2bearing_group(gear_spacing=0.0);
+  translate([0,0,17]) roller_retainer_ring(gear_spacing=0.0);
+  translate([0,0,23]) pump_pressure_rollers(gear_spacing=0.0);
+  translate([0,0,45]) rotate([180,0,0]) outer_pressure_ring(gear_spacing=0.0);
+  translate([0,0,47]) roller_gear_coupler2bearing_group(gear_spacing=0.0);
+  translate([0,0,55]) rotate([180,0,0]) roller_retainer_ring(gear_spacing=0.0);
+  translate([0,0,60]) rotate([180,0,0]) roller_gear_coupler2bearing_group(gear_spacing=0.0);
+  translate([0,0,75]) rotate([180,0,0]) alignment_gears(gear_spacing=0.0);
 }
