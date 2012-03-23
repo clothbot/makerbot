@@ -10,7 +10,7 @@ render_part=0; // full_assembly
 // render_part=5; // roller_retainer_ring
 // render_part=6; // roller_gear_coupler2bearing_group
 // render_part=7; // pressure_roller_coupler2bearing_group 
-render_part=8; // pump_body
+//render_part=8; // pump_body
 
 module spider_coupler(
 	thickness=5.0
@@ -564,16 +564,20 @@ module pump_body(
   difference() {
     cylinder(r=gear_d+roller_shield_d,h=2*roller_thickness,center=false);
     translate([0,0,-hole_ext]) cylinder(r=gear_d+roller_min_d/2+bevel_dr,h=2*roller_thickness+2*hole_ext,center=false);
-
+    difference() {
+	translate([0,0,roller_thickness/2]) cylinder(r=gear_d+3*roller_shield_d/4,h=roller_thickness+hole_ext,center=false);
+	translate([0,0,roller_thickness/2-hole_ext])
+	  cylinder(r=dr2-2*bevel_dr,h=2*roller_thickness+2*hole_ext,center=false);
+    }
     translate([0,0,roller_thickness]) cylinder(r=gear_d+3*roller_shield_d/4,h=roller_thickness+hole_ext,center=false);
-    translate([0,0,3*roller_thickness/3+roller_thickness/2-tube_outer_d])
+    translate([0,0,3*roller_thickness/3+roller_thickness/2-tube_outer_d]) rotate([0,0,-90]) 
 	cube(size=[gear_d+roller_shield_d+2*bevel_dr,gear_d+roller_shield_d+2*bevel_dr,roller_thickness],center=false);
   }
 }
 
 if(render_part==8) assign(roller_thickness=15.0,roller_shield_thickness=3.0) {
   echo("Rendering pump_body()...");
-  % translate([0,0,2*roller_thickness+roller_thickness/4]) rotate([180,0,90]) outer_pressure_ring(gear_spacing=0.0);
+  % translate([0,0,2*roller_thickness+roller_thickness/8]) rotate([180,0,90]) outer_pressure_ring(gear_spacing=0.0);
   pump_body(gear_spacing=0.0);
 }
 
@@ -588,5 +592,7 @@ if(render_part==0) {
   translate([0,0,53]) roller_gear_coupler2bearing_group(gear_spacing=0.0);
   translate([0,0,60]) rotate([180,0,0]) roller_retainer_ring(gear_spacing=0.0);
   translate([0,0,65]) rotate([180,0,0]) roller_gear_coupler2bearing_group(gear_spacing=0.0);
-  translate([0,0,80]) rotate([180,0,0]) alignment_gears(gear_spacing=0.0);
+  translate([0,0,100]) rotate([180,0,0]) alignment_gears(gear_spacing=0.0);
+  translate([0,0,80]) rotate([180,0,0]) pump_body(gear_spacing=0.0);
+
 }
