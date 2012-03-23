@@ -3,6 +3,8 @@
 include <MCAD/involute_gears.scad>
 
 render_part=0; // full_assembly
+plate_number=0; // no plates.
+plate_number=1; // small gears and coupler parts
 // render_part=1; // drive_gears
 // render_part=2; // alignment_gears
 // render_part=3; // pressure_rollers
@@ -42,6 +44,33 @@ module spider_coupler(
   }
 }
 
+module motor_drive_gear(
+	gear_d=20.0, gear_num_teeth=17, gear_spacing=1.0
+	, roller_gear_thickness=10.0, motor_gear_thickness=12.0
+	, roller_gear_hub_thickness=15.0, motor_gear_hub_thickness=17.0
+	, roller_gear_hub_d=12.0, motor_gear_hub_d=15.0
+	, roller_axle_d=3.0, motor_axle_d=5.0
+	, roller_gear_count=3
+	, gear_clearance=0.4
+	, bevel_dr=0.5
+	) {
+  $fs=0.1;
+  // Motor gear at center
+  gear_circular_pitch=gear_d * 180 / gear_num_teeth;
+  intersection() {
+    gear(number_of_teeth=gear_num_teeth
+	, circular_pitch=gear_circular_pitch
+	, gear_thickness=motor_gear_thickness, rim_thickness=motor_gear_thickness
+	, bore_diameter=motor_axle_d
+	, clearance=gear_clearance/2
+	, hub_thickness=motor_gear_hub_thickness
+	, hub_diameter=motor_gear_hub_d
+	);
+    cylinder(r1=gear_d/2,r2=gear_d/2+motor_gear_hub_thickness,h=motor_gear_hub_thickness,center=false);
+//    cylinder(r2=gear_d/2,r1=gear_d/2+motor_gear_thickness,h=motor_gear_thickness,center=false);
+  }
+}
+
 module roller_drive_gear(
 	gear_d=20.0, gear_num_teeth=17, gear_spacing=1.0
 	, roller_gear_thickness=10.0, motor_gear_thickness=12.0
@@ -50,7 +79,7 @@ module roller_drive_gear(
 	, roller_axle_d=3.0, motor_axle_d=5.0
 	, roller_gear_count=3
 	, gear_clearance=0.4
-	, twist_ratio=0.5, bevel_dr=0.5
+	, bevel_dr=0.5
 	) {
   $fs=0.1;
   gear_circular_pitch=gear_d * 180 / gear_num_teeth;
@@ -84,29 +113,22 @@ module drive_gears(
 	, roller_axle_d=3.0, motor_axle_d=5.0
 	, roller_gear_count=3
 	, gear_clearance=0.4
-	, twist_ratio=0.5, bevel_dr=0.5
+	, bevel_dr=0.5
 	) {
   $fs=0.1;
   // Motor gear at center
   gear_circular_pitch=gear_d * 180 / gear_num_teeth;
-  intersection() {
-    gear(number_of_teeth=gear_num_teeth
-	, circular_pitch=gear_circular_pitch
-	, gear_thickness=motor_gear_thickness, rim_thickness=motor_gear_thickness
-	, bore_diameter=motor_axle_d
-	, clearance=gear_clearance/2
-	, hub_thickness=motor_gear_hub_thickness
-	, hub_diameter=motor_gear_hub_d
-	);
-    cylinder(r1=gear_d/2,r2=gear_d/2+motor_gear_hub_thickness,h=motor_gear_hub_thickness,center=false);
-//    cylinder(r2=gear_d/2,r1=gear_d/2+motor_gear_thickness,h=motor_gear_thickness,center=false);
-  }
+  motor_drive_gear(
+		gear_d=gear_d, gear_num_teeth=gear_num_teeth, motor_gear_thickness=motor_gear_thickness, gear_spacing=gear_spacing
+		, motor_gear_hub_thickness=motor_gear_hub_thickness, motor_gear_hub_d=motor_gear_hub_d, motor_axle_d=motor_axle_d
+		, gear_clearance=gear_clearance, bevel_dr=bevel_dr
+	  );
   for(i=[0:roller_gear_count-1]) assign( rotAngle=360*i/roller_gear_count ) {
     rotate([0,0,rotAngle]) translate([gear_d+gear_clearance+gear_spacing,0,0]) rotate([0,0,-2*rotAngle])
 	  roller_drive_gear(
 		gear_d=gear_d, gear_num_teeth=gear_num_teeth, gear_thickness=roller_gear_thickness, gear_spacing=gear_spacing
 		, gear_hub_thickness=roller_gear_hub_thickness, gear_hub_d=roller_gear_hub_d, roller_axle_d=roller_axle_d
-		, gear_clearance=gear_clearance, twist_ratio=twist_ratio, bevel_dr=bevel_dr
+		, gear_clearance=gear_clearance, bevel_dr=bevel_dr
 	  );
 
   }
@@ -581,18 +603,73 @@ if(render_part==8) assign(roller_thickness=15.0,roller_shield_thickness=3.0) {
   pump_body(gear_spacing=0.0);
 }
 
-if(render_part==0) {
-  echo("Rendering full assembly...");
-  drive_gears(gear_spacing=0.0);
-  translate([0,0,13]) roller_gear_coupler2bearing_group(gear_spacing=0.0);
-  translate([0,0,17]) roller_retainer_ring(gear_spacing=0.0);
-  translate([0,0,26]) rotate([180,0,0]) pressure_roller_coupler2bearing_group(gear_spacing=0.0);
-  translate([0,0,50]) rotate([180,0,0]) pump_pressure_rollers(gear_spacing=0.0);
-  translate([0,0,29]) outer_pressure_ring(gear_spacing=0.0);
-  translate([0,0,53]) roller_gear_coupler2bearing_group(gear_spacing=0.0);
-  translate([0,0,60]) rotate([180,0,0]) roller_retainer_ring(gear_spacing=0.0);
-  translate([0,0,65]) rotate([180,0,0]) roller_gear_coupler2bearing_group(gear_spacing=0.0);
-  translate([0,0,100]) rotate([180,0,0]) alignment_gears(gear_spacing=0.0);
-  translate([0,0,80]) rotate([180,0,0]) pump_body(gear_spacing=0.0);
+if(render_part==0) assign(
+	gear_d=20.0, gear_num_teeth=17, gear_spacing=1.0
+	, roller_gear_thickness=10.0, motor_gear_thickness=12.0
+	, roller_gear_hub_thickness=15.0, motor_gear_hub_thickness=17.0
+	, roller_gear_hub_d=12.0, motor_gear_hub_d=15.0
+	, roller_axle_d=3.0, motor_axle_d=5.0
+	, roller_gear_count=3
+	, gear_clearance=0.4
+	, bevel_dr=0.5
+	, roller_axle_d=3.0, roller_thickness=15.0
+	, roller_coupler_thickness=3.0, roller_coupler_d=12.0
+	, roller_shield_d=20.0, roller_shield_thickness=3.0
+	, roller_min_d=15.0, roller_max_d=18.0
+	, pressure_roller_count=3
+	, gear_d=20.0, gear_clearance=0.4, gear_spacing=1.0
+	, tube_outer_d=Tygon_B_44_3_OD()
+	, tube_inner_d=Tygon_B_44_3_ID()
+	, hole_ext=0.01
+	, gear_hub_thickness=15.0, gear_hub_d=12.0, gear_thickness=12.0
+	, middle_axle_d=5.0
+	, twist_ratio=0.5
+	) {
+  if(plate_number==0) {
+    echo("Rendering full assembly...");
+    drive_gears(gear_spacing=0.0);
+    translate([0,0,13]) roller_gear_coupler2bearing_group(gear_spacing=0.0);
+    translate([0,0,17]) roller_retainer_ring(gear_spacing=0.0);
+    translate([0,0,26]) rotate([180,0,0]) pressure_roller_coupler2bearing_group(gear_spacing=0.0);
+    translate([0,0,50]) rotate([180,0,0]) pump_pressure_rollers(gear_spacing=0.0);
+    translate([0,0,29]) outer_pressure_ring(gear_spacing=0.0);
+    translate([0,0,53]) roller_gear_coupler2bearing_group(gear_spacing=0.0);
+    translate([0,0,60]) rotate([180,0,0]) roller_retainer_ring(gear_spacing=0.0);
+    translate([0,0,65]) rotate([180,0,0]) roller_gear_coupler2bearing_group(gear_spacing=0.0);
+    translate([0,0,100]) rotate([180,0,0]) alignment_gears(gear_spacing=0.0);
+    translate([0,0,80]) rotate([180,0,0]) pump_body(gear_spacing=0.0);
+  }
+  if(plate_number>0) {
+    % translate([50,50,-1.0]) cube(size=[100,100,2.0],center=true);
+  }
+  if(plate_number==1) {
+    echo("Rendering printing plate 1...");
+	translate([gear_d/2,gear_d/2,0]) {
+	  motor_drive_gear(
+		gear_d=gear_d, gear_num_teeth=gear_num_teeth, motor_gear_thickness=motor_gear_thickness, gear_spacing=gear_spacing
+		, motor_gear_hub_thickness=motor_gear_hub_thickness, motor_gear_hub_d=motor_gear_hub_d, motor_axle_d=motor_axle_d
+		, gear_clearance=gear_clearance, bevel_dr=bevel_dr
+	  );
+	  for(i=[1:roller_gear_count]) translate([i*(gear_d+2*gear_spacing),0,0]) roller_drive_gear(
+		gear_d=gear_d, gear_num_teeth=gear_num_teeth, gear_thickness=roller_gear_thickness, gear_spacing=gear_spacing
+		, gear_hub_thickness=roller_gear_hub_thickness, gear_hub_d=roller_gear_hub_d, roller_axle_d=roller_axle_d
+		, gear_clearance=gear_clearance, bevel_dr=bevel_dr
+	  );
+	}
 
+	translate([gear_d, 3*gear_d/2,0]) {
+	  alignment_gear_middle(
+		gear_d=gear_d, gear_num_teeth=gear_num_teeth, gear_thickness=gear_thickness, gear_spacing=gear_spacing
+		, gear_hub_thickness=gear_hub_thickness, gear_hub_d=gear_hub_d, middle_axle_d=middle_axle_d
+		, gear_clearance=gear_clearance, twist_ratio=twist_ratio, bevel_dr=bevel_dr
+		);
+	  for(i=[1:roller_gear_count]) translate([i*(gear_d+2*gear_spacing),0,0])
+	    alignment_gear_roller(
+		gear_d=gear_d, gear_num_teeth=gear_num_teeth, gear_thickness=gear_thickness, gear_spacing=gear_spacing
+		, gear_hub_thickness=gear_hub_thickness, gear_hub_d=gear_hub_d, roller_axle_d=roller_axle_d
+		, gear_clearance=gear_clearance, twist_ratio=twist_ratio, bevel_dr=bevel_dr
+	    );
+	}
+  }
+	// translate([gear_d,0,0]) alignment_gears(gear_spacing=gear_spacing);
 }
