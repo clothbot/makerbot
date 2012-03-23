@@ -9,7 +9,8 @@ render_part=0; // full_assembly
 // render_part=4; // outer_pressure_ring
 // render_part=5; // roller_retainer_ring
 // render_part=6; // roller_gear_coupler2bearing_group
-// render_part=7; // pressure_roller_coupler2bearing_group
+// render_part=7; // pressure_roller_coupler2bearing_group 
+render_part=8; // pump_body
 
 module spider_coupler(
 	thickness=5.0
@@ -543,6 +544,37 @@ module pressure_roller_coupler2bearing_group(
 if(render_part==7) {
   echo("Rendering pressure_roller_coupler2bearing_group()...");
   pressure_roller_coupler2bearing_group(gear_spacing=2.0);
+}
+
+module pump_body(
+	roller_axle_d=3.0, roller_thickness=15.0
+	, roller_coupler_thickness=3.0, roller_coupler_d=12.0
+	, roller_shield_d=20.0, roller_shield_thickness=3.0
+	, roller_min_d=15.0, roller_max_d=18.0
+	, pressure_roller_count=3
+	, bevel_dr=0.5
+	, gear_d=20.0, gear_clearance=0.4, gear_spacing=1.0
+	, tube_outer_d=Tygon_B_44_3_OD()
+	, tube_inner_d=Tygon_B_44_3_ID()
+	, hole_ext=0.01
+	) {
+  $fs=0.1;
+  dr1=gear_d+roller_min_d/2+tube_outer_d-tube_inner_d;
+  dr2=gear_d+roller_max_d/2+tube_outer_d-tube_inner_d;
+  difference() {
+    cylinder(r=gear_d+roller_shield_d,h=2*roller_thickness,center=false);
+    translate([0,0,-hole_ext]) cylinder(r=gear_d+roller_min_d/2+bevel_dr,h=2*roller_thickness+2*hole_ext,center=false);
+
+    translate([0,0,roller_thickness]) cylinder(r=gear_d+3*roller_shield_d/4,h=roller_thickness+hole_ext,center=false);
+    translate([0,0,3*roller_thickness/3+roller_thickness/2-tube_outer_d])
+	cube(size=[gear_d+roller_shield_d+2*bevel_dr,gear_d+roller_shield_d+2*bevel_dr,roller_thickness],center=false);
+  }
+}
+
+if(render_part==8) assign(roller_thickness=15.0,roller_shield_thickness=3.0) {
+  echo("Rendering pump_body()...");
+  % translate([0,0,2*roller_thickness+roller_thickness/4]) rotate([180,0,90]) outer_pressure_ring(gear_spacing=0.0);
+  pump_body(gear_spacing=0.0);
 }
 
 if(render_part==0) {
