@@ -509,7 +509,7 @@ module pressure_roller_coupler2bearing(
    difference() {
     union() {
       translate([0,0,roller_coupler_thickness/2]) {
-	  rotate([180,0,0]) spider_coupler( thickness=roller_coupler_thickness/2
+	  rotate([180,0,0]) translate([0,0,-hole_ext]) spider_coupler( thickness=roller_coupler_thickness/2+hole_ext
 		, outer_d=roller_coupler_d, axle_d=roller_axle_d-2*bevel_dr, bevel_dr=bevel_dr/2,shrink=2*hole_ext );
 	  intersection() {
 	    cylinder(r=roller_coupler_d/2,h=roller_shield_thickness,center=false);
@@ -624,6 +624,7 @@ if(render_part==0) assign(
 	, gear_hub_thickness=15.0, gear_hub_d=12.0, gear_thickness=12.0
 	, middle_axle_d=5.0
 	, twist_ratio=0.5
+	, roller_bearing_od=Bearing_623_OD(), roller_bearing_th=Bearing_623_TH()
 	) {
   if(plate_number==0) {
     echo("Rendering full assembly...");
@@ -650,7 +651,7 @@ if(render_part==0) assign(
 		, motor_gear_hub_thickness=motor_gear_hub_thickness, motor_gear_hub_d=motor_gear_hub_d, motor_axle_d=motor_axle_d
 		, gear_clearance=gear_clearance, bevel_dr=bevel_dr
 	  );
-	  for(i=[1:roller_gear_count]) translate([i*(gear_d+2*gear_spacing),0,0]) roller_drive_gear(
+	  for(i=[1:roller_gear_count]) translate([i*(gear_d+3*gear_spacing),0,0]) roller_drive_gear(
 		gear_d=gear_d, gear_num_teeth=gear_num_teeth, gear_thickness=roller_gear_thickness, gear_spacing=gear_spacing
 		, gear_hub_thickness=roller_gear_hub_thickness, gear_hub_d=roller_gear_hub_d, roller_axle_d=roller_axle_d
 		, gear_clearance=gear_clearance, bevel_dr=bevel_dr
@@ -663,12 +664,94 @@ if(render_part==0) assign(
 		, gear_hub_thickness=gear_hub_thickness, gear_hub_d=gear_hub_d, middle_axle_d=middle_axle_d
 		, gear_clearance=gear_clearance, twist_ratio=twist_ratio, bevel_dr=bevel_dr
 		);
-	  for(i=[1:roller_gear_count]) translate([i*(gear_d+2*gear_spacing),0,0])
+	  for(i=[1:roller_gear_count]) translate([i*(gear_d+3*gear_spacing),0,0])
 	    alignment_gear_roller(
 		gear_d=gear_d, gear_num_teeth=gear_num_teeth, gear_thickness=gear_thickness, gear_spacing=gear_spacing
 		, gear_hub_thickness=gear_hub_thickness, gear_hub_d=gear_hub_d, roller_axle_d=roller_axle_d
 		, gear_clearance=gear_clearance, twist_ratio=twist_ratio, bevel_dr=bevel_dr
 	    );
+	}
+
+	translate([gear_d/2,5*gear_d/2,0]) {
+	  pressure_roller_coupler2bearing(
+		roller_axle_d=roller_axle_d, roller_thickness=roller_thickness
+		, roller_coupler_thickness=roller_coupler_thickness, roller_coupler_d=roller_coupler_d
+		, roller_shield_d=roller_shield_d, roller_shield_thickness=roller_shield_thickness
+		, roller_min_d=roller_min_d, roller_max_d=roller_max_d
+		, bevel_dr=bevel_dr
+		, gear_d=gear_d, gear_clearance=gear_clearance, gear_spacing=gear_spacing
+		, tube_outer_d=tube_outer_d
+		, tube_inner_d=tube_inner_d
+		, hole_ext=hole_ext
+		, roller_bearing_od=roller_bearing_od, roller_bearing_th=roller_bearing_th
+	  );
+	  for(i=[1:roller_gear_count]) translate([i*(gear_d+3*gear_spacing),0,0])
+	    roller_gear_coupler2bearing(
+		roller_axle_d=roller_axle_d, roller_thickness=roller_thickness
+		, roller_coupler_thickness=roller_coupler_thickness, roller_coupler_d=roller_coupler_d
+		, roller_shield_d=roller_shield_d, roller_shield_thickness=roller_shield_thickness
+		, roller_min_d=roller_min_d, roller_max_d=roller_max_d
+		, bevel_dr=bevel_dr
+		, gear_d=gear_d, gear_clearance=gear_clearance, gear_spacing=gear_spacing
+		, tube_outer_d=tube_outer_d
+		, tube_inner_d=tube_inner_d
+		, hole_ext=hole_ext
+		, roller_bearing_od=roller_bearing_od, roller_bearing_th=roller_bearing_th
+	  );
+	}
+	translate([gear_d,7*gear_d/2,0]) {
+	  pressure_roller_coupler2bearing(
+		roller_axle_d=roller_axle_d, roller_thickness=roller_thickness
+		, roller_coupler_thickness=roller_coupler_thickness, roller_coupler_d=roller_coupler_d
+		, roller_shield_d=roller_shield_d, roller_shield_thickness=roller_shield_thickness
+		, roller_min_d=roller_min_d, roller_max_d=roller_max_d
+		, bevel_dr=bevel_dr
+		, gear_d=gear_d, gear_clearance=gear_clearance, gear_spacing=gear_spacing
+		, tube_outer_d=tube_outer_d
+		, tube_inner_d=tube_inner_d
+		, hole_ext=hole_ext
+		, roller_bearing_od=roller_bearing_od, roller_bearing_th=roller_bearing_th
+	  );
+	  for(i=[1:roller_gear_count]) translate([i*(gear_d+3*gear_spacing),0,0])
+	    roller_gear_coupler2bearing(
+		roller_axle_d=roller_axle_d, roller_thickness=roller_thickness
+		, roller_coupler_thickness=roller_coupler_thickness, roller_coupler_d=roller_coupler_d
+		, roller_shield_d=roller_shield_d, roller_shield_thickness=roller_shield_thickness
+		, roller_min_d=roller_min_d, roller_max_d=roller_max_d
+		, bevel_dr=bevel_dr
+		, gear_d=gear_d, gear_clearance=gear_clearance, gear_spacing=gear_spacing
+		, tube_outer_d=tube_outer_d
+		, tube_inner_d=tube_inner_d
+		, hole_ext=hole_ext
+		, roller_bearing_od=roller_bearing_od, roller_bearing_th=roller_bearing_th
+	  );
+	}
+	translate([gear_d/2,9*gear_d/2,0]) {
+	  pressure_roller_coupler2bearing(
+		roller_axle_d=roller_axle_d, roller_thickness=roller_thickness
+		, roller_coupler_thickness=roller_coupler_thickness, roller_coupler_d=roller_coupler_d
+		, roller_shield_d=roller_shield_d, roller_shield_thickness=roller_shield_thickness
+		, roller_min_d=roller_min_d, roller_max_d=roller_max_d
+		, bevel_dr=bevel_dr
+		, gear_d=gear_d, gear_clearance=gear_clearance, gear_spacing=gear_spacing
+		, tube_outer_d=tube_outer_d
+		, tube_inner_d=tube_inner_d
+		, hole_ext=hole_ext
+		, roller_bearing_od=roller_bearing_od, roller_bearing_th=roller_bearing_th
+	  );
+	  for(i=[1:roller_gear_count]) translate([i*(gear_d+3*gear_spacing),0,0])
+	    roller_gear_coupler2bearing(
+		roller_axle_d=roller_axle_d, roller_thickness=roller_thickness
+		, roller_coupler_thickness=roller_coupler_thickness, roller_coupler_d=roller_coupler_d
+		, roller_shield_d=roller_shield_d, roller_shield_thickness=roller_shield_thickness
+		, roller_min_d=roller_min_d, roller_max_d=roller_max_d
+		, bevel_dr=bevel_dr
+		, gear_d=gear_d, gear_clearance=gear_clearance, gear_spacing=gear_spacing
+		, tube_outer_d=tube_outer_d
+		, tube_inner_d=tube_inner_d
+		, hole_ext=hole_ext
+		, roller_bearing_od=roller_bearing_od, roller_bearing_th=roller_bearing_th
+	  );
 	}
   }
 	// translate([gear_d,0,0]) alignment_gears(gear_spacing=gear_spacing);
