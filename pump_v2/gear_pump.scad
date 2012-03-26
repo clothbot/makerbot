@@ -2,17 +2,23 @@
 
 include <MCAD/involute_gears.scad>
 
+roller_axle_d=3.0+1.0;
+motor_axle_d=5.0+1.0;
+function Bearing_623_OD()=10.0+1.0; // outer diameter
+function Bearing_623_ID()=3.0+1.0; // inner diameter
+function Bearing_623_TH()=4.0; // thickness
+
 render_part=0; // full_assembly
 plate_number=0; // no plates.
 plate_number=1; // small gears and coupler parts
-// render_part=1; // drive_gears
+ render_part=1; // drive_gears
 // render_part=2; // alignment_gears
 // render_part=3; // pressure_rollers
 // render_part=4; // outer_pressure_ring
 // render_part=5; // roller_retainer_ring
 // render_part=6; // roller_gear_coupler2bearing_group
 // render_part=7; // pressure_roller_coupler2bearing_group 
-//render_part=8; // pump_body
+// render_part=8; // pump_body
 
 module spider_coupler(
 	thickness=5.0
@@ -73,8 +79,8 @@ module motor_drive_gear(
 
 module roller_drive_gear(
 	gear_d=20.0, gear_num_teeth=17, gear_spacing=1.0
-	, roller_gear_thickness=10.0, motor_gear_thickness=12.0
-	, roller_gear_hub_thickness=15.0, motor_gear_hub_thickness=17.0
+	, roller_gear_thickness=5.0, motor_gear_thickness=12.0
+	, roller_gear_hub_thickness=5+5, motor_gear_hub_thickness=12+5
 	, roller_gear_hub_d=12.0, motor_gear_hub_d=15.0
 	, roller_axle_d=3.0, motor_axle_d=5.0
 	, roller_gear_count=3
@@ -96,19 +102,19 @@ module roller_drive_gear(
 	cylinder(r1=gear_d/2,r2=gear_d/2+roller_gear_thickness,h=roller_gear_thickness,center=false);
 	cylinder(r2=gear_d/2,r1=gear_d/2+roller_gear_thickness,h=roller_gear_thickness,center=false);
     }
-    translate([0,0,gear_thickness+bevel_dr]) rotate([180,0,0])
+    translate([0,0,roller_gear_thickness+bevel_dr]) rotate([180,0,0])
 	    translate([0,0,-bevel_dr]) spider_coupler( thickness=(roller_gear_hub_thickness-roller_gear_thickness)/2+2*bevel_dr
 		, outer_d=gear_hub_d+2*bevel_dr, axle_d=roller_axle_d-2*bevel_dr, bevel_dr=bevel_dr/2,shrink=-0.2 );
   }
-  translate([0,0,gear_thickness]) 
+  translate([0,0,roller_gear_thickness]) 
 	  spider_coupler( thickness=(roller_gear_hub_thickness-roller_gear_thickness)/2
 		, outer_d=gear_hub_d, axle_d=roller_axle_d, bevel_dr=bevel_dr,shrink=0.2 );
 }
 
 module drive_gears(
 	gear_d=20.0, gear_num_teeth=17, gear_spacing=1.0
-	, roller_gear_thickness=10.0, motor_gear_thickness=12.0
-	, roller_gear_hub_thickness=15.0, motor_gear_hub_thickness=17.0
+	, roller_gear_thickness=5.0, motor_gear_thickness=12.0
+	, roller_gear_hub_thickness=10.0, motor_gear_hub_thickness=17.0
 	, roller_gear_hub_d=12.0, motor_gear_hub_d=15.0
 	, roller_axle_d=3.0, motor_axle_d=5.0
 	, roller_gear_count=3
@@ -136,7 +142,7 @@ module drive_gears(
 
 if(render_part==1) {
   echo("Rendering drive_gears()...");
-  drive_gears(gear_spacing=2.0);
+  drive_gears(gear_spacing=2.0,roller_axle_d=roller_axle_d,motor_axle_d=motor_axle_d);
 }
 
 module alignment_gear_middle(
@@ -260,7 +266,7 @@ module alignment_gears(
 
 if(render_part==2) {
   echo("Rendering alignment_gears()...");
-  alignment_gears(gear_spacing=2.0);
+  alignment_gears(gear_spacing=2.0,roller_axle_d=roller_axle_d,motor_axle_d=motor_axle_d);
 }
 
 module pressure_roller(
@@ -275,7 +281,7 @@ module pressure_roller(
     union() {
 	cylinder(r=roller_max_d/2,h=roller_shield_thickness,center=false);
 	translate([0,0,roller_shield_thickness])
-	  cylinder(r1=roller_max_d/2,r2=roller_min_d/2,h=roller_thickness,center=false);
+	  cylinder($fn=128,r1=roller_max_d/2,r2=roller_min_d/2,h=roller_thickness,center=false);
 	translate([0,0,roller_shield_thickness+roller_thickness])
 	  cylinder(r=roller_min_d/2,h=roller_shield_thickness,center=false);
 //	translate([0,0,roller_shield_thickness+roller_thickness+(roller_shield_d/2-roller_min_d/2)])
@@ -318,7 +324,7 @@ module pump_pressure_rollers(
 
 if(render_part==3) {
   echo("Rendering pump_pressure_rollers()...");
-  pump_pressure_rollers(gear_spacing=2.0);
+  pump_pressure_rollers(gear_spacing=2.0,roller_axle_d=roller_axle_d,motor_axle_d=motor_axle_d);
 }
 
 function Tygon_B_44_3_OD()=25.4*3/16; // Outer Diameter
@@ -345,7 +351,7 @@ module outer_pressure_ring(
     cylinder(r=gear_d+3*roller_shield_d/4,h=3*roller_thickness/2,center=false);
     translate([0,0,-hole_ext]) cylinder(r=dr2,h=3*roller_thickness/2+2*hole_ext,center=false);
     translate([0,0,roller_thickness/8+roller_thickness/2-tube_outer_d])
-	cube(size=[gear_d+roller_shield_d+2*bevel_dr,gear_d+roller_shield_d+2*bevel_dr,2*tube_outer_d],center=false);
+	cube(size=[gear_d+roller_shield_d+2*bevel_dr,gear_d+roller_shield_d+2*bevel_dr,2*tube_outer_d+roller_thickness],center=false);
   }
   // bottom section
   difference() {
@@ -361,8 +367,8 @@ module outer_pressure_ring(
   }
   translate([0,0,roller_thickness/8+roller_thickness/2-tube_outer_d]) difference() {
     cylinder(r=gear_d+3*roller_shield_d/4,h=2*tube_outer_d,center=false);
-    translate([0,0,tube_outer_d]) cylinder(r1=dr1,r2=dr2,h=roller_thickness,center=true);
-    cube(size=[gear_d+roller_shield_d+2*bevel_dr,gear_d+roller_shield_d+2*bevel_dr,2*tube_outer_d],center=false);
+    translate([0,0,tube_outer_d]) cylinder($fn=128,r1=dr1,r2=dr2,h=roller_thickness,center=true);
+    cube(size=[gear_d+roller_shield_d+2*bevel_dr,gear_d+roller_shield_d+2*bevel_dr,2*tube_outer_d+roller_thickness],center=false);
   }
 //  translate([0,0,roller_thickness/8+roller_thickness/2+tube_outer_d]) difference() {
 //    cylinder(r=gear_d+3*roller_shield_d/4,h=roller_thickness/2-tube_outer_d, center=false);
@@ -378,12 +384,9 @@ module outer_pressure_ring(
 if(render_part==4) {
   echo("Rendering outer_pressure_ring()...");
   % translate([0,0,23]) rotate([180,0,0]) pump_pressure_rollers(gear_spacing=0.0);
-  outer_pressure_ring(gear_spacing=0.0);
+  outer_pressure_ring(gear_spacing=0.0,roller_axle_d=roller_axle_d,motor_axle_d=motor_axle_d);
 }
 
-function Bearing_623_OD()=10.0; // outer diameter
-function Bearing_623_ID()=3.0; // inner diameter
-function Bearing_623_TH()=4.0; // thickness
 
 
 module roller_retainer_ring(
@@ -421,7 +424,7 @@ module roller_retainer_ring(
 if(render_part==5) {
   echo("Rendering roller_retainer_ring()...");
   % translate([0,0,30]) rotate([180,0,0]) pump_pressure_rollers(gear_spacing=0.0);
-  roller_retainer_ring(gear_spacing=0.0);
+  roller_retainer_ring(gear_spacing=0.0,roller_axle_d=roller_axle_d,motor_axle_d=motor_axle_d);
 }
 
 module roller_gear_coupler2bearing(
@@ -486,7 +489,7 @@ module roller_gear_coupler2bearing_group(
 
 if(render_part==6) {
   echo("Rendering roller_gear_coupler2bearing_group()...");
-  roller_gear_coupler2bearing_group(gear_spacing=2.0);
+  roller_gear_coupler2bearing_group(gear_spacing=2.0,roller_axle_d=roller_axle_d,motor_axle_d=motor_axle_d);
 }
 
 module pressure_roller_coupler2bearing(
@@ -565,7 +568,7 @@ module pressure_roller_coupler2bearing_group(
 
 if(render_part==7) {
   echo("Rendering pressure_roller_coupler2bearing_group()...");
-  pressure_roller_coupler2bearing_group(gear_spacing=2.0);
+  pressure_roller_coupler2bearing_group(gear_spacing=2.0,roller_axle_d=roller_axle_d,motor_axle_d=motor_axle_d);
 }
 
 module pump_body(
@@ -600,7 +603,7 @@ module pump_body(
 if(render_part==8) assign(roller_thickness=15.0,roller_shield_thickness=3.0) {
   echo("Rendering pump_body()...");
   % translate([0,0,2*roller_thickness+roller_thickness/8]) rotate([180,0,90]) outer_pressure_ring(gear_spacing=0.0);
-  pump_body(gear_spacing=0.0);
+  pump_body(gear_spacing=0.0,roller_axle_d=roller_axle_d,motor_axle_d=motor_axle_d);
 }
 
 if(render_part==0) assign(
@@ -608,11 +611,11 @@ if(render_part==0) assign(
 	, roller_gear_thickness=10.0, motor_gear_thickness=12.0
 	, roller_gear_hub_thickness=15.0, motor_gear_hub_thickness=17.0
 	, roller_gear_hub_d=12.0, motor_gear_hub_d=15.0
-	, roller_axle_d=3.0, motor_axle_d=5.0
+	, roller_axle_d=roller_axle_d, motor_axle_d=motor_axle_d
 	, roller_gear_count=3
 	, gear_clearance=0.4
 	, bevel_dr=0.5
-	, roller_axle_d=3.0, roller_thickness=15.0
+	, roller_thickness=15.0
 	, roller_coupler_thickness=3.0, roller_coupler_d=12.0
 	, roller_shield_d=20.0, roller_shield_thickness=3.0
 	, roller_min_d=15.0, roller_max_d=18.0
@@ -622,7 +625,7 @@ if(render_part==0) assign(
 	, tube_inner_d=Tygon_B_44_3_ID()
 	, hole_ext=0.01
 	, gear_hub_thickness=15.0, gear_hub_d=12.0, gear_thickness=12.0
-	, middle_axle_d=5.0
+	, middle_axle_d=motor_axle_d
 	, twist_ratio=0.5
 	, roller_bearing_od=Bearing_623_OD(), roller_bearing_th=Bearing_623_TH()
 	) {
