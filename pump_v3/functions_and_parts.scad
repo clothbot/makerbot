@@ -49,8 +49,14 @@ module spider_coupler(
          union() {
           translate([0,0,-bevel_dr]) cylinder(r=axle_d/2,h=thickness+2*bevel_dr,center=false);
           translate([0,0,thickness-bevel_dr])  cylinder(r2=axle_d/2+2*bevel_dr,r1=axle_d/2,h=2*bevel_dr,center=false);
-          translate([0,0,thickness]) rotate([45,0,0]) cube(size=[outer_d,2*bevel_dr,2*bevel_dr],center=true);
-          translate([0,0,thickness]) rotate([45,0,90]) cube(size=[outer_d,2*bevel_dr,2*bevel_dr],center=true);
+          translate([0,shrink,thickness]) rotate([45,0,0]) 
+		translate([0,-bevel_dr,-bevel_dr]) cube(size=[outer_d,2*bevel_dr,2*bevel_dr],center=false);
+          translate([0,-shrink,thickness]) rotate([45,0,180]) 
+		translate([0,-bevel_dr,-bevel_dr]) cube(size=[outer_d,2*bevel_dr,2*bevel_dr],center=false);
+          translate([shrink,0,thickness]) rotate([45,0,90]) 
+		translate([0,-bevel_dr,-bevel_dr]) cube(size=[outer_d,2*bevel_dr,2*bevel_dr],center=false);
+          translate([-shrink,0,thickness]) rotate([45,0,-90]) 
+		translate([0,-bevel_dr,-bevel_dr]) cube(size=[outer_d,2*bevel_dr,2*bevel_dr],center=false);
          }
     }
   }
