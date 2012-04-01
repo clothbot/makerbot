@@ -17,7 +17,7 @@ motor_axle_d=NEMA17_shaft_d(grow=1.0);
 
 middle_gear_bearing_od=Bearing_608_OD(grow=1.0);
 
-gear_d=roller_bearing_od+tube_od;
+gear_d=roller_bearing_od+(middle_gear_bearing_od-roller_bearing_od)/2;
 gear_num_teeth=17;
 drive_gear_thickness=4.0;
 motor_gear_thickness=10.0;
@@ -36,7 +36,19 @@ module roller_drive_gear(
 	, gear_thickness=drive_gear_thickness
 	, gear_clearance=gear_clearance
 	, bevel_dr=bevel_dr, axle_d=roller_axle_d
+	, coupler_thickness=drive_gear_thickness/4
+	, annotate=false
 	) {
+  if(annotate) {
+    echo("roller_drive_gear:");
+    echo(str("  gear_d=",gear_d));
+    echo(str("  gear_num_teeth=",gear_num_teeth));
+    echo(str("  gear_thickness=",gear_thickness));
+    echo(str("  gear_clearance=",gear_clearance));
+    echo(str("  bevel_dr=",bevel_dr));
+    echo(str("  axle_d=",axle_d));
+    echo(str("  coupler_thickness=",coupler_thickness));
+  }
   $fs=0.1;
   difference() {
     intersection() {
@@ -52,19 +64,30 @@ module roller_drive_gear(
     }
     translate([0,0,gear_thickness]) rotate([180.0,0])
       translate([0,0,-bevel_dr])
-	spider_coupler( thickness=gear_thickness/4+2*bevel_dr
+	spider_coupler( thickness=coupler_thickness+2*bevel_dr
 	  , outer_d=3*gear_d/4+bevel_dr, axle_d=axle_d-2*bevel_dr, bevel_dr=bevel_dr/2,shrink=-0.2);
   }
   translate([0,0,gear_thickness])
-    spider_coupler( thickness=gear_thickness/4, outer_d=3*gear_d/4, axle_d=axle_d, bevel_dr=bevel_dr, shrink=0.2);
+    spider_coupler( thickness=coupler_thickness, outer_d=3*gear_d/4, axle_d=axle_d, bevel_dr=bevel_dr, shrink=0.2);
 }
 
 module motor_drive_gear(
 	gear_d=gear_d, gear_num_teeth=gear_num_teeth
-	, gear_thickness=drive_gear_thickness
+	, gear_thickness=drive_gear_thickness, coupler_thickness=drive_gear_thickness/4
 	, gear_clearance=gear_clearance
 	, bevel_dr=bevel_dr, axle_d=motor_axle_d
+	, annotate=false
 	) {
+  if(annotate) {
+    echo("motor_drive_gear:");
+    echo(str("  gear_d=",gear_d));
+    echo(str("  gear_num_teeth=",gear_num_teeth));
+    echo(str("  gear_thickness=",gear_thickness));
+    echo(str("  gear_clearance=",gear_clearance));
+    echo(str("  bevel_dr=",bevel_dr));
+    echo(str("  axle_d=",axle_d));
+    echo(str("  coupler_thickness=",coupler_thickness));
+  }
   $fs=0.1;
   difference() {
     intersection() {
@@ -80,11 +103,11 @@ module motor_drive_gear(
     }
     translate([0,0,gear_thickness]) rotate([180.0,0])
       translate([0,0,-bevel_dr])
-	spider_coupler( thickness=gear_thickness/4+2*bevel_dr
+	spider_coupler( thickness=coupler_thickness+2*bevel_dr
 	  , outer_d=3*gear_d/4+bevel_dr, axle_d=axle_d-2*bevel_dr, bevel_dr=bevel_dr/2,shrink=-0.2);
   }
   translate([0,0,gear_thickness])
-    spider_coupler( thickness=gear_thickness/4, outer_d=3*gear_d/4, axle_d=axle_d, bevel_dr=bevel_dr, shrink=0.2);
+    spider_coupler( thickness=coupler_thickness, outer_d=3*gear_d/4, axle_d=axle_d, bevel_dr=bevel_dr, shrink=0.2);
 }
 
 
@@ -95,23 +118,39 @@ module drive_gears(
 	, roller_gear_count=roller_count
 	, gear_clearance=0.4
 	, bevel_dr=bevel_dr
+	, coupler_thickness=drive_gear_thickness/4
+	, annotate=false
 	) {
+  if(annotate) {
+    echo("drive_gears:");
+    echo(str("  gear_d=",gear_d));
+    echo(str("  gear_num_teeth=",gear_num_teeth));
+    echo(str("  gear_spacing=",gear_spacing));
+    echo(str("  roller_gear_thickness=",roller_gear_thickness));
+    echo(str("  roller_axle_d=",roller_axle_d));
+    echo(str("  motor_gear_thickness=",motor_gear_thickness));
+    echo(str("  motor_axle_d=",motor_axle_d));
+    echo(str("  roller_gear_count=",roller_gear_count));
+    echo(str("  gear_clearance=",gear_clearance));
+    echo(str("  bevel_dr=",bevel_dr));
+    echo(str("  coupler_thickness=",coupler_thickness));
+  }
   $fs=0.1;
   motor_drive_gear(
 	gear_d=gear_d, gear_num_teeth=gear_num_teeth, gear_thickness=motor_gear_thickness, gear_spacing=gear_spacing
-	, axle_d=motor_axle_d, gear_clearance=gear_clearance, bevel_dr=bevel_dr
+	, axle_d=motor_axle_d, gear_clearance=gear_clearance, bevel_dr=bevel_dr, coupler_thickness=coupler_thickness, annotate=annotate
   );
   for(i=[0:roller_gear_count-1]) assign( rotAngle=360*i/roller_gear_count ) {
     rotate([0,0,rotAngle]) translate([gear_d+gear_clearance+gear_spacing,0,0]) rotate([0,0,-2*rotAngle])
 	roller_drive_gear(
 	  gear_d=gear_d, gear_num_teeth=gear_num_teeth, gear_thickness=roller_gear_thickness, gear_spacing=gear_spacing
-	  , axle_d=roller_axle_d, gear_clearance=gear_clearance, bevel_dr=bevel_dr
+	  , axle_d=roller_axle_d, gear_clearance=gear_clearance, bevel_dr=bevel_dr, coupler_thickness=coupler_thickness, annotate=(i==0 && annotate)
 	);
   }
 }
 
 if(render_part==1) {
   echo("Rendering drive_gears()...");
-  drive_gears(gear_spacing=2.0, roller_axle_d=roller_axle_d, motor_axle_d=motor_axle_d);
+  drive_gears(gear_spacing=2.0, roller_axle_d=roller_axle_d, motor_axle_d=motor_axle_d,annotate=true);
 }
 
