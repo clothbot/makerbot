@@ -11,10 +11,10 @@ function Bearing_623_TH()=4.0; // thickness
 render_part=0; // full_assembly
 plate_number=0; // no plates.
 plate_number=1; // small gears and coupler parts
- render_part=1; // drive_gears
+// render_part=1; // drive_gears
 // render_part=2; // alignment_gears
 // render_part=3; // pressure_rollers
-// render_part=4; // outer_pressure_ring
+ render_part=4; // outer_pressure_ring
 // render_part=5; // roller_retainer_ring
 // render_part=6; // roller_gear_coupler2bearing_group
 // render_part=7; // pressure_roller_coupler2bearing_group 
@@ -343,13 +343,15 @@ module outer_pressure_ring(
 	, tube_outer_d=Tygon_B_44_3_OD()
 	, tube_inner_d=Tygon_B_44_3_ID()
 	, hole_ext=0.01
+	, bolt_d=3.0, bolt_head_d=5.5
+	, bolt_pos_r=20.0+20.0-5.5 // gear_d+roller_shield_d-bolt_head_d
 	) {
   $fs=0.1;
   dr1=gear_d+roller_min_d/2+tube_outer_d-tube_inner_d;
   dr2=gear_d+roller_max_d/2+tube_outer_d-tube_inner_d;
   difference() {
     cylinder(r=gear_d+3*roller_shield_d/4,h=3*roller_thickness/2,center=false);
-    translate([0,0,-hole_ext]) cylinder(r=dr2,h=3*roller_thickness/2+2*hole_ext,center=false);
+    translate([0,0,-hole_ext]) cylinder(r1=dr2-bevel_dr,r2=dr2+bevel_dr,h=3*roller_thickness/2+2*hole_ext,center=false);
     translate([0,0,roller_thickness/8+roller_thickness/2-tube_outer_d])
 	cube(size=[gear_d+roller_shield_d+2*bevel_dr,gear_d+roller_shield_d+2*bevel_dr,2*tube_outer_d+roller_thickness],center=false);
   }
