@@ -6,6 +6,10 @@ function Bearing_623_OD(grow=0.0)=10.0+grow; // outer diameter
 function Bearing_623_ID(grow=0.0)=3.0+grow; // inner diameter
 function Bearing_623_TH(grow=0.0)=4.0+grow; // thickness
 
+function Bearing_625_OD(grow=0.0)=16.0+grow; // outer diameter
+function Bearing_625_ID(grow=0.0)=5.0+grow; // inner diameter
+function Bearing_625_TH(grow=0.0)=5.0+grow; // thickness
+
 function Bearing_608_OD(grow=0.0)=22.0+grow; // outer diameter
 function Bearing_608_ID(grow=0.0)=8.0+grow; // inner diameter
 function Bearing_608_TH(grow=0.0)=7.0+grow; // thickness

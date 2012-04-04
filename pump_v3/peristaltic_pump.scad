@@ -11,13 +11,18 @@ roller_bearing_od=Bearing_623_OD(grow=0.0);
 roller_bearing_id=Bearing_623_ID(grow=0.0);
 roller_bearing_th=Bearing_623_TH(grow=0.0);
 roller_axle_d=3.0+1.0;
+roller_bolt_head_d=5.5+1.0;
 roller_count=3;
+
+drive_bearing_od=Bearing_625_OD(grow=0.0);
+drive_bearing_id=Bearing_625_ID(grow=0.0);
+drive_bearing_th=Bearing_625_TH(grow=0.0);
 
 motor_axle_d=NEMA17_shaft_d(grow=1.0);
 
 middle_gear_bearing_od=Bearing_608_OD(grow=1.0);
 
-gear_d=roller_bearing_od+(middle_gear_bearing_od-roller_bearing_od)/2;
+gear_d=16.0;
 gear_num_teeth=17;
 drive_gear_thickness=4.0;
 motor_gear_thickness=10.0;
@@ -26,10 +31,10 @@ bevel_dr=0.5;
 gear_clearance=0.1;
 
 render_part=1; // drive_gears
-// render_part=2; // alignment_gears
-// render_part=3; // pressure rollers
-// render_part=4; // outer_pressure_ring
-// render_part=5; // roller_retainer_ring
+render_part=2; // roller_retainer_ring
+// render_part=3; // alignment_gears
+// render_part=4; // pressure rollers
+// render_part=5; // outer_pressure_ring
 
 module roller_drive_gear(
 	gear_d=gear_d, gear_num_teeth=gear_num_teeth
@@ -154,3 +159,38 @@ if(render_part==1) {
   drive_gears(gear_spacing=2.0, roller_axle_d=roller_axle_d, motor_axle_d=motor_axle_d,annotate=true);
 }
 
+module roller_retainer_ring(
+	gear_d=gear_d, retainer_ring_th=drive_bearing_th
+	, roller_bearing_od=roller_bearing_od, roller_bearing_id=roller_bearing_id, roller_bearing_th=roller_bearing_th
+	, roller_bolt_head_d=roller_bolt_head_d
+	, drive_bearing_od=drive_bearing_od, drive_bearing_id=drive_bearing_id, drive_bearing_th=drive_bearing_th
+	, bevel_dr=bevel_dr, roller_gear_count=3
+	) {
+  $fs=0.1;
+  difference() {
+    cylinder(r=3*gear_d/2, h=drive_bearing_th,center=false);
+    translate([0,0,-bevel_dr]) union() {
+      cylinder(r=drive_bearing_id/2,h=2*bevel_dr+retainer_ring_th,center=false);
+      cylinder(r1=drive_bearing_od/2+2*bevel_dr,r2=drive_bearing_od/2-bevel_dr,h=3*bevel_dr,center=false);
+      translate([0,0,drive_bearing_th-bevel_dr]) cylinder(r1=drive_bearing_od/2-bevel_dr,r2=drive_bearing_od/2+2*bevel_dr,h=3*bevel_dr,center=false);
+      cylinder(r=drive_bearing_od/2,h=drive_bearing_th+2*bevel_dr,center=false);
+      for(i=[0:roller_gear_count-1]) assign( rotAngle=360*i/roller_gear_count ) {
+        rotate([0,0,rotAngle]) translate([gear_d+gear_clearance,0,0]) rotate([0,0,-2*rotAngle])
+	    cylinder(r=roller_bolt_head_d/2+(roller_bearing_od-roller_bolt_head_d)/4,h=2*bevel_dr+retainer_ring_th,center=false);
+      }
+    }
+    for(i=[0:roller_gear_count-1]) assign( rotAngle=360*i/roller_gear_count ) {
+      rotate([0,0,rotAngle]) translate([gear_d,0,retainer_ring_th-roller_bearing_th-bevel_dr]) rotate([0,0,-2*rotAngle])
+	  cylinder(r=roller_bearing_od/2,h=2*bevel_dr+retainer_ring_th,center=false);
+    }
+  }
+}
+
+if(render_part==2) {
+  echo("Rendering roller_retainer_ring()...");
+  %  translate([0,0,drive_bearing_th]) motor_drive_gear(
+	gear_d=gear_d, gear_num_teeth=gear_num_teeth, gear_thickness=motor_gear_thickness
+	, axle_d=motor_axle_d, gear_clearance=gear_clearance, bevel_dr=bevel_dr, coupler_thickness=drive_gear_thickness/4, annotate=false
+  );
+  roller_retainer_ring(gear_d=gear_d);
+}
