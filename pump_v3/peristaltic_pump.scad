@@ -31,7 +31,7 @@ bevel_dr=0.5;
 gear_clearance=0.1;
 
 render_part=1; // drive_gears
-render_part=2; // roller_retainer_ring
+//render_part=2; // roller_retainer_ring
 // render_part=3; // alignment_gears
 // render_part=4; // pressure rollers
 // render_part=5; // outer_pressure_ring
@@ -115,6 +115,26 @@ module motor_drive_gear(
     spider_coupler( thickness=coupler_thickness, outer_d=3*gear_d/4, axle_d=axle_d, bevel_dr=bevel_dr, shrink=0.2);
 }
 
+module op_position_rollers_driver(
+	gear_d=gear_d, gear_num_teeth=gear_num_teeth, gear_spacing=1.0
+	, roller_gear_count=roller_count, gear_clearance=0.4
+	, annotate=false
+	) {
+  offset_angle=(gear_num_teeth%2-1)*180/gear_num_teeth;
+  if(annotate) {
+    echo("op_position_rollers_driver:");
+    echo(str("  offset_angle (calculated)=",offset_angle));
+    echo(str("  gear_d=",gear_d));
+    echo(str("  gear_num_teeth=",gear_num_teeth));
+    echo(str("  gear_spacing=",gear_spacing));
+    echo(str("  roller_gear_count=",roller_gear_count));
+    echo(str("  gear_clearance=",gear_clearance));
+  }
+  for(i=[0:roller_gear_count-1]) assign( rotAngle=360*i/roller_gear_count-offset_angle )
+    rotate([0,0,rotAngle]) translate([gear_d+gear_clearance+gear_spacing,0,0]) rotate([0,0,-2*rotAngle])
+	child(0);
+  child(1);
+}
 
 module drive_gears(
 	gear_d=gear_d, gear_num_teeth=gear_num_teeth, gear_spacing=1.0
@@ -141,22 +161,24 @@ module drive_gears(
     echo(str("  coupler_thickness=",coupler_thickness));
   }
   $fs=0.1;
-  motor_drive_gear(
-	gear_d=gear_d, gear_num_teeth=gear_num_teeth, gear_thickness=motor_gear_thickness, gear_spacing=gear_spacing
-	, axle_d=motor_axle_d, gear_clearance=gear_clearance, bevel_dr=bevel_dr, coupler_thickness=coupler_thickness, annotate=annotate
-  );
-  for(i=[0:roller_gear_count-1]) assign( rotAngle=360*i/roller_gear_count ) {
-    rotate([0,0,rotAngle]) translate([gear_d+gear_clearance+gear_spacing,0,0]) rotate([0,0,-2*rotAngle])
-	roller_drive_gear(
-	  gear_d=gear_d, gear_num_teeth=gear_num_teeth, gear_thickness=roller_gear_thickness, gear_spacing=gear_spacing
-	  , axle_d=roller_axle_d, gear_clearance=gear_clearance, bevel_dr=bevel_dr, coupler_thickness=coupler_thickness, annotate=(i==0 && annotate)
-	);
+  op_position_rollers_driver(gear_d=gear_d, gear_num_teeth=gear_num_teeth, gear_spacing=gear_spacing
+	, roller_gear_count=roller_count, gear_clearance=gear_clearance
+	, annotate=annotate
+	) {
+    roller_drive_gear(
+      gear_d=gear_d, gear_num_teeth=gear_num_teeth, gear_thickness=roller_gear_thickness, gear_spacing=gear_spacing
+      , axle_d=roller_axle_d, gear_clearance=gear_clearance, bevel_dr=bevel_dr, coupler_thickness=coupler_thickness, annotate=false
+    );
+    motor_drive_gear(
+      gear_d=gear_d, gear_num_teeth=gear_num_teeth, gear_thickness=motor_gear_thickness, gear_spacing=gear_spacing
+      , axle_d=motor_axle_d, gear_clearance=gear_clearance, bevel_dr=bevel_dr, coupler_thickness=coupler_thickness, annotate=false
+    );
   }
 }
 
 if(render_part==1) {
   echo("Rendering drive_gears()...");
-  drive_gears(gear_spacing=2.0, roller_axle_d=roller_axle_d, motor_axle_d=motor_axle_d,annotate=true);
+  drive_gears(gear_num_teeth=17,gear_spacing=2.0, roller_axle_d=roller_axle_d, motor_axle_d=motor_axle_d,annotate=true);
 }
 
 module roller_retainer_ring(
