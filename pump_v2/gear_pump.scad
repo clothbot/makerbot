@@ -8,13 +8,14 @@ function Bearing_623_OD()=10.0+1.0; // outer diameter
 function Bearing_623_ID()=3.0+1.0; // inner diameter
 function Bearing_623_TH()=4.0; // thickness
 
-render_part=0; // full_assembly
 plate_number=0; // no plates.
-plate_number=1; // small gears and coupler parts
-// render_part=1; // drive_gears
+// plate_number=1; // small gears and coupler parts
+
+//render_part=0; // full_assembly
+render_part=1; // drive_gears
 // render_part=2; // alignment_gears
 // render_part=3; // pressure_rollers
- render_part=4; // outer_pressure_ring
+// render_part=4; // outer_pressure_ring
 // render_part=5; // roller_retainer_ring
 // render_part=6; // roller_gear_coupler2bearing_group
 // render_part=7; // pressure_roller_coupler2bearing_group 
