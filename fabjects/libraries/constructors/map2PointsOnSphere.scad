@@ -10,7 +10,7 @@ function pointOnSphere(radius=1.0,k,N) =
   ];
 
 // Cartesian to Spherical coordinate mapping.
-function cart2sphere(x,y,z) = [ // returns [r, theta, phi]
+function cart2sphere(x,y,z) = [ // returns [r, inclination, azimuth]
   sqrt( x*x+y*y+z*z )
   , acos(z/sqrt(x*x+y*y+z*z))
   , (x>0) ? atan(y/x) : (
@@ -32,8 +32,9 @@ module map2PointsOnSphere(radius=1.0,N=3) assign(
 }
 
 % color(0.1,0.1,0.1) sphere(r=8.0);
-map2PointsOnSphere(radius=8.0,N=128) cube(1.0);
-spt_count=4;
+map2PointsOnSphere(radius=8.0,N=128) cube(1.0,center=true);
+
+spt_count=6;
 for(i=[0:spt_count-1]) assign(cc=pointOnSphere(radius=10.0,k=i,N=spt_count)) translate(cc) {
   cube(1.0,center=false);
   cylinder($fn=7,r1=1,r2=0,h=5);
@@ -44,12 +45,11 @@ translate([10,0,0]) rotate([0,90,0]) union() {
   cylinder($fn=32,r1=1.0,r2=0,h=10.0);
   cube(size=[2,2,4],center=false);
 }
-horn_count=4;
+horn_count=6;
 for(i=[0:horn_count-1]) assign(cc=pointOnSphere(radius=10.0,k=i,N=horn_count)) {
   echo("  points: ",cc);
   echo("  cart2sphere: ",cart2sphere(cc[0],cc[1],cc[2]));
-  rotate([cart2sphere(cc[0],cc[1],cc[2])[2],0,0])
-  rotate([0,0,cart2sphere(cc[0],cc[1],cc[2])[1] ])
+  rotate([0,cart2sphere(cc[0],cc[1],cc[2])[1]-90,cart2sphere(cc[0],cc[1],cc[2])[2] ])
       translate([cart2sphere(cc[0],cc[1],cc[2])[0],0,0])
 	rotate([0,90,0]) union() {
 	  cylinder($fn=32,r1=2.0,r2=0,h=2.0);
