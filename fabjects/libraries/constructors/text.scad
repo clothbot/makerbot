@@ -2,7 +2,7 @@
 // Encoding from http://en.wikipedia.org/wiki/ASCII
 
 render_part=0; // polytext()
-//render_part=1; // test variable widths.
+render_part=1; // test variable widths.
 // render_part=2; // test styles
 
 use <fonts.scad>
