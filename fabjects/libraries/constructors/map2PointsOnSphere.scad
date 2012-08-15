@@ -3,6 +3,7 @@
 
 test_object=0; // direct test
 test_object=1; // module test
+test_object=2; // hull ball
 
 function pi()=3.14159265358979323846;
 
@@ -22,17 +23,32 @@ function cart2sphere(x,y,z) = [ // returns [r, inclination, azimuth]
 	(x==0 && y>0) ? 90 : -90 ) ) )
   ];
 
-module translate2PointOnSphere(radius=1.0,k,N) {
+// Spherical to Cartesian coordinate mapping.
+function sphere2cart(r,inc,azi) = [ // returns [x, y, z]
+  r*sin(inc)*cos(azi)
+  , r*sin(inc)*sin(azi)
+  , r*cos(inc)
+  ];
+
+module translate2PointOnSphere(radius=1.0,k,N,align=false) {
   // Cartesian Coordinate Translate
-  for( i=[0:$children-1] ) {
-    translate( pointOnSphere(radius=radius,k=k,N=N) ) child(i);
+  for( i=[0:$children-1] ) assign(cc=pointOnSphere(radius=radius,k=k,N=N),cc0=pointOnSphere(radius=radius,k=0,N=N))
+	 {
+    if(align==false) {
+      translate( cc ) child(i);
+    } else assign(cs=cart2sphere(cc[0],cc[1],cc[2]),cs0=cart2sphere(cc0[0],cc0[1],cc0[2]) ) {
+      translate( sphere2cart(cs[0],cs[1]-cs0[1]+90,cs[2]-cs0[2]) ) child(i);
+    }
   }
 }
 
-module radial2PointOnSphere(radius=1.0,k,N) {
+module radial2PointOnSphere(radius=1.0,k,N,align=false) {
   // Spherical Coordinate Mapping
-  for( i=[0:$children-1] ) assign(cc=pointOnSphere(radius=radius,k=k,N=N)) {
-    rotate([0,cart2sphere(cc[0],cc[1],cc[2])[1]-90,cart2sphere(cc[0],cc[1],cc[2])[2] ])
+  for( i=[0:$children-1] ) assign(cc=pointOnSphere(radius=radius,k=k,N=N),cc0=pointOnSphere(radius=radius,k=0,N=N)) {
+    rotate([0
+	,cart2sphere(cc[0],cc[1],cc[2])[1]-((align==true) ? cart2sphere(cc0[0],cc0[1],cc0[2])[1]:90)
+	,cart2sphere(cc[0],cc[1],cc[2])[2]-((align==true) ? cart2sphere(cc0[0],cc0[1],cc0[2])[2]:0)
+	])
       translate([cart2sphere(cc[0],cc[1],cc[2])[0],0,0])
 	rotate([0,90,0]) child(i);
   }
@@ -81,18 +97,40 @@ if(test_object==1) {
   % color(0.1,0.1,0.1) sphere(r=8.0);
   map2PointsOnSphere(radius=8.0,N=128) cube(1.0,center=true);
 
-  for(i=[0:spt_count-1]) translate2PointOnSphere(radius=12.0,k=i,N=spt_count) {
-    cube(1.0,center=false);
-    cylinder($fn=7,r1=1,r2=0,h=5);
-  }
-
-  translate([10,0,0]) rotate([0,90,0]) union() {
-    cylinder($fn=32,r1=1.0,r2=0,h=10.0);
+  translate([15,0,0]) rotate([0,90,0]) union() {
+    color([1,1,1]) cylinder($fn=32,r1=1.0,r2=0,h=10.0);
     cube(size=[2,2,4],center=false);
   }
 
+  for(i=[0:spt_count-1]) translate2PointOnSphere(radius=12.0,k=i,N=spt_count) {
+    cube(1.0,center=false);
+    color([1,0,0]) cylinder($fn=7,r1=1,r2=0,h=5);
+  }
+  for(i=[0:spt_count-1]) translate2PointOnSphere(radius=13.0,k=i,N=spt_count,align=true) {
+    cube(1.0,center=false);
+    color([1,1,0]) cylinder($fn=7,r1=1,r2=0,h=5);
+  }
+
   for(i=[0:horn_count-1]) radial2PointOnSphere(radius=8.0,k=i,N=horn_count) {
-	    cylinder($fn=32,r1=2.0,r2=0,h=2.0);
+	    color([0,1,0]) cylinder($fn=32,r1=2.0,r2=0,h=2.0);
 	    cube(size=[3,3,1],center=false);
+  }
+  for(i=[0:horn_count-1]) radial2PointOnSphere(radius=9.0,k=i,N=horn_count,align=true) {
+	    color([0,0,1]) cylinder($fn=32,r1=2.0,r2=0,h=2.0);
+	    cube(size=[3,3,1],center=false);
+  }
+}
+
+hull_cone_count=17;
+if(test_object==2) {
+  for(i=[0:hull_cone_count-1]) union() {
+    hull() {
+      sphere($fn=9,r=3.0);
+      radial2PointOnSphere(radius=20.0,k=i,N=hull_cone_count,align=false) rotate([-90,0,0]) cylinder($fn=7,r1=1,r2=3,h=6.0);
+    }
+    hull() {
+      radial2PointOnSphere(radius=20.0,k=i,N=hull_cone_count,align=false) rotate([-90,0,0]) cylinder($fn=7,r1=1,r2=3,h=6.0);
+      radial2PointOnSphere(radius=30.0,k=i,N=hull_cone_count,align=true) cylinder($fn=7,r1=3.0,r2=0,h=12.0);
+    }
   }
 }
