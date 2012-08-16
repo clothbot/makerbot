@@ -136,10 +136,14 @@ if(test_object==2) {
   }
 }
 
-ball_sides=199;
+ball_sides=61;
 ball_radius=30.0;
+dimple_radius_scale=ball_sides;
+dimple_radius=dimple_radius_scale*ball_radius/ball_sides;
 if(test_object==3) {
-  % cube(ball_radius);
-  intersection_for(i=[0:ball_sides-1]) radial2PointOnSphere(radius=ball_radius,k=i,N=ball_sides,align=true)
-    translate([-2*ball_radius,-2*ball_radius,-2*ball_radius]) cube(size=[4*ball_radius,4*ball_radius,6*ball_radius],center=false);
+  % translate([-ball_radius,0,0]) cube(ball_radius);
+    intersection_for(i=[0:ball_sides-1]) radial2PointOnSphere(radius=ball_radius,k=i,N=ball_sides,align=true) render() difference() {
+      translate([-2*ball_radius,-2*ball_radius,-2*ball_radius]) cube(size=[4*ball_radius,4*ball_radius,6*ball_radius],center=false);
+      translate([0,0,-2*ball_radius-sqrt(dimple_radius_scale-3)*dimple_radius/sqrt(dimple_radius_scale)]) sphere($fn=32,r=dimple_radius);
+  }
 }
