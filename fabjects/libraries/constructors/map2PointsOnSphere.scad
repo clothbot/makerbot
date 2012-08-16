@@ -3,7 +3,8 @@
 
 test_object=0; // direct test
 test_object=1; // module test
-test_object=2; // hull ball
+test_object=2; // spike ball
+test_object=3; // ball test
 
 function pi()=3.14159265358979323846;
 
@@ -133,4 +134,12 @@ if(test_object==2) {
       radial2PointOnSphere(radius=30.0,k=i,N=hull_cone_count,align=true) cylinder($fn=7,r1=3.0,r2=0,h=12.0);
     }
   }
+}
+
+ball_sides=199;
+ball_radius=30.0;
+if(test_object==3) {
+  % cube(ball_radius);
+  intersection_for(i=[0:ball_sides-1]) radial2PointOnSphere(radius=ball_radius,k=i,N=ball_sides,align=true)
+    translate([-2*ball_radius,-2*ball_radius,-2*ball_radius]) cube(size=[4*ball_radius,4*ball_radius,6*ball_radius],center=false);
 }
