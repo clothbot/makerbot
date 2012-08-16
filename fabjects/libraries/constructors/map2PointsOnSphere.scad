@@ -5,6 +5,9 @@ test_object=0; // direct test
 test_object=1; // module test
 test_object=2; // spike ball
 test_object=3; // ball test
+test_object=4; // dimpled ball
+test_object=5; // ribbon ball
+test_object=6; // ball gear
 
 function pi()=3.14159265358979323846;
 
@@ -30,6 +33,9 @@ function sphere2cart(r,inc,azi) = [ // returns [x, y, z]
   , r*sin(inc)*sin(azi)
   , r*cos(inc)
   ];
+
+function sphere_surface_area(r)=4*pi()*pow(r,2);
+function sphere_volume(r)=4*pi()*pow(r,3)/3;
 
 module translate2PointOnSphere(radius=1.0,k,N,align=false) {
   // Cartesian Coordinate Translate
@@ -136,14 +142,99 @@ if(test_object==2) {
   }
 }
 
-ball_sides=61;
+ball_sides= pow(7,3);
 ball_radius=30.0;
+ball_surface_area=sphere_surface_area(ball_radius);
+ball_volume=sphere_volume(ball_radius);
+
+module ball(r,align=false) {
+  ball_sides=$fn;
+  intersection_for(i=[0:ball_sides-1]) radial2PointOnSphere(radius=r,k=i,N=ball_sides,align=true) render()
+    translate([-2*r,-2*r,-2*r]) cube(size=[4*r,4*r,6*r],center=false);
+}
+
+if(test_object==3) {
+  echo("Ball:");
+  echo( str("  Sides: ",ball_sides) );
+  echo( str("  Radius: ",ball_radius) );
+  echo( str("  Surface Area: ",ball_surface_area ) );
+  echo( str("  Volume: ",ball_volume ) );
+  echo( str("  Surface Area/Side: ",ball_surface_area/ball_sides) );
+  echo( str("  sqrt(Surface Area/Side): ",sqrt(ball_surface_area/ball_sides) ) );
+  % translate([-ball_radius,0,0]) cube(ball_radius);
+  ball($fn=ball_sides,r=ball_radius,align=true);
+}
+
 dimple_radius_scale=ball_sides;
 dimple_radius=dimple_radius_scale*ball_radius/ball_sides;
-if(test_object==3) {
+
+if(test_object==4) {
+  echo("Dimpled ball:");
+  echo( str("  Sides: ",ball_sides) );
+  echo( str("  Radius: ",ball_radius) );
+  echo( str("  Surface Area: ",ball_surface_area ) );
+  echo( str("  Volume: ",ball_volume ) );
+  echo( str("  Surface Area/Side: ",ball_surface_area/ball_sides) );
+  echo( str("  sqrt(Surface Area/Side): ",sqrt(ball_surface_area/ball_sides) ) );
+
   % translate([-ball_radius,0,0]) cube(ball_radius);
     intersection_for(i=[0:ball_sides-1]) radial2PointOnSphere(radius=ball_radius,k=i,N=ball_sides,align=true) render() difference() {
-      translate([-2*ball_radius,-2*ball_radius,-2*ball_radius]) cube(size=[4*ball_radius,4*ball_radius,6*ball_radius],center=false);
+      translate([-4*ball_radius,-4*ball_radius,-2*ball_radius]) cube(size=[8*ball_radius,8*ball_radius,6*ball_radius],center=false);
       translate([0,0,-2*ball_radius-sqrt(dimple_radius_scale-3)*dimple_radius/sqrt(dimple_radius_scale)]) sphere($fn=32,r=dimple_radius);
   }
 }
+
+ribbon_vertex_count=pow(5,3);
+ribbon_ball_radius=25.0;
+ribbon_th=3.0;
+ribbon_ball_surface_area=sphere_surface_area(ribbon_ball_radius);
+ribbon_ball_volume=sphere_volume(ribbon_ball_radius);
+ribbon_width=0.707*sqrt(ribbon_ball_surface_area/ribbon_vertex_count);
+
+if(test_object==5) {
+  echo("Ribbon ball...");
+  % sphere($fn=ribbon_vertex_count,r=ribbon_ball_radius);
+  union() for(i=[0:ribbon_vertex_count-2]) difference() {
+    hull() {
+        radial2PointOnSphere(radius=ribbon_ball_radius,k=i,N=ribbon_vertex_count,align=true) cylinder($fn=8,r=ribbon_width/2,h=ribbon_th);
+        radial2PointOnSphere(radius=ribbon_ball_radius,k=i+1,N=ribbon_vertex_count,align=true) cylinder($fn=8,r=ribbon_width/2,h=ribbon_th);
+    }
+    cube(size=[2*ribbon_ball_radius,2*ribbon_ball_radius,2*ribbon_ball_radius],center=false);
+  }
+}
+
+ball_gear_tooth_h=1.0;
+ball_gear1_teeth=pow(5,3);
+ball_gear1_radius=25.0;
+ball_gear1_surface_area=sphere_surface_area(ball_gear1_radius);
+ball_gear1_tooth_surface_area=ball_gear1_surface_area/ball_gear1_teeth;
+// circle_area=pi()*pow(r,2); circle_r=sqrt(circle_area/pi());
+ball_gear1_tooth_r=sqrt(ball_gear1_tooth_surface_area/pi());
+
+ball_gear2_sockets=pow(5,3);
+ball_gear2_socket_r=ball_gear1_tooth_r;
+ball_gear2_tooth_surface_area=pi()*pow(ball_gear2_socket_r,2);
+ball_gear2_surface_area=ball_gear2_sockets*ball_gear2_tooth_surface_area;
+// sphere_area=4*pi()*pow(r,2); sphere_r=sqrt(sphere_area/(4*pi()));
+ball_gear2_radius=sqrt(ball_gear2_surface_area/(4*pi()));
+
+ball_gear2gear_space=1.0;
+
+if(test_object==6) {
+  echo("Simple ball gear example");
+  union() {
+    sphere(r=ball_gear1_radius);
+    for(i=[0:ball_gear1_teeth-1]) radial2PointOnSphere(radius=ball_gear1_radius,k=i,N=ball_gear1_teeth,align=true)
+	cylinder($fn=8,r1=ball_gear1_tooth_r/sqrt(2),r2=ball_gear1_tooth_r/2,h=2*ball_gear_tooth_h,center=true);
+  }
+}
+if(test_object==7) {
+  echo("Simple ball gear socket example");
+  // translate([-ball_gear1_radius-ball_gear2_radius-ball_gear_tooth_h-ball_gear2gear_space,0,0]) 
+  mirror([1,0,0]) difference() {
+    sphere(r=ball_gear2_radius);
+    for(i=[0:ball_gear2_sockets-1]) radial2PointOnSphere(radius=ball_gear2_radius,k=i,N=ball_gear2_sockets,align=true)
+	translate([0,0,-1.5*ball_gear_tooth_h]) cylinder($fn=12,r2=ball_gear2_socket_r,r1=ball_gear2_socket_r/2,h=3*ball_gear_tooth_h);
+  }
+}
+
