@@ -8,6 +8,8 @@ test_object=3; // ball test
 test_object=4; // dimpled ball
 test_object=5; // ribbon ball
 test_object=6; // ball gear
+test_object=7; // ball socket
+test_object=8; // sphere stand
 
 function pi()=3.14159265358979323846;
 
@@ -49,13 +51,14 @@ module translate2PointOnSphere(radius=1.0,k,N,align=false) {
   }
 }
 
-module radial2PointOnSphere(radius=1.0,k,N,align=false) {
+module radial2PointOnSphere(radius=1.0,k,N,align=false,hemisphere=false) {
   // Spherical Coordinate Mapping
-  for( i=[0:$children-1] ) assign(cc=pointOnSphere(radius=radius,k=k,N=N),cc0=pointOnSphere(radius=radius,k=0,N=N)) {
-    rotate([0
-	,cart2sphere(cc[0],cc[1],cc[2])[1]-((align==true) ? cart2sphere(cc0[0],cc0[1],cc0[2])[1]:90)
-	,cart2sphere(cc[0],cc[1],cc[2])[2]-((align==true) ? cart2sphere(cc0[0],cc0[1],cc0[2])[2]:0)
-	])
+  for( i=[0:$children-1] ) assign(cc=pointOnSphere(radius=radius,k=k,N=N),cc0=pointOnSphere(radius=radius,k=0,N=N)) 
+    assign(rx=0
+	,ry=cart2sphere(cc[0],cc[1],cc[2])[1]-((align==true) ? cart2sphere(cc0[0],cc0[1],cc0[2])[1]:90)
+	,rz=cart2sphere(cc[0],cc[1],cc[2])[2]-((align==true) ? cart2sphere(cc0[0],cc0[1],cc0[2])[2]:0)
+	) {
+    rotate([rx,ry,rz]) if(hemisphere==false || ry>0.0) 
       translate([cart2sphere(cc[0],cc[1],cc[2])[0],0,0])
 	rotate([0,90,0]) child(i);
   }
@@ -237,4 +240,39 @@ if(test_object==7) {
 	translate([0,0,-1.5*ball_gear_tooth_h]) cylinder($fn=12,r2=ball_gear2_socket_r,r1=ball_gear2_socket_r/2,h=3*ball_gear_tooth_h);
   }
 }
+
+hemisphere_stand_points=20;
+hemisphere_stand_radius=25.0;
+hemisphere_surface_area=sphere_surface_area(hemisphere_stand_radius);
+hemisphere_surface_disc_area=hemisphere_surface_area/(2*hemisphere_stand_points);
+hemisphere_surface_disc_r=sqrt(hemisphere_surface_disc_area/pi());
+hemisphere_surface_disc_th=3.0;
+hemisphere_stand_base_th=5.0;
+hemisphere_stand_base_radius=hemisphere_stand_radius+2*hemisphere_surface_disc_th+hemisphere_stand_base_th;
+
+if(test_object==8) {
+  % translate([0,0,hemisphere_stand_radius+3*hemisphere_surface_disc_th])
+	sphere(r=hemisphere_stand_radius+hemisphere_surface_disc_th);
+  cylinder(r=hemisphere_stand_base_radius,h=hemisphere_stand_base_th,center=true);
+  for(i=[0:2*hemisphere_stand_points-1]) assign(
+	cch=pointOnSphere(radius=hemisphere_stand_radius+hemisphere_surface_disc_th,k=i,N=2*hemisphere_stand_points) 
+	, cch0=pointOnSphere(radius=hemisphere_stand_radius+hemisphere_surface_disc_th,k=0,N=2*hemisphere_stand_points)
+	)
+    assign( csh=cart2sphere(cch[0],cch[1],cch[2]), csh0=cart2sphere(cch0[0],cch0[1],cch0[2]) ) {
+	echo("csh:",csh," csh0:",csh0);
+	if( (csh[1]-csh0[1])>30 ) hull() {
+      translate([0,0,hemisphere_stand_radius+3*hemisphere_surface_disc_th]) radial2PointOnSphere(radius=hemisphere_stand_radius+hemisphere_surface_disc_th,k=i,N=2*hemisphere_stand_points,align=true,hemisphere=false) difference() {
+	  cylinder($fn=16,r=hemisphere_surface_disc_r,h=hemisphere_surface_disc_th);
+	  cylinder($fn=16,r=hemisphere_surface_disc_r/2,h=2*hemisphere_surface_disc_th);
+	 }
+      render() linear_extrude(height=hemisphere_surface_disc_th) projection(cut=false)
+	  radial2PointOnSphere(radius=hemisphere_stand_radius+hemisphere_surface_disc_th,k=i,N=2*hemisphere_stand_points,align=true,hemisphere=false) difference() {
+	    cylinder($fn=16,r=hemisphere_surface_disc_r,h=hemisphere_surface_disc_th);
+	    cylinder($fn=16,r=hemisphere_surface_disc_r/2,h=2*hemisphere_surface_disc_th);
+	  }
+	}
+  }
+}
+
+
 
