@@ -292,9 +292,12 @@ module radial2PointOnTorus(major_r=25.0,minor_r=5.0,k,N,align=false,hemisphere=f
 }
 
 toroid_points_outer=900;
-toroid_points_inner=600;
+toroid_points_inner=200;
 toroid_major_r=30.0;
 toroid_minor_r=12.0;
+toroid_minor_r_connected=14.0;
+toroid_points_inner_connected=200;
+toroid_show_path=true;
 if(test_object==9) {
   % rotate_extrude(convexity=10) translate([toroid_major_r,0,0]) circle(r=toroid_minor_r);
   echo(" Mapping onto the inner and outer hemi-torus surfaces.");
@@ -302,5 +305,11 @@ if(test_object==9) {
     color([1,0,0]) cube(toroid_minor_r/10);
   for(i=[0:toroid_points_inner-1]) radial2PointOnTorus(major_r=-toroid_major_r,minor_r=toroid_minor_r,k=i,N=toroid_points_inner)
     color([0,0,1]) cube(toroid_minor_r/10);
+  if(toroid_show_path) {
+    for(i=[0:toroid_points_inner_connected-2]) color([0,1,0]) hull() {
+      radial2PointOnTorus(major_r=-toroid_major_r,minor_r=toroid_minor_r_connected,k=i,N=toroid_points_inner_connected) cube(toroid_minor_r/20);
+      radial2PointOnTorus(major_r=-toroid_major_r,minor_r=toroid_minor_r_connected,k=i+1,N=toroid_points_inner_connected) cube(toroid_minor_r/20);
+    }
+  }
 }
 
