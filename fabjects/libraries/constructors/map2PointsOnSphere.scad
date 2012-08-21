@@ -10,7 +10,7 @@ test_object=1; // module test
 //test_object=6; // ball gear
 //test_object=7; // ball socket
 //test_object=8; // sphere stand
-// test_object=9; // toroidal mapping
+test_object=9; // toroidal mapping
 
 function pi()=3.14159265358979323846;
 
@@ -279,5 +279,28 @@ if(test_object==8) {
   }
 }
 
+module radial2PointOnTorus(major_r=25.0,minor_r=5.0,k,N,align=false,hemisphere=false) {
+  // Adapted from Spherical Coordinate Mapping
+  for( i=[0:$children-1] ) assign(cc=pointOnSphere(radius=minor_r,k=k,N=N),cc0=pointOnSphere(radius=minor_r,k=0,N=N)) 
+    assign(rx=0
+	,ry=cart2sphere(cc[0],cc[1],cc[2])[1]-((align==true) ? cart2sphere(cc0[0],cc0[1],cc0[2])[1]:90)
+	,rz=cart2sphere(cc[0],cc[1],cc[2])[2]-((align==true) ? cart2sphere(cc0[0],cc0[1],cc0[2])[2]:0)
+	) 
+    rotate([rx,0,rz]) translate([major_r,0,0]) rotate([0,ry,0]) if(hemisphere==false || ry>0.0) 
+      translate([cart2sphere(cc[0],cc[1],cc[2])[0],0,0])
+	rotate([0,90,0]) child(i);
+}
 
+toroid_points_outer=900;
+toroid_points_inner=600;
+toroid_major_r=30.0;
+toroid_minor_r=12.0;
+if(test_object==9) {
+  % rotate_extrude(convexity=10) translate([toroid_major_r,0,0]) circle(r=toroid_minor_r);
+  echo(" Mapping onto the inner and outer hemi-torus surfaces.");
+  for(i=[0:toroid_points_outer-1]) radial2PointOnTorus(major_r=toroid_major_r,minor_r=toroid_minor_r,k=i,N=toroid_points_outer)
+    color([1,0,0]) cube(toroid_minor_r/10);
+  for(i=[0:toroid_points_inner-1]) radial2PointOnTorus(major_r=-toroid_major_r,minor_r=toroid_minor_r,k=i,N=toroid_points_inner)
+    color([0,0,1]) cube(toroid_minor_r/10);
+}
 
