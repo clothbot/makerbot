@@ -11,6 +11,7 @@ test_object=1; // module test
 //test_object=7; // ball socket
 //test_object=8; // sphere stand
 test_object=9; // toroidal mapping
+test_object=10; // map random-radius sphere onto outer surface of toroid.
 
 function pi()=3.14159265358979323846;
 
@@ -310,6 +311,18 @@ if(test_object==9) {
       radial2PointOnTorus(major_r=-toroid_major_r,minor_r=toroid_minor_r_connected,k=i,N=toroid_points_inner_connected) cube(toroid_minor_r/20);
       radial2PointOnTorus(major_r=-toroid_major_r,minor_r=toroid_minor_r_connected,k=i+1,N=toroid_points_inner_connected) cube(toroid_minor_r/20);
     }
+  }
+}
+
+rand_bump_seed=1;
+rand_bump_count=128;
+rand_bump_r=rands(toroid_minor_r/32,toroid_minor_r/8,rand_bump_count,rand_bump_seed);
+if(test_object==10) {
+  echo(" Random Number Array: ",rand_bump_r);
+  union() {
+    rotate_extrude(convexity=10) render() translate([toroid_major_r,0,0]) circle(r=toroid_minor_r);
+    for(i=[0:rand_bump_count-1]) color([1,0,0]) if(rand_bump_r[i]>0.0) 
+	radial2PointOnTorus(major_r=toroid_major_r,minor_r=toroid_minor_r,k=i,N=rand_bump_count) sphere($fn=9,r=rand_bump_r[i]);
   }
 }
 
