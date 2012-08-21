@@ -3,13 +3,14 @@
 
 test_object=0; // direct test
 test_object=1; // module test
-test_object=2; // spike ball
-test_object=3; // ball test
-test_object=4; // dimpled ball
-test_object=5; // ribbon ball
-test_object=6; // ball gear
-test_object=7; // ball socket
-test_object=8; // sphere stand
+//test_object=2; // spike ball
+//test_object=3; // ball test
+//test_object=4; // dimpled ball
+//test_object=5; // ribbon ball
+//test_object=6; // ball gear
+//test_object=7; // ball socket
+//test_object=8; // sphere stand
+// test_object=9; // toroidal mapping
 
 function pi()=3.14159265358979323846;
 
@@ -23,10 +24,7 @@ function pointOnSphere(radius=1.0,k,N) =
 function cart2sphere(x,y,z) = [ // returns [r, inclination, azimuth]
   sqrt( x*x+y*y+z*z )
   , acos(z/sqrt(x*x+y*y+z*z))
-  , (x>0) ? atan(y/x) : (
-	(x<0 && y>0) ? atan(y/x)+180 : (
-	(x<0 && y<0) ? atan(y/x)-180 : (
-	(x==0 && y>0) ? 90 : -90 ) ) )
+  , atan2(y,x)
   ];
 
 // Spherical to Cartesian coordinate mapping.
