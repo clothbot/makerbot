@@ -25,19 +25,37 @@ wing_front_thickness = 0.4; // Wing thickness
 wing_back_thickness = 0.4; // Tail Thickness
 wing_span = 160/2; // half of the wing span actually
 wing_rib_angle = 25.5;
+//wing_rib_angle = 30;
 wing_bone_r=2*wing_front_thickness;
 nose_distance = 42;
 nose_size = 8;
+
+module shell_2d(th=0.2,resolution=8) {
+  for(i=[0:resolution-1]) assign(rotAngle=360*i/resolution) for(j=[0:$children-1]) {
+    difference() {
+      child(j);
+	 translate([th*cos(rotAngle),th*sin(rotAngle)]) child(j);
+    }
+  }
+}
+
+module Wing_2D(wing_front_thickness=wing_front_thickness
+	, wing_span=wing_span
+	, side=1
+	) {
+	hull() {
+		circle(r=1,center=0);
+		translate([-60,side*wing_span])scale([1,2]) circle(r=17,center=0);
+		translate([-70,0]) circle(r=1,center=0);
+	}
+}
 
 module Wing(wing_front_thickness=wing_front_thickness
 	, wing_span=wing_span
 	, side=1
 	) {
-	hull() {
-		cylinder(r=1,h=wing_front_thickness,center=0);
-		translate([-60,side*wing_span,0])scale([1,2,1])cylinder(r=17,h=wing_front_thickness,center=0);
-		translate([-70,0,0])cylinder(r=1,h=wing_front_thickness,center=0);
-	}
+  linear_extrude(height=wing_front_thickness)
+	Wing_2D(wing_span=wing_span,side=side);
 }
 
 module Wing_Skeleton(wing_bone_r=wing_bone_r
@@ -57,9 +75,10 @@ module Wing_Skeleton(wing_bone_r=wing_bone_r
 		  translate([-0.5*70*(wing_bone_count-0.5)/wing_bone_count-wing_bone_r,side*wing_span*(wing_bone_count-0.5)/wing_bone_count,0]) {
 		    rotate([90,0,-90-side*35]) cylinder(r1=wing_bone_r,r2=wing_front_thickness,h=sqrt(2)*(70-0.5*70*(wing_bone_count-0.5)/wing_bone_count),center=false);
 		  }
+		  linear_extrude(height=wing_front_thickness) shell_2d(th=2*wing_bone_r)
+			Wing_2D(wing_span=wing_span,side=side);
 		}
 	}
-	
 }
 
 module Tail(wing_back_thickness=wing_back_thickness
@@ -108,7 +127,7 @@ module Fuselage(
 
 	translate([wing_bone_r,0,wing_bone_r/2]) {
 		for ( i = [0 , 1 ] ) {
-			mirror([0,i,0])rotate([-90,0,wing_rib_angle])scale([1,.6,1])cylinder(r=wing_bone_r,h=wing_span*1.45,center=0);
+			mirror([0,i,0])rotate([-90,0,wing_rib_angle])scale([1,.6,1])cylinder(r=wing_bone_r,h=0.5*wing_span/sin(wing_rib_angle),center=0);
 		}
 	}
 
@@ -137,7 +156,7 @@ module Fuselage(
 
 
 for ( i = [-1 , 1 ] ) {
-  Wing(side=i);
+  //Wing(side=i);
   Wing_Skeleton(side=i);
 }
 translate([-80,0,0]) {
