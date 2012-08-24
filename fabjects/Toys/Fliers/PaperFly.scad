@@ -19,16 +19,21 @@ This program is free software: you can redistribute it and/or modify
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+plane_type=0; // Standard issue Paper Fly
+plane_type=1; // V-Tail Paper Fly
+
 $fn= 60; // Smoothness setting
 
 wing_front_thickness = 0.4; // Wing thickness
 wing_back_thickness = 0.4; // Tail Thickness
-wing_span = 160/2; // half of the wing span actually
-wing_rib_angle = 25.5;
+wing_span = 150/2; // half of the wing span actually
+wing_rib_angle = 26.5;
 //wing_rib_angle = 30;
 wing_bone_r=2*wing_front_thickness;
 nose_distance = 42;
 nose_size = 8;
+tail_width=4.0;
+vtail_angle=30;
 
 module shell_2d(th=0.2,resolution=8) {
   for(i=[0:resolution-1]) assign(rotAngle=360*i/resolution) for(j=[0:$children-1]) {
@@ -102,9 +107,9 @@ module Tail_2D(side=1
 	) {
 // Tail
 	hull() {
-		circle(r=1,center=0);
+		circle(r=2,center=0);
 		translate([-30,side*40]) circle(r=10,center=0);
-		translate([-30,0]) circle(r=10,center=0);
+		translate([-39,-side*1.0]) circle(r=1,center=0);
 	}
 }
 
@@ -115,6 +120,41 @@ module Tail(wing_back_thickness=wing_back_thickness
     linear_extrude(height=wing_back_thickness)
 	Tail_2D(side=side);
 }
+
+module VTail(wing_back_thickness=wing_back_thickness
+	, side=1
+	, tail_width=tail_width
+	, vtail_angle=vtail_angle
+	) {
+    translate([0,side*tail_width/2,0]) difference() {
+	intersection() {
+       linear_extrude(height=tail_width) Tail_2D(side=side);
+	  union() {
+	    linear_extrude(height=wing_back_thickness) shell_2d(th=2*wing_bone_r)
+			Tail_2D(side=side);
+	    rotate([-90*side,0,side*35.0]) translate([0,0,tail_width]) sphere(r=wing_bone_r);
+	    rotate([-90*side,0,side*35.0]) translate([0,0,tail_width]) cylinder(r1=wing_bone_r,r2=wing_back_thickness,h=60);
+	    rotate([-90*side,0,side*45.0]) translate([0,0,tail_width]) cylinder(r1=wing_bone_r,r2=wing_back_thickness,h=55);
+	    rotate([-90*side,0,side*60.0]) translate([0,0,tail_width]) cylinder(r1=wing_bone_r,r2=wing_back_thickness,h=45);
+	    mirror([0,(1+side)/2,0]) translate([-20.0,-wing_back_thickness,wing_back_thickness]) union() {
+		hull() {
+		  translate([20,-1.5,-0.5]) sphere(r=1.0);
+		  rotate([vtail_angle+90,0,0])
+	        cube(size=[16.0,tail_width,2*tail_width],center=false);
+		  translate([-20,-1.5,-0.5]) sphere(r=1.0);
+		}
+		for(k=[-1:1]) rotate([vtail_angle+90,0,0]) translate([8*k,tail_width,4.0]) rotate([90,0,0]) difference() {
+			cylinder(r=4.9/2,h=1.8+tail_width/2,center=true);
+			cylinder(r=1.8/2,h=2*(1.8+tail_width/2),center=true);
+		}
+	    }
+	  }
+	}
+	translate([-20.0,side*wing_back_thickness/2,1.414*wing_back_thickness]) rotate([45,0,0])
+	  cube(size=[50.0,wing_back_thickness,wing_back_thickness],center=true);
+    }
+}
+
 
 module Rudder_2D() {
 //Rudder
@@ -161,6 +201,9 @@ module Fuselage(
 	, wing_span=wing_span
 	, wing_bone_r=wing_bone_r
 	, wing_front_thickness=wing_front_thickness
+	, wing_back_thickness=wing_back_thickness
+	, tail_width=tail_width
+	, vtail=false
 	) {
   // Fuselage
   difference() {
@@ -168,13 +211,19 @@ module Fuselage(
 		// Nose
 		hull() {
 			translate([42,0,2.5])scale([1,1.1,.6])sphere(r=8);
-			translate([-10,0,1])sphere(r=1.5);
+			translate([-10,0,1])sphere(r=tail_width/2);
 		}
 
 		// Fuselage beam
 		hull() {
-			translate([-10,0,1])sphere(r=1.5);
-			translate([-116,0,1])sphere(r=1.5);
+			translate([-10,0,1])sphere(r=tail_width/2);
+			if(vtail==false) {
+			  translate([-116,0,1])sphere(r=tail_width/2);
+			} else {
+			  translate([-80,0,1]) cube([tail_width,tail_width,tail_width+wing_back_thickness],center=true);
+			  translate([-110,0,1]) cube([tail_width,tail_width,tail_width+wing_back_thickness],center=true);
+			  translate([-116,0,1])sphere(r=tail_width/2);
+			}
 		}
 	} // End Union
 
@@ -188,16 +237,110 @@ module Fuselage(
   }
 }
 
-
-for ( i = [-1 , 1 ] ) {
-  //Wing(side=i);
-  Wing_Skeleton(side=i);
-}
-translate([-80,0,0]) {
+if(plane_type==0) {
+  echo("Standard PaperFly design...");
   for ( i = [-1 , 1 ] ) {
-    Tail(side=i);
+    //Wing(side=i);
+    Wing_Skeleton(side=i);
   }
-  Rudder();
-  Flap();
-} // End Tail - Translate
-Fuselage();
+  translate([-80,0,0]) {
+    for ( i = [-1 , 1 ] ) {
+      Tail(side=i);
+    }
+    Rudder();
+    Flap();
+  } // End Tail - Translate
+  Fuselage();
+}
+
+
+module Fuselage_Lego_Connector(
+	xn=3,yn=2
+	) {
+//  difference() {
+//    union() {
+      hull() {
+        translate([-8*(xn)/2,0,3.2/2]) cube([8*(xn-1),8*yn,3.2],center=true);
+	   translate([0,0,0]) cylinder(r=8.0*(yn-1),h=3.2);
+      }
+      for(ix=[0:xn-1]) for(iy=[0:yn-1]) translate([-8.0*ix,8.0*(iy-yn/2+0.5),0]) cylinder(r=4.9/2,h=3.2+1.8);
+//    }
+//    for(ix=[1:xn-1]) for(iy=[0:yn-1]) translate([-8.0*ix,8.0*(iy-yn/2+0.5),-0.1]) cylinder(r=1.8/2,h=3.2+1.8+0.2);
+//    for(ix=[1:xn-1]) for(iy=[0:yn-1]) translate([-8.0*ix,8.0*(iy-yn/2+0.5),-0.1]) cylinder(r=4.9/2,h=2.0+0.1);
+//  }
+}
+
+module Fuselage_Lego_Holes(
+	xn=3,yn=2
+	) {
+  for(ix=[0:xn-1]) for(iy=[0:yn-1]) translate([-8.0*ix,8.0*(iy-yn/2+0.5),-0.1]) cylinder(r=1.8/2,h=3.2+1.8+0.2);
+  for(ix=[0:xn-1]) for(iy=[0:yn-1]) translate([-8.0*ix,8.0*(iy-yn/2+0.5),-0.1]) cylinder(r=4.9/2,h=2.0+0.1);
+  for(ix=[1:xn-1]) translate([-8.0*ix+4.0,0,-0.1]) cylinder(r=1.8/2,h=3.2+1.8+0.2);
+  translate([4,0,0]) cylinder(r=3.0/2,h=10.0,center=true);
+}
+
+
+module Fuselage_Lego_Pegs(
+	wing_rib_angle=wing_rib_angle
+	, wing_span=wing_span
+	, wing_bone_r=wing_bone_r
+	, wing_front_thickness=wing_front_thickness
+	, wing_back_thickness=wing_back_thickness
+	, tail_width=tail_width
+	, vtail=false
+	) {
+  // Fuselage
+  difference() {
+	union() {
+		// Nose
+		Fuselage_Lego_Connector();
+		// Fuselage beam
+		hull() {
+			translate([-10,0,1])sphere(r=tail_width/2);
+			if(vtail==false) {
+			  translate([-116,0,1])sphere(r=tail_width/2);
+			} else {
+			  translate([-80,0,1]) cube([tail_width,tail_width,tail_width+wing_back_thickness],center=true);
+			  translate([-110,0,1]) cube([tail_width,tail_width,tail_width+wing_back_thickness],center=true);
+			  translate([-116,0,1])sphere(r=tail_width/2);
+			}
+		}
+	} // End Union
+
+	// Fuselage_Lego_Holes();
+
+	// Hook Hole
+	// translate([38,0,3])rotate([0,15,0])cylinder(r=1.5,h=25,center=true);
+
+	// Nose and bottom trimmer
+	translate([-20,0,-25])cube([200,300,50],true);
+	translate([50,0,16])cube([100,50,20],true);
+
+  }
+}
+
+
+if(plane_type==1) {
+  echo("VTail PaperFly design with LEGO-style connectors...");
+  difference() {
+   union() {
+    //for ( i = [-1 , 1 ] ) {
+      //Wing(side=i);
+      Wing_Skeleton(side=1);
+      Wing_Skeleton(side=-1);
+    //}
+    translate([-80,0,0]) {
+      //for ( i = [-1 , 1 ] ) {
+     union() {
+		VTail(side=1);
+		VTail(side=-1);
+	}
+        //VFlap(side=i);
+      //}
+    } // End Tail - Translate
+    Fuselage_Lego_Pegs(vtail=true);
+   }
+   Fuselage_Lego_Holes();
+  }
+}
+
