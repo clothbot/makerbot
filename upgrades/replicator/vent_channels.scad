@@ -3,6 +3,8 @@
 //render_part="channel_section_2d";
 //render_part="channel_inner_mask_2d";
 render_part="channel_section";
+render_part="channel_sectionx4";
+render_part="channel_section_tapered";
 
 vent_xy=29.82; // From laser cut DXF source files
 vent2stepper=186.5;
@@ -58,7 +60,33 @@ module channel_section(h=60.0,vent_xy=vent_xy,channel_th=channel_th) {
 
 if(render_part=="channel_section") {
   echo("Rendering channel_section()...");
+  channel_section();
+}
+
+
+if(render_part=="channel_sectionx4") {
+  echo("Rendering channel_section() x4...");
   for(i=[0:3]) rotate([0,0,i*360/4]) translate([channel_th,channel_th,0]) 
     channel_section();
+}
+
+module channel_taper(vent_xy=vent_xy,channel_th=channel_th) {
+  hull() {
+    translate([0,0,-2*channel_th]) cube([channel_th/2,channel_th/2,channel_th],center=false);
+    translate([2*channel_th,2*channel_th,channel_th]) cube([channel_th/2,channel_th/2,channel_th],center=false);
+  }
+}
+
+module channel_section_tapered(h=60.0,vent_xy=vent_xy,channel_th=channel_th) {
+  minkowski() {
+    linear_extrude(height=h) render() channel_section_2d(vent_xy=vent_xy,channel_th=channel_th/2);
+    channel_taper(vent_xy=vent_xy,channel_th=channel_th/2);
+  }
+}
+
+if(render_part=="channel_section_tapered") {
+  echo("Rendering channel_section_tapered()...");
+  % channel_taper();
+  channel_section_tapered();
 }
 
