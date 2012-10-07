@@ -15,7 +15,8 @@ rep_spool_bracket_th=3.0;
 rep_support_tube_d=25.4*5/8+dim_delta; // 5/8" copper pipe
 rep_support_tube_id=25.4*0.55; // inner diameter of copper pipe
 
-spool_id=32.0;
+spool_id=30.0;
+spool_od=36.0;
 spool_h=92.0;
 bearing_od=22.5;
 bearing_id=8.0;
@@ -86,12 +87,12 @@ module spool_holder_cap(panel_th=rep_panel_th,spool_bracket_w=rep_spool_bracket_
 
 module spool_holder_insert(panel_th=rep_panel_th,spool_bracket_w=rep_spool_bracket_w,spool_bracket_h=rep_spool_bracket_h
 	, spool_bracket_offset=rep_spool_bracket_offset,spool_bracket_th=rep_spool_bracket_th, support_tube_d=rep_support_tube_d, support_tube_id=rep_support_tube_id-dim_delta
-	, spool_id=spool_id, spool_h=spool_h, bearing_od=bearing_od, bearing_id=bearing_id, bearing_th=bearing_th
+	, spool_id=spool_id, spool_od=spool_od, spool_h=spool_h, bearing_od=bearing_od, bearing_id=bearing_id, bearing_th=bearing_th
 	, set_screw_d=3.0+dim_delta, set_screw_nut_w=5.5+dim_delta, set_screw_nut_h=2.4
 	) {
   difference() {
     union() {
-	cylinder(r=spool_id/2+spool_bracket_th,h=spool_bracket_th,center=false);
+	cylinder(r=spool_od/2,h=spool_bracket_th,center=false);
 	hull() {
 	  cylinder(r=support_tube_id/2,h=spool_bracket_th,center=false);
 	  translate([0,0,bearing_th+1.5*spool_bracket_th]) cylinder(r1=support_tube_id/2,r2=support_tube_id/2-spool_bracket_th/2,h=spool_bracket_th/2,center=false);
@@ -123,7 +124,7 @@ if(render_part==0) {
   translate([0,0,0.5*spool_id/sqrt(2)+rep_spool_bracket_th/2+spool_id/2+rep_support_tube_d/2+sqrt(2)*rep_spool_bracket_th]) cube([2*(rep_spool_bracket_w+bearing_od),2*(rep_spool_bracket_h+bearing_od),spool_id],center=true);
  }
  translate([spool_id+rep_panel_th/2,0,0]) spool_holder_cap();
- translate([spool_id/2+rep_panel_th,spool_id+rep_panel_th/2,0]) spool_holder_insert();
+ translate([spool_id/2+rep_panel_th,spool_id/2+spool_od/2,0]) spool_holder_insert();
 }
 
 if(render_part==1) {
