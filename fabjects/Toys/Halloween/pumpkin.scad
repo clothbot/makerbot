@@ -1,10 +1,12 @@
 // Parametric Pumpkin
 
 render_part="pumpkin_body";
-render_part="pumpkin_hollow";
+//render_part="pumpkin_hollow";
 render_part="hollow_pumpkin";
-render_part="pumpkin_face";
+//render_part="pumpkin_face_parts";
+//render_part="pumpkin_face";
 //render_part="hollow_pumpkin_w_face";
+render_part="large_pumpkin_w_10mm_LED";
 
 
 module lobe(a=30,truncate=true) {
@@ -18,6 +20,7 @@ module lobe(a=30,truncate=true) {
 }
 
 module pumpkin_body(diam=20.0,lobes=9) {
+  cylinder(r=diam/4,h=diam/20,center=false);
   translate([0,0,diam/2]) union() {
     sphere($fn=32,r=0.5*diam);
     for(i=[0:lobes-1]) rotate([0,0,360*i/lobes]) translate([0,2*diam/lobes,0])
@@ -55,7 +58,7 @@ module hollow_pumpkin(diam=20.0,lobes=9,wall_th=0.8,bottom_hole_d=5.5) {
 
 if(render_part=="hollow_pumpkin") {
   echo("Rendering hollow_pumpkin()...");
-  hollow_pumpkin();
+  hollow_pumpkin(diam=30.0,bottom_hole_d=10.5);
 }
 
 module pumpkin_mask(diam=20.0,lobes=9,wall_th=0.8) {
@@ -77,15 +80,28 @@ module pumpkin_face_parts(diam=20.0,lobes=9,wall_th=0.8) {
     }
     // mouth
     translate([0,0,diam/4+diam/8]) {
-	rotate([90,0,0]) render() scale([1.5,0.5,1]) difference() {
-	  cylinder(r=diam/4,h=diam,center=false);
-	  translate([0,diam/8,0]) cylinder(r=diam/4,h=diam,center=false);
+	rotate([90,0,0]) render() difference() {
+	  scale([1.5,0.5,1]) cylinder(r=diam/4,h=diam,center=false);
+	  scale([1.5,0.5,1]) translate([0,diam/8,0]) cylinder(r=diam/4,h=diam,center=false);
+	  translate([-diam/10,-diam/17,0]) rotate([0,0,-90-45]) cube([diam/8,diam/8,diam],center=false);
+	  translate([-diam/6,diam/12,0]) rotate([0,0,-90-45-12.5]) cube([diam/8,diam/8,diam],center=false);
+	  translate([diam/10,-diam/17,0]) rotate([0,0,-90-45]) cube([diam/8,diam/8,diam],center=false);
+	  translate([diam/6,diam/12,0]) rotate([0,0,-90-45+12.5]) cube([diam/8,diam/8,diam],center=false);
 	}
     }
 }
 
+if(render_part=="pumpkin_face_parts") {
+  echo("Rendering pumpkin_face_parts()...");
+  pumpkin_face_parts();
+}
+
 module pumpkin_face(diam=20.0,lobes=9,wall_th=0.8) {
   % pumpkin_body(diam=diam,lobes=lobes);
+  difference() {
+    render() hollow_pumpkin(diam=diam,lobes=lobes,wall_th=2*wall_th);
+    render() hollow_pumpkin(diam=diam,lobes=lobes,wall_th=wall_th);
+  }
   pumpkin_mask(diam=diam,lobes=lobes,wall_th=wall_th) {
     pumpkin_face_parts(diam=diam,lobes=lobes,wall_th=wall_th);
   }
@@ -100,6 +116,20 @@ if(render_part=="hollow_pumpkin_w_face") {
   echo("Rendering hollow_pumpkin_w_face...");
   difference() {
     hollow_pumpkin(wall_th=2*0.8);
-    pumpkin_face_parts(wall_th=2*0.8);
+    intersection() {
+      hollow_pumpkin(wall_th=0.8);
+      pumpkin_face_parts(wall_th=2*0.8);
+    }
+  }
+}
+
+if(render_part=="large_pumpkin_w_10mm_LED") {
+  echo("Rendering large_pumpkin_w_10mm_LED...");
+  difference() {
+    hollow_pumpkin(wall_th=2*0.8,diam=30.0,bottom_hole_d=10.5);
+    intersection() {
+      hollow_pumpkin(wall_th=0.8,diam=30.0,bottom_hole_d=10.5);
+      pumpkin_face_parts(wall_th=2*0.8,diam=30.0,bottom_hole_d=10.5);
+    }
   }
 }
