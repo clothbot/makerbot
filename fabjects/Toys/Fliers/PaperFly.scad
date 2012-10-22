@@ -26,7 +26,7 @@ $fn= 60; // Smoothness setting
 
 wing_front_thickness = 0.4; // Wing thickness
 wing_back_thickness = 0.4; // Tail Thickness
-wing_span = 150/2; // half of the wing span actually
+wing_span = 150; // half of the wing span actually
 wing_rib_angle = 26.5;
 //wing_rib_angle = 30;
 wing_bone_r=2*wing_front_thickness;
@@ -50,7 +50,7 @@ module Wing_2D(wing_front_thickness=wing_front_thickness
 	) {
 	hull() {
 		circle(r=1,center=0);
-		translate([-60,side*wing_span])scale([1,2]) circle(r=17,center=0);
+		translate([-60,side*wing_span/2])scale([1,2]) circle(r=17,center=0);
 		translate([-70,0]) circle(r=1,center=0);
 	}
 }
@@ -65,7 +65,7 @@ module Wing(wing_front_thickness=wing_front_thickness
 // Wing Ribs / Leading edge
 	translate([wing_bone_r,0,wing_bone_r/2]) {
 		for ( i = [0 , 1 ] ) {
-			mirror([0,i,0])rotate([-90,0,wing_rib_angle])scale([1,.6,1])cylinder(r=wing_bone_r,h=0.5*wing_span/sin(wing_rib_angle),center=0);
+			mirror([0,i,0])rotate([-90,0,wing_rib_angle])scale([1,.6,1])cylinder(r=wing_bone_r,h=0.25*wing_span/sin(wing_rib_angle),center=0);
 		}
 	}
 }
@@ -83,11 +83,11 @@ module Wing_Skeleton(wing_bone_r=wing_bone_r
 		Wing(wing_front_thickness=wing_bone_r,wing_span=wing_span,side=side);
 		union() {
 		  for(i=[0:wing_bone_count-1]) {
-		    translate([-0.5*60*(i+0.5)/wing_bone_count-wing_bone_r,side*wing_span*(i+0.5)/wing_bone_count,0]) {
-		      rotate([90,0,-90]) cylinder(r1=wing_bone_r,r2=wing_front_thickness,h=wing_span-0.5*60*(i+0.5)/wing_bone_count,center=false);
+		    translate([-0.5*60*(i+0.5)/wing_bone_count-wing_bone_r,0.5*side*wing_span*(i+0.5)/wing_bone_count,0]) {
+		      rotate([90,0,-90]) cylinder(r1=wing_bone_r,r2=wing_front_thickness,h=wing_span/2-0.5*60*(i+0.5)/wing_bone_count,center=false);
 		    }
 		  }
-		  translate([-0.5*70*(wing_bone_count-0.5)/wing_bone_count-wing_bone_r,side*wing_span*(wing_bone_count-0.5)/wing_bone_count,0]) {
+		  translate([-0.5*70*(wing_bone_count-0.5)/wing_bone_count-wing_bone_r,0.5*side*wing_span*(wing_bone_count-0.5)/wing_bone_count,0]) {
 		    rotate([90,0,-90-side*wing_rib_angle]) cylinder(r1=wing_bone_r,r2=wing_front_thickness,h=sqrt(2)*(70-0.5*70*(wing_bone_count-0.5)/wing_bone_count),center=false);
 		  }
 		  linear_extrude(height=wing_front_thickness) shell_2d(th=2*wing_bone_r)
@@ -96,9 +96,9 @@ module Wing_Skeleton(wing_bone_r=wing_bone_r
 	}
 // Wing Ribs / Leading edge
 	translate([wing_bone_r,0,wing_bone_r/4]) mirror([0,(1-side)/2,0]) rotate([-90,0,wing_rib_angle]) scale([1,0.6,1])
-		cylinder(r1=sqrt(2)*wing_bone_r,r2=wing_bone_r,h=0.5*wing_span/sin(wing_rib_angle),center=false);
+		cylinder(r1=sqrt(2)*wing_bone_r,r2=wing_bone_r,h=0.25*wing_span/sin(wing_rib_angle),center=false);
     } // union
-    translate([0,0,-wing_bone_r]) cube(size=[4*wing_span,4*wing_span,2*wing_bone_r],center=true);
+    translate([0,0,-wing_bone_r]) cube(size=[2*wing_span,2*wing_span,2*wing_bone_r],center=true);
   }
 
 }
@@ -272,10 +272,15 @@ module Fuselage_Lego_Connector(
 
 module Fuselage_Lego_Holes(
 	xn=3,yn=2
+	, body_th=3.2
+	, peg_h=1.8
+	, peg_hole_r=1.8/2
+	, socket_hole_r=4.9/2
+	, socket_hole_h=2.0
 	) {
-  for(ix=[0:xn-1]) for(iy=[0:yn-1]) translate([-8.0*ix,8.0*(iy-yn/2+0.5),-0.1]) cylinder(r=1.8/2,h=3.2+1.8+0.2);
-  for(ix=[0:xn-1]) for(iy=[0:yn-1]) translate([-8.0*ix,8.0*(iy-yn/2+0.5),-0.1]) cylinder(r=4.9/2,h=2.0+0.1);
-  for(ix=[1:xn-1]) translate([-8.0*ix+4.0,0,-0.1]) cylinder(r=1.8/2,h=3.2+1.8+0.2);
+  for(ix=[0:xn-1]) for(iy=[0:yn-1]) translate([-8.0*ix,8.0*(iy-yn/2+0.5),-0.1]) cylinder(r=peg_hole_r,h=body_th+peg_h+0.2);
+  for(ix=[0:xn-1]) for(iy=[0:yn-1]) translate([-8.0*ix,8.0*(iy-yn/2+0.5),-0.1]) cylinder(r=socket_hole_r,h=socket_hole_h+0.1);
+  for(ix=[1:xn-1]) translate([-8.0*ix+4.0,0,-0.1]) cylinder(r=peg_hole_r,h=body_th+peg_h+0.2);
   translate([4,0,0]) cylinder(r=3.0/2,h=10.0,center=true);
 }
 
