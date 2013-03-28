@@ -3,23 +3,25 @@
 render_part=0; // window_clip_outline
 render_part=1; // window_clip
 
+abs_correct=0.5;
+
 scale_1in=25.4;
-bottom_width=(2+1/8)*scale_1in;
-bottom_height=scale_1in*7/8;
+bottom_width=(2+1/8)*scale_1in-abs_correct;
+bottom_height=scale_1in*7/8-abs_correct;
 bottom_th=scale_1in/4;
-clip_width=(1+1/4)*scale_1in;
+clip_width=(1+1/4)*scale_1in-abs_correct;
 bottom2clip_height=2.5*scale_1in;
 bottom2fork_height=(1+5/16)*scale_1in;
-fork_tine_width=scale_1in*7/16;
+fork_tine_width=scale_1in*7/16-abs_correct;
 hole_radius2radius=scale_1in*0.5;
-fork_tine_tip_width=scale_1in*0.475;
-fork_tine_tip_height=scale_1in*0.275;
-clip_peg_outer_diameter=0.2425*scale_1in;
+fork_tine_tip_width=scale_1in*0.475-abs_correct;
+fork_tine_tip_height=scale_1in*0.275-abs_correct;
+clip_peg_outer_diameter=0.2425*scale_1in-abs_correct/2;
 clip_peg_height=0.220*scale_1in;
 clip_peg_inner_diameter=0.082*scale_1in;
 bracket_inner_height=18.0;
 bracket_inset_deltax=3.5;
-bracket_clip_width=0.25*scale_1in;
+bracket_clip_width=0.25*scale_1in+abs_correct;
 bracket_clip_deltaz=0.125*scale_1in;
 bracket_clip_overhang=0.4;
 
@@ -113,11 +115,12 @@ module window_clip(bottom_w=bottom_width
 	,fork_tine_tip_h=fork_tine_tip_h
 	, bevel_r=bevel_r
 	);
-      translate([-clip_w/2,bottom_h/2])
-	  cylinder(r=peg_od/2,h=bottom_th+peg_h,center=false);
-	translate([clip_w/2,bottom_h/2])
-	  cylinder(r=peg_od/2,h=bottom_th+peg_h,center=false);
-	translate([-bottom_w/2+bracket_inset_dx,0,0]) {
+      translate([-clip_w/2,bottom_h/2]) cylinder(r=peg_od/2,h=bottom_th+peg_h-(peg_od-peg_id)/4,center=false);
+      translate([-clip_w/2,bottom_h/2,bottom_th+peg_h-(peg_od-peg_id)/4])
+		cylinder(r1=peg_od/2,r2=peg_od/2-(peg_od-peg_id)/4,h=(peg_od-peg_id)/4,center=false);
+      translate([clip_w/2,bottom_h/2]) cylinder(r=peg_od/2,h=bottom_th+peg_h-(peg_od-peg_id)/4,center=false);
+      translate([clip_w/2,bottom_h/2,bottom_th+peg_h-(peg_od-peg_id)/4])
+		cylinder(r1=peg_od/2,r2=peg_od/2-(peg_od-peg_id)/4,h=(peg_od-peg_id)/4,center=false);	translate([-bottom_w/2+bracket_inset_dx,0,0]) {
 	  cube([bracket_clip_w,bracket_clip_dy,bottom_th+peg_h],center=false);
 	  hull() {
 	    translate([0,0,bottom_th+bracket_clip_dz]) cube([bracket_clip_w,bracket_clip_dy+bracket_clip_oh,bracket_clip_oh],center=false);
@@ -149,11 +152,13 @@ module window_clip(bottom_w=bottom_width
     translate([-clip_w/2,bottom_h/2,0]) {
 	cylinder($fn=8,r=peg_id/2,h=bottom_th+peg_h+0.2,center=false);
 	cylinder($fn=16,r=bolt_head_d/2,h=2*bolt_head_h, center=true);
+	translate([0,0,bolt_head_h-0.1]) cylinder(r1=bolt_head_d/2+0.1,r2=0,h=bolt_head_d/2+0.1,center=false);
 	cube([1.2*bolt_head_d,peg_id/8,2*(bottom_th+bracket_clip_dz)],center=true);
     }
     translate([clip_w/2,bottom_h/2,0]) {
 	cylinder($fn=8,r=peg_id/2,h=bottom_th+peg_h+0.2,center=false);
 	cylinder($fn=16,r=bolt_head_d/2,h=2*bolt_head_h, center=true);
+	translate([0,0,bolt_head_h-0.1]) cylinder(r1=bolt_head_d/2+0.1,r2=0,h=bolt_head_d/2+0.1,center=false);
 	cube([1.2*bolt_head_d,peg_id/8,2*(bottom_th+bracket_clip_dz)],center=true);
     }	
     translate([-clip_w/2-bevel_r,bottom2clip_h,bottom_th-bevel_r]) rotate([60,0,0]) cube([clip_w+2*bevel_r,bevel_r,4*bevel_r],center=false);
