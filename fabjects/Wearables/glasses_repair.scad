@@ -11,12 +11,14 @@ render_part="arm_spring_clamp_min";
 render_part="arm_spring_clamp_min_multiples";
 
 module arm_spring_clamp_holes(delta=0.4,offset_spring=0.4,extend_bottom=0.1,extend_top=0.1
-	,outer_h=3.11,outer_w=10.65,outer_l=3.0,gap_w=4.72,wall_th=0.4,spring_th=0.6,spring_w=4.1) {
+	,outer_h=3.11,outer_w=10.65,outer_l=3.0,gap_w=4.72,wall_th=0.4,spring_th=0.6,spring_w=4.1,side_open=1) {
     translate([0,0,-extend_bottom]) union() {
-        translate([-(outer_w+delta)/2,0,0]) cube([outer_w+delta,outer_h,outer_l+2*wall_th+extend_bottom+extend_top],center=false);
-        translate([-gap_w/2-delta/2,0,0]) cube([gap_w+delta,outer_h+spring_th/4,outer_l+2*wall_th+extend_bottom+extend_top],center=false);
-        translate([-spring_w/2-delta/2,0,offset_spring+wall_th+extend_bottom])
-		cube([spring_w+delta,outer_h+spring_th,outer_l+extend_top+wall_th-offset_spring],center=false);
+        translate([-(outer_w+delta)/2,0,0]) cube([outer_w+delta,spring_th,outer_l+2*wall_th+extend_bottom+extend_top],center=false);
+        translate([side_open*(outer_w+delta-2*spring_th)/2,0,0]) translate([-spring_th,0,0]) cube([2*spring_th,outer_h,outer_l+2*wall_th+extend_bottom+extend_top],center=false);
+        translate([-(outer_w+delta)/2,outer_h-spring_th,0]) cube([outer_w+delta,spring_th,outer_l+2*wall_th+extend_bottom+extend_top],center=false);
+        translate([-gap_w/2-delta/2,outer_h-spring_th,0]) cube([gap_w+delta,spring_th+spring_th/4,outer_l+2*wall_th+extend_bottom+extend_top],center=false);
+        translate([-spring_w/2-delta/2,outer_h-spring_th,offset_spring+wall_th+extend_bottom])
+		cube([spring_w+delta,spring_th+spring_th,outer_l+extend_top+wall_th-offset_spring],center=false);
         translate([0,outer_h,offset_spring+wall_th+extend_bottom])
 		rotate([45,0,0]) cube([spring_w+delta,sqrt(2)*spring_th,sqrt(2)*spring_th],center=true);
         translate([-outer_w/2,0]) cylinder(r=delta/2,h=outer_l+2*wall_th+extend_bottom+extend_top,center=false,$fn=8);
@@ -90,6 +92,10 @@ if(render_part=="arm_spring_clamp_multiples") {
 }
 
 if(render_part=="arm_spring_clamp_min_multiples") {
-  for(i=[-1:1]) translate([0,i*8.0])
-    arm_spring_clamp_min(wall_th=3*global_wall_th,delta=0.5,outer_h=2.7,outer_l=4.0);
+  for(i=[-2:1]) translate([0,i*8.0+3])
+    if(abs(i%2)==0) {
+      arm_spring_clamp_min(wall_th=3*global_wall_th,delta=0.5,outer_h=2.7,outer_l=4.0);
+    } else if(abs(i%2)==1) {
+      mirror([1,0,0]) arm_spring_clamp_min(wall_th=3*global_wall_th,delta=0.5,outer_h=2.7,outer_l=4.0);
+    }
 }
