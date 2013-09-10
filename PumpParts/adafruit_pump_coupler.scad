@@ -1,6 +1,9 @@
 // Peristaltic Pump Coupler
 // Measured from https://www.adafruit.com/products/1150
 
+render_part="pump_coupler";
+render_part="pump_roller";
+
 function pump_coupler_id() = 4.38; // mm
 function pump_coupler_od() = 22.37; // mm
 function pump_base_th() = 1.93; // mm
@@ -35,6 +38,21 @@ module pump_coupler(
         translate([0,0,-base_hub_th/2]) cylinder(r=coupler_id/2,h=2*base_hub_th,center=true,$fn=32);
     }
 }
+if(render_part=="pump_coupler") {
+    pump_coupler();
+}
 
-pump_coupler();
+function pump_roller_od() = 11.08; // mm
+function pump_roller_peg_hole_id() = 2.75; // mm
+function pump_roller_peg_hole_od() = 6.00; // mm
+function pump_roller_peg_hole_depth() = 10.00; // mm
+function pump_roller_cap_od() = 5.33; // mm
+function pump_roller_cap_hole_id() = 9.00; // mm
+function pump_roller_cap_depth() = 0.25; // mm
+function pump_roller_cap_side_depth() = 6.38; // mm
+function pump_roller_cap_wall_th() = 0.9; // mm
+
+function m3_washer_od() = 6.86; // mm
+function m3_washer_id() = 3.1; // mm
+function m3_washer_th() = 0.6; // mm
 
