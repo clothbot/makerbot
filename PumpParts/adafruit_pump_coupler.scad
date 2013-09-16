@@ -261,14 +261,20 @@ module pump_shell_sensors( wall_th=1.6
 				translate([-sensor_w/2,sensor_h/2-shrink_th/16,(sensor_th-sensor_th_min)/2]) cube([sensor_w,shell_od,(sensor_th-sensor_th_min)/2],center=false);
 				translate([-sensor_w_min/2+shrink_th,sensor_h/2-shrink_th/16,sensor_th-sensor_th_min]) cube([sensor_w_min-2*shrink_th,shell_od,sensor_th_min+shrink_th],center=false);
 			}
-			rotate([0,0,180]) {
-				// vdd terminal
-				translate([wire_lead_spacing,shell_od/2,0]) cube([1.1*wire_lead_spacing,shell_od/2,1.5*sensor_th_min],center=true);
+			rotate([0,0,180]) difference() {
+				union() {
+				  hull() {
+				    translate([0,(shell_od/2-sensor_offset)/2+wire_lead_spacing/2,0]) translate([-3*wire_lead_spacing/2,0,-sensor_th_min/2]) cube([3*wire_lead_spacing,2*wire_lead_spacing,1.5*sensor_th_min],center=false);
+				    // vdd terminal
+				    translate([0,(shell_od/2-sensor_offset)/2+1.5*wire_lead_spacing,0]) rotate([0,0,-90]) translate([-wire_lead_spacing/2,0,-sensor_th_min/2]) cube([1*wire_lead_spacing,3*wire_lead_spacing,1.5*sensor_th_min],center=false);
+				    // sig out terminal
+				    translate([0,(shell_od/2-sensor_offset)/2+1.5*wire_lead_spacing,0]) rotate([0,0,90]) translate([-wire_lead_spacing/2,0,-sensor_th_min/2]) cube([1*wire_lead_spacing,3*wire_lead_spacing,1.5*sensor_th_min],center=false);
+				  }
+				  // gnd terminal
+				  translate([0,shell_od/2-sensor_offset+shrink_th+wall_th,0]) translate([-1.5*wire_lead_spacing,0,-sensor_th_min/2]) cube([3*wire_lead_spacing,4*wire_lead_spacing,1.5*sensor_th_min],center=false);
+				}
 				// gnd terminal
-				translate([0,shell_od/2,0]) cube([1.1*wire_lead_spacing,shell_od/2,1.5*sensor_th_min],center=true);
-				// sig out terminal
-				translate([-wire_lead_spacing,shell_od/2,0]) cube([1.1*wire_lead_spacing,shell_od/2,1.5*sensor_th_min],center=true);
-
+				translate([0,(shell_od/2-sensor_offset)/2,0]) translate([-wire_lead_spacing,0,-sensor_th_min/2]) cube([2*wire_lead_spacing,3*wire_lead_spacing,1.5*sensor_th_min],center=false);
 			}
 		}	
 	}
@@ -279,5 +285,5 @@ module pump_shell_sensors( wall_th=1.6
 
 if(render_part=="pump_shell_sensors") {
   echo("Rendering pump_shell_sensors()...");
-  pump_shell_sensors(sensor_count=4);
+  pump_shell_sensors(sensor_count=6);
 }
