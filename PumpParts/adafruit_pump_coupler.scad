@@ -206,15 +206,15 @@ module pump_hall_sensor(wall_th=1.6
 			}
 			translate([0,shrink_th/2,0]) cube([sensor_w,sensor_h+shrink_th,sensor_th],center=true);
 			rotate([0,0,180]) hull() {
-				translate([-sensor_w/2,sensor_h/2-shrink_th/16,(sensor_th-sensor_th_min)/2]) cube([sensor_w,shell_od,(sensor_th-sensor_th_min)/2],center=false);
-				translate([-sensor_w_min/2+shrink_th,sensor_h/2-shrink_th/16,sensor_th-sensor_th_min]) cube([sensor_w_min-2*shrink_th,shell_od,sensor_th_min+shrink_th],center=false);
+				translate([-sensor_w/2,sensor_h/2-shrink_th/16,(sensor_th-sensor_th_min)/2]) cube([sensor_w,(shell_od/2-sensor_offset)+connector_socket_w+shrink_th,(sensor_th-sensor_th_min)/2],center=false);
+				translate([-sensor_w_min/2+shrink_th,sensor_h/2-shrink_th/16,sensor_th-sensor_th_min]) cube([sensor_w_min-2*shrink_th,(shell_od/2-sensor_offset)+connector_socket_w+shrink_th,sensor_th_min+shrink_th],center=false);
 			}
 			rotate([0,0,180]) difference() {
 				union() {
 				// Socket for vdd and gnd plug
-				translate([0,(shell_od/2)/2+wall_th,-1*shell_h]) translate([-2*connector_socket_w-shrink_th,0,-sensor_th_min/2]) cube([2*connector_socket_w+shrink_th,connector_socket_w+shrink_th,4*shell_h],center=false);
+				translate([0,(shell_od/2)/2+wall_th,-1*shell_h]) translate([-2*connector_socket_w-shrink_th,0,-sensor_th_min/2]) cube([2*connector_socket_w+shrink_th,connector_socket_w+shrink_th,2*shell_h],center=false);
 				// Socket for sig out plug
-				translate([0,(shell_od/2)/2+wall_th,-1*shell_h]) translate([connector_socket_w/2+shrink_th,0,-sensor_th_min/2]) cube([connector_socket_w+shrink_th,connector_socket_w+shrink_th,4*shell_h],center=false);
+				translate([0,(shell_od/2)/2+wall_th,-1*shell_h]) translate([connector_socket_w/2+shrink_th,0,-sensor_th_min/2]) cube([connector_socket_w+shrink_th,connector_socket_w+shrink_th,2*shell_h],center=false);
 				  if(false) hull() {
 				    translate([0,(shell_od/2-sensor_offset)/2+wire_lead_spacing/2,0]) translate([-3*wire_lead_spacing/2,0,-sensor_th_min/2]) cube([3*wire_lead_spacing,2*wire_lead_spacing,1.5*sensor_th_min],center=false);
 				    // vdd terminal
@@ -270,7 +270,7 @@ module pump_shell_sensors( wall_th=1.6
 		    translate([0,-(shell_mount_outer/2-mount_bolt_hole_d/2),0]) cylinder(r=mount_bolt_hole_d/2+shrink_th+wall_th,h=mount_bolt_hole_h+wall_th,center=false,$fn=16);
 		  }
 		  for(i=[0:sensor_count-1]) rotate([0,0,360*(i+0.5*(sensor_count/2%2+1))/sensor_count]) translate([shell_od/2+shrink_th,-2*connector_socket_w-wall_th/2,0]) {
-			cube([connector_socket_w+2*shrink_th+wall_th,4*connector_socket_w+2*shrink_th+wall_th,shell_h+sensor_th],center=false);
+			cube([connector_socket_w+2*shrink_th+wall_th,4*connector_socket_w+2*shrink_th+wall_th,shell_h-sensor_th_min/2+wall_th/2],center=false);
 		  }
 
 		}
