@@ -6,7 +6,12 @@ render_part="pump_roller";
 render_part="pump_roller_insert";
 render_part="pump_roller_magnet_insert";
 render_part="pump_hall_sensor";
-//render_part="pump_shell_sensors";
+render_part="pump_shell_sensors";
+
+global_wall_th=1.6;
+global_shrink_th=0.4;
+global_wire_lead_spacing=0.05*25.4;
+global_connector_socket_w=0.1*25.4;
 
 function pump_coupler_id() = 4.38; // mm
 function pump_coupler_od() = 22.37; // mm
@@ -97,7 +102,7 @@ module pump_roller_insert( roller_h=pump_roller_h(), roller_od=pump_roller_od()
     , peg_hole_id=pump_roller_peg_hole_id(), peg_hole_od=pump_roller_peg_hole_od(), peg_hole_depth=pump_roller_peg_hole_depth()
     , cap_od=pump_roller_cap_od(), cap_hole_id=pump_roller_cap_hole_id(), cap_depth=pump_roller_cap_depth()
     , cap_side_depth=pump_roller_cap_side_depth()/2, cap_wall_th=pump_roller_cap_wall_th()
-    , center_hole_d=2.0, shrink_th=0.5, cut_w=0.4, cut_count=3
+    , center_hole_d=2.0, shrink_th=global_shrink_th, cut_w=0.4, cut_count=3
     , debug=false
     ) {
     if(debug) echo(str("  pump_roller_insert: od = ",cap_hole_id-shrink_th/2));
@@ -133,7 +138,7 @@ module pump_roller_magnet_insert( roller_h=pump_roller_h(), roller_od=pump_rolle
     , peg_hole_id=pump_roller_peg_hole_id(), peg_hole_od=pump_roller_peg_hole_od(), peg_hole_depth=pump_roller_peg_hole_depth()
     , cap_od=pump_roller_cap_od(), cap_hole_id=pump_roller_cap_hole_id(), cap_depth=pump_roller_cap_depth()
     , cap_side_depth=pump_roller_cap_side_depth()/2, cap_wall_th=pump_roller_cap_wall_th()
-    , center_hole_d=2.0, shrink_th=0.5, cut_w=0.4, cut_count=3
+    , center_hole_d=2.0, shrink_th=global_shrink_th, cut_w=0.4, cut_count=3
     , debug=false
     , magnet_od=washer_od(), magnet_h=magnet_h()
     ) {
@@ -187,16 +192,16 @@ function shell_sensor_h() = 3.2;
 function shell_sensor_th() = 1.6;
 function shell_sensor_th_min() = 0.84;
 
-module pump_hall_sensor(wall_th=1.6
+module pump_hall_sensor(wall_th=global_wall_th
 	, shell_od=pump_shell_od(), shell_h=pump_shell_h()
 	, peg_od=pump_peg_od()
 	, peg_h=pump_peg_h()
 	, peg_triangle_h=pump_peg_triangle_h()
 	, sensor_w=shell_sensor_w(), sensor_w_min=shell_sensor_w_min(), sensor_h=shell_sensor_h()
 	, sensor_th=shell_sensor_th(), sensor_th_min=shell_sensor_th_min()
-	, shrink_th=0.5
-	, wire_lead_spacing=0.05*25.4
-	, connector_socket_w=0.1*25.4
+	, shrink_th=global_shrink_th
+	, wire_lead_spacing=global_wire_lead_spacing
+	, connector_socket_w=global_connector_socket_w
 	) {
 	sensor_offset=pump_c2peg_r(peg_d=peg_od,triangle_h=peg_triangle_h);
 			translate([0,shrink_th/2,sensor_th]) cube([sensor_w_min,sensor_h+shrink_th,sensor_th],center=true);
@@ -212,9 +217,15 @@ module pump_hall_sensor(wall_th=1.6
 			rotate([0,0,180]) difference() {
 				union() {
 				// Socket for vdd and gnd plug
-				translate([0,(shell_od/2)/2+wall_th,-1*shell_h]) translate([-2*connector_socket_w-shrink_th,0,-sensor_th_min/2]) cube([2*connector_socket_w+shrink_th,connector_socket_w+shrink_th,2*shell_h],center=false);
+				translate([0,(shell_od/2)/2+wall_th,-shell_h]) {
+					translate([-2*connector_socket_w-shrink_th,0,-sensor_th_min/2]) cube([2*connector_socket_w+shrink_th,connector_socket_w+shrink_th,4*shell_h],center=false);
 				// Socket for sig out plug
-				translate([0,(shell_od/2)/2+wall_th,-1*shell_h]) translate([connector_socket_w/2+shrink_th,0,-sensor_th_min/2]) cube([connector_socket_w+shrink_th,connector_socket_w+shrink_th,2*shell_h],center=false);
+					translate([connector_socket_w/2+shrink_th,0,-sensor_th_min/2]) cube([connector_socket_w+shrink_th,connector_socket_w+shrink_th,4*shell_h],center=false);
+					//hull() {
+					translate([-2.0*connector_socket_w+shrink_th,0.0*wall_th,1*(shell_h+sensor_th_min)]) cube([3.0*connector_socket_w+shrink_th,1.0*connector_socket_w+shrink_th,1.5*sensor_th_min],center=false);
+					translate([-sensor_w/2,-2.0*wall_th,0*(shell_h+sensor_th_min)]) cube([sensor_w,1.5*connector_socket_w+0.75*wall_th,shell_h+1.0*sensor_th_min],center=false);
+					//}
+				}
 				  if(false) hull() {
 				    translate([0,(shell_od/2-sensor_offset)/2+wire_lead_spacing/2,0]) translate([-3*wire_lead_spacing/2,0,-sensor_th_min/2]) cube([3*wire_lead_spacing,2*wire_lead_spacing,1.5*sensor_th_min],center=false);
 				    // vdd terminal
@@ -228,13 +239,20 @@ module pump_hall_sensor(wall_th=1.6
 			}
 }
 
-if(render_part=="pump_hall_sensor") {
+if(render_part=="pump_hall_sensor") rotate([0,0,90]) {
   echo("Rendering pump_hall_sensor()...");
   % pump_shell_sensors();
-  translate([pump_c2peg_r(peg_d=pump_peg_od(),triangle_h=pump_peg_triangle_h()),0,0]) rotate([0,0,90]) pump_hall_sensor();
+  difference() {
+    union() {
+	translate([0,-shell_sensor_w()/2-global_wall_th,0]) cube([pump_shell_od()/2+global_wall_th, shell_sensor_w()+2*global_wall_th,shell_sensor_th()],center=false);
+	translate([pump_shell_od()/2+global_shrink_th-2*global_wall_th,-2*global_connector_socket_w-global_wall_th,0]) cube([global_connector_socket_w+2*global_shrink_th+3.5*global_wall_th,4*global_connector_socket_w+2*global_shrink_th+2*global_wall_th,pump_shell_h()-shell_sensor_th_min()/2+global_wall_th],center=false);
+    }
+    translate([0,0,shell_sensor_th()]) cylinder(r=pump_shell_od()/2+global_shrink_th,h=pump_shell_h()+shell_sensor_th()+shell_sensor_h(),center=false,$fn=128);
+    translate([pump_c2peg_r(peg_d=pump_peg_od(),triangle_h=pump_peg_triangle_h()),0,0]) rotate([0,0,90]) pump_hall_sensor();
+  }
 }
 
-module pump_shell_sensors( wall_th=1.6
+module pump_shell_sensors( wall_th=global_wall_th
 	, shell_od=pump_shell_od(), shell_h=pump_shell_h()
 	, shell_notch_w=pump_shell_notch_w(), shell_notch_h=pump_shell_notch_h()
 	, shell_mount_inner=pump_shell_mount_inner(), shell_mount_outer=pump_shell_mount_outer()
@@ -244,9 +262,9 @@ module pump_shell_sensors( wall_th=1.6
 	, peg_triangle_h=pump_peg_triangle_h()
 	, sensor_w=shell_sensor_w(), sensor_w_min=shell_sensor_w_min(), sensor_h=shell_sensor_h()
 	, sensor_th=shell_sensor_th(), sensor_th_min=shell_sensor_th_min()
-    , center_hole_d=2.0, shrink_th=0.5, sensor_count=6
-	, wire_lead_spacing=0.05*25.4
-	, connector_socket_w=0.1*25.4
+    , center_hole_d=2.0, shrink_th=global_shrink_th, sensor_count=6
+	, wire_lead_spacing=global_wire_lead_spacing
+	, connector_socket_w=global_connector_socket_w
 	, anchor_nub_th=0.5
 	) {
 	sensor_offset=pump_c2peg_r(peg_d=peg_od,triangle_h=peg_triangle_h);
@@ -269,8 +287,8 @@ module pump_shell_sensors( wall_th=1.6
 		    translate([0,-(shell_mount_inner/2+mount_bolt_hole_d/2),0]) cylinder(r=mount_bolt_hole_d/2+shrink_th+wall_th,h=mount_bolt_hole_h+wall_th,center=false,$fn=16);
 		    translate([0,-(shell_mount_outer/2-mount_bolt_hole_d/2),0]) cylinder(r=mount_bolt_hole_d/2+shrink_th+wall_th,h=mount_bolt_hole_h+wall_th,center=false,$fn=16);
 		  }
-		  for(i=[0:sensor_count-1]) rotate([0,0,360*(i+0.5*(sensor_count/2%2+1))/sensor_count]) translate([shell_od/2+shrink_th,-2*connector_socket_w-wall_th/2,0]) {
-			cube([connector_socket_w+2*shrink_th+wall_th,4*connector_socket_w+2*shrink_th+wall_th,shell_h-sensor_th_min/2+wall_th/2],center=false);
+		  for(i=[0:sensor_count-1]) rotate([0,0,360*(i+0.5*(sensor_count/2%2+1))/sensor_count]) translate([shell_od/2+shrink_th-wall_th,-2*connector_socket_w-wall_th,0]) {
+			cube([connector_socket_w+2*shrink_th+2.5*wall_th,4*connector_socket_w+2*shrink_th+2*wall_th,shell_h-sensor_th_min/2+wall_th],center=false);
 		  }
 
 		}
